@@ -145,9 +145,9 @@ func load_from_active_quest_data() -> void:
 	_delete_all_nodes()
 	for action_name in active_quest_data.actions:
 		var action_class: QuestAction = active_quest_data.actions[action_name]['class']
-		var size: Vector2 = active_quest_data.actions[action_name]['size']
-		var position: Vector2 = active_quest_data.actions[action_name]['position']
-		var connections: Array[Dictionary] = active_quest_data.actions[action_name]['connections']
+		var size: Vector2 = active_quest_data.actions[action_name].get('size', Vector2.INF)
+		var position: Vector2 = active_quest_data.actions[action_name].get('position', Vector2.INF)
+		var connections: Array = active_quest_data.actions[action_name].get('connections', [])
 		add_node(action_class, action_name, position, size)
 		connection_list.append_array(connections)
 

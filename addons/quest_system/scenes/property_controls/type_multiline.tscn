@@ -16,9 +16,8 @@ size_flags_horizontal = 3
 [node name="Label" type="Label" parent="VBoxContainer"]
 custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
-size_flags_horizontal = 0
 text_overrun_behavior = 3
 
 [node name="TextEdit" type="TextEdit" parent="VBoxContainer"]
-custom_minimum_size = Vector2(0, 100)
+custom_minimum_size = Vector2(200, 100)
 layout_mode = 2

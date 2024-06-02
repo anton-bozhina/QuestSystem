@@ -16,12 +16,13 @@ var quest_changed: bool = false
 
 
 func _ready() -> void:
-	graph_edit.active_quest_data = QuestData.new()
 	node_tree.tree_item_activated.connect(_on_node_tree_item_activated)
 	graph_edit.open_button_pressed.connect(_on_graph_edit_open_button_pressed)
 	graph_edit.save_button_pressed.connect(_on_graph_edit_save_button_pressed)
 	graph_edit.new_button_pressed.connect(_on_graph_edit_new_button_pressed)
 	graph_edit.graph_edit_changed.connect(_on_graph_edit_changed)
+	# Фикс положения новой ноды, нода создается раньше, чем изменится размер граф эдита
+	graph_edit.resized.connect(_on_new_quest_action_quest_created.bind(QuestData.new()), CONNECT_ONE_SHOT)
 	open_quest_action.quest_selected.connect(_on_open_quest_action_quest_selected)
 	save_quest_action.quest_saved.connect(_on_save_quest_action_quest_saved)
 	new_quest_action.quest_created.connect(_on_new_quest_action_quest_created)

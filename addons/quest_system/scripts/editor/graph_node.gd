@@ -35,9 +35,6 @@ func _create_controls() -> void:
 		control.queue_free()
 	control_list.clear()
 
-	caption.text = action.node_caption
-	caption.visible = not caption.text.is_empty()
-
 	for property in action.get_property_list().filter(_property_filter):
 		var property_type: int = property['type']
 		var property_hint: int = property['hint']
@@ -54,6 +51,10 @@ func _create_controls() -> void:
 		new_control.property_changed.connect(_on_control_property_changed.bind(new_control))
 		control_list[new_control] = property_name
 		control_container.add_child(new_control)
+
+	caption.text = action.node_caption
+	caption.visible = not caption.text.is_empty()
+	control_container.get_parent().visible = not control_list.is_empty()
 
 
 func _on_control_property_changed(control: QuestEditGraphNodePropertyControl) -> void:

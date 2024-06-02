@@ -124,3 +124,4 @@ filters = PackedStringArray("*.tres, *.res ; Quest Data Resources")
 [connection signal="delete_nodes_request" from="WindowContainer/BodyContainer/GraphEdit" to="WindowContainer/BodyContainer/GraphEdit" method="_on_delete_nodes_request"]
 [connection signal="disconnection_request" from="WindowContainer/BodyContainer/GraphEdit" to="WindowContainer/BodyContainer/GraphEdit" method="_on_disconnection_request"]
 [connection signal="end_node_move" from="WindowContainer/BodyContainer/GraphEdit" to="WindowContainer/BodyContainer/GraphEdit" method="_on_end_node_move"]
+[connection signal="resized" from="WindowContainer/BodyContainer/GraphEdit" to="WindowContainer/BodyContainer/GraphEdit" method="_on_resized"]

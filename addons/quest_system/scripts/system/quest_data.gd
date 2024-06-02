@@ -5,7 +5,11 @@ extends Resource
 @export_multiline var quest_description: String
 @export_group('Actions')
 @export var start_action: StringName
-@export var actions: Dictionary
+@export var actions: Dictionary = {
+	'QuestStart_0': {
+		'class': QuestActionLogicStart.new()
+	}
+}
 @export_group('Quest Editor')
 @export var graph_edit_zoom: float = 1
 @export var graph_edit_scroll_offset: Vector2 = Vector2.ZERO

@@ -3,19 +3,9 @@
 [ext_resource type="Script" path="res://addons/quest_system/scripts/editor/graph_node.gd" id="1_2u2bm"]
 
 [node name="GraphNode" type="GraphNode" node_paths=PackedStringArray("control_container", "caption")]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -168.0
-offset_top = -28.5
-offset_right = 168.0
-offset_bottom = 28.5
-grow_horizontal = 2
-grow_vertical = 2
+offset_right = 37.0
+offset_bottom = 92.0
 size_flags_vertical = 4
-mouse_filter = 1
 slot/0/left_enabled = false
 slot/0/left_type = 0
 slot/0/left_color = Color(8.18223e-07, 0.47419, 0.346886, 1)
@@ -60,6 +50,5 @@ theme_override_constants/margin_top = 5
 theme_override_constants/margin_bottom = 5
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
-custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_vertical = 3
