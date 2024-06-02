@@ -1,0 +1,126 @@
+[gd_scene load_steps=9 format=3 uid="uid://cnu201dhmsx2j"]
+
+[ext_resource type="Script" path="res://addons/quest_system/scripts/editor/main_panel.gd" id="1_gj44q"]
+[ext_resource type="Script" path="res://addons/quest_system/scripts/editor/node_tree.gd" id="2_ir3ok"]
+[ext_resource type="Script" path="res://addons/quest_system/scripts/editor/graph_edit.gd" id="3_rfcal"]
+[ext_resource type="PackedScene" uid="uid://bbm37xscdri5y" path="res://addons/quest_system/scenes/graph_node.tscn" id="4_akk4m"]
+[ext_resource type="Script" path="res://addons/quest_system/scripts/editor/open_inspector_quest_action.gd" id="5_6tymq"]
+[ext_resource type="Script" path="res://addons/quest_system/scripts/editor/open_quest_action.gd" id="6_68tno"]
+[ext_resource type="Script" path="res://addons/quest_system/scripts/editor/new_quest_action.gd" id="7_pwrqb"]
+[ext_resource type="Script" path="res://addons/quest_system/scripts/editor/save_quest_action.gd" id="8_ucs87"]
+
+[node name="MainPanel" type="MarginContainer" node_paths=PackedStringArray("node_tree", "graph_edit", "open_quest_action", "save_quest_action", "new_quest_action", "open_inspector_quest_action")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+script = ExtResource("1_gj44q")
+node_tree = NodePath("WindowContainer/BodyContainer/NodeTree")
+graph_edit = NodePath("WindowContainer/BodyContainer/GraphEdit")
+open_quest_action = NodePath("Actions/OpenQuestAction")
+save_quest_action = NodePath("Actions/SaveQuestAction")
+new_quest_action = NodePath("Actions/NewQuestAction")
+open_inspector_quest_action = NodePath("Actions/OpenInspectorQuestAction")
+
+[node name="WindowContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="BodyContainer" type="HSplitContainer" parent="WindowContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+split_offset = 200
+
+[node name="NodeTree" type="Tree" parent="WindowContainer/BodyContainer"]
+custom_minimum_size = Vector2(150, 64)
+layout_mode = 2
+hide_root = true
+script = ExtResource("2_ir3ok")
+
+[node name="GraphEdit" type="GraphEdit" parent="WindowContainer/BodyContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+right_disconnects = true
+script = ExtResource("3_rfcal")
+graph_node = ExtResource("4_akk4m")
+
+[node name="FooterContainer" type="HBoxContainer" parent="WindowContainer"]
+layout_mode = 2
+
+[node name="Actions" type="Node" parent="."]
+
+[node name="OpenInspectorQuestAction" type="Node" parent="Actions"]
+script = ExtResource("5_6tymq")
+
+[node name="SaveFileDialog" type="FileDialog" parent="Actions/OpenInspectorQuestAction"]
+size = Vector2i(312, 154)
+ok_button_text = "Save"
+dialog_hide_on_ok = true
+filters = PackedStringArray("*.tres, *.res ; Quest Data Resources")
+
+[node name="SaveConfirmationDialog" type="ConfirmationDialog" parent="Actions/OpenInspectorQuestAction"]
+size = Vector2i(300, 100)
+unresizable = true
+popup_window = true
+ok_button_text = "Save"
+dialog_text = "Save the current quest?"
+
+[node name="OpenQuestAction" type="Node" parent="Actions"]
+script = ExtResource("6_68tno")
+
+[node name="SaveFileDialog" type="FileDialog" parent="Actions/OpenQuestAction"]
+ok_button_text = "Save"
+dialog_hide_on_ok = true
+filters = PackedStringArray("*.tres, *.res ; Quest Data Resources")
+
+[node name="OpenFileDialog" type="FileDialog" parent="Actions/OpenQuestAction"]
+title = "Open a File"
+size = Vector2i(312, 154)
+ok_button_text = "Open"
+dialog_hide_on_ok = true
+file_mode = 0
+filters = PackedStringArray("*.tres, *.res ; Quest Data Resources")
+
+[node name="SaveConfirmationDialog" type="ConfirmationDialog" parent="Actions/OpenQuestAction"]
+size = Vector2i(300, 100)
+unresizable = true
+popup_window = true
+ok_button_text = "Save"
+dialog_text = "Save the current quest?"
+
+[node name="NewQuestAction" type="Node" parent="Actions"]
+script = ExtResource("7_pwrqb")
+
+[node name="SaveFileDialog" type="FileDialog" parent="Actions/NewQuestAction"]
+size = Vector2i(312, 154)
+ok_button_text = "Save"
+dialog_hide_on_ok = true
+filters = PackedStringArray("*.tres, *.res ; Quest Data Resources")
+
+[node name="SaveConfirmationDialog" type="ConfirmationDialog" parent="Actions/NewQuestAction"]
+size = Vector2i(300, 100)
+unresizable = true
+popup_window = true
+ok_button_text = "Save"
+dialog_text = "Save the current quest?"
+
+[node name="SaveQuestAction" type="Node" parent="Actions"]
+script = ExtResource("8_ucs87")
+
+[node name="SaveFileDialog" type="FileDialog" parent="Actions/SaveQuestAction"]
+size = Vector2i(312, 154)
+ok_button_text = "Save"
+dialog_hide_on_ok = true
+filters = PackedStringArray("*.tres, *.res ; Quest Data Resources")
+
+[connection signal="item_activated" from="WindowContainer/BodyContainer/NodeTree" to="WindowContainer/BodyContainer/NodeTree" method="_on_item_activated"]
+[connection signal="connection_request" from="WindowContainer/BodyContainer/GraphEdit" to="WindowContainer/BodyContainer/GraphEdit" method="_on_connection_request"]
+[connection signal="delete_nodes_request" from="WindowContainer/BodyContainer/GraphEdit" to="WindowContainer/BodyContainer/GraphEdit" method="_on_delete_nodes_request"]
+[connection signal="disconnection_request" from="WindowContainer/BodyContainer/GraphEdit" to="WindowContainer/BodyContainer/GraphEdit" method="_on_disconnection_request"]
+[connection signal="end_node_move" from="WindowContainer/BodyContainer/GraphEdit" to="WindowContainer/BodyContainer/GraphEdit" method="_on_end_node_move"]

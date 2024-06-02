@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=3 uid="uid://cs7dn6skx1nsq"]
+
+[ext_resource type="Script" path="res://addons/quest_system/scripts/editor/property_control.gd" id="1_4u7lu"]
+
+[node name="BoolProperty" type="HBoxContainer" node_paths=PackedStringArray("_property_control", "_label")]
+script = ExtResource("1_4u7lu")
+_property_control = NodePath("CheckBox")
+_property_value = &"button_pressed"
+_property_change_signal = &"toggled"
+_label = NodePath("Label")
+
+[node name="Label" type="Label" parent="."]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+text_overrun_behavior = 3
+
+[node name="CheckBox" type="CheckBox" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "On"

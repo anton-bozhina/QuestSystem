@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://gs33p6t7v3uh"]
+
+[ext_resource type="Script" path="res://addons/quest_system/scripts/editor/property_control.gd" id="1_mjfiw"]
+
+[node name="StringProperty" type="HBoxContainer" node_paths=PackedStringArray("_property_control", "_label")]
+script = ExtResource("1_mjfiw")
+_property_control = NodePath("LineEdit")
+_property_value = &"text"
+_property_change_signal = &"text_changed"
+_label = NodePath("Label")
+
+[node name="Label" type="Label" parent="."]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+text_overrun_behavior = 3
+
+[node name="LineEdit" type="LineEdit" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
