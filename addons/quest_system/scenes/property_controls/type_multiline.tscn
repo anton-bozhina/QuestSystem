@@ -6,6 +6,7 @@
 script = ExtResource("1_q4e37")
 _property_control = NodePath("VBoxContainer/TextEdit")
 _property_value = &"text"
+_property_hint = &"placeholder_text"
 _property_change_signal = &"text_changed"
 _label = NodePath("VBoxContainer/Label")
 
@@ -14,9 +15,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="Label" type="Label" parent="VBoxContainer"]
-custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
-text_overrun_behavior = 3
 
 [node name="TextEdit" type="TextEdit" parent="VBoxContainer"]
 custom_minimum_size = Vector2(200, 100)

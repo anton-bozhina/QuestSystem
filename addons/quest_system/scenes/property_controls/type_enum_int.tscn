@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3 uid="uid://ipnukrpy54fd"]
+
+[ext_resource type="Script" path="res://addons/quest_system/scripts/editor/property_control.gd" id="1_ghdtc"]
+[ext_resource type="Script" path="res://addons/quest_system/scripts/editor/graph_node_enum.gd" id="2_gqq0j"]
+
+[node name="IntEnumProperty" type="HBoxContainer" node_paths=PackedStringArray("_property_control", "_label")]
+script = ExtResource("1_ghdtc")
+_property_control = NodePath("OptionButton")
+_property_value = &"selected"
+_property_hint = &"hint_string"
+_property_change_signal = &"item_selected"
+_can_update_node = true
+_label = NodePath("Label")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="OptionButton" type="OptionButton" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("2_gqq0j")

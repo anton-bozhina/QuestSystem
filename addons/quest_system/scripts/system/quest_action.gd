@@ -1,10 +1,20 @@
 class_name QuestAction
 extends RefCounted
 
-var action_name: StringName = 'Action'
+var name: StringName = 'Action'
 var node_caption: String = ''
 var ignore: bool = false
 
+
+var tree: SceneTree : set = set_tree, get = get_tree
+
+
+func get_tree() -> SceneTree:
+	return tree
+
+
+func set_tree(value: SceneTree) -> void:
+	tree = value
 
 func _init() -> void:
 	ignore = true

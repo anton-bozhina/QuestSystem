@@ -11,7 +11,6 @@ const QUEST_CLASS_PARENT = 'QuestAction'
 @export var new_quest_action: QuestEditorNewQuestAction
 @export var open_inspector_quest_action: QuestEditorOpenInspectorQuestAction
 
-
 var quest_changed: bool = false
 
 

@@ -8,5 +8,5 @@ extends QuestActionLogic
 
 
 func _init() -> void:
-	action_name = 'QuestStart'
+	name = 'QuestStart'
 	node_show_right_slot = true

@@ -46,7 +46,7 @@ func _create_tree_items(action_list: Array[QuestAction]) -> void:
 	for action in action_list:
 		var folder: TreeItem = _get_folder_by_name(action.folder_name, action.folder_position)
 		var new_node: TreeItem = folder.create_child()
-		new_node.set_text(0, action.action_name)
+		new_node.set_text(0, action.name)
 		new_node.set_meta('action', action)
 
 

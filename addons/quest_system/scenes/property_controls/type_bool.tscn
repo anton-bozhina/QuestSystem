@@ -7,12 +7,12 @@ script = ExtResource("1_4u7lu")
 _property_control = NodePath("CheckBox")
 _property_value = &"button_pressed"
 _property_change_signal = &"toggled"
+_can_update_node = true
 _label = NodePath("Label")
 
 [node name="Label" type="Label" parent="."]
-custom_minimum_size = Vector2(140, 0)
 layout_mode = 2
-text_overrun_behavior = 3
+size_flags_horizontal = 3
 
 [node name="CheckBox" type="CheckBox" parent="."]
 layout_mode = 2
