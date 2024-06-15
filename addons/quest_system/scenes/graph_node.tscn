@@ -1,18 +1,40 @@
-[gd_scene load_steps=2 format=3 uid="uid://bbm37xscdri5y"]
+[gd_scene load_steps=4 format=3 uid="uid://bbm37xscdri5y"]
 
 [ext_resource type="Script" path="res://addons/quest_system/scripts/editor/graph_node.gd" id="1_2u2bm"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uf37k"]
+resource_local_to_scene = true
+content_margin_left = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 2.0
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rfjw0"]
+resource_local_to_scene = true
+content_margin_left = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 2.0
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
 [node name="GraphNode" type="GraphNode" node_paths=PackedStringArray("control_container", "caption")]
-offset_right = 37.0
-offset_bottom = 92.0
-size_flags_vertical = 4
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/titlebar = SubResource("StyleBoxFlat_uf37k")
+theme_override_styles/titlebar_selected = SubResource("StyleBoxFlat_rfjw0")
+title = "test"
 slot/0/left_enabled = false
 slot/0/left_type = 0
-slot/0/left_color = Color(8.18223e-07, 0.47419, 0.346886, 1)
+slot/0/left_color = Color(1, 0.784314, 0, 1)
 slot/0/left_icon = null
 slot/0/right_enabled = false
 slot/0/right_type = 0
-slot/0/right_color = Color(0, 0.789063, 0.701992, 1)
+slot/0/right_color = Color(0.21379, 0.71663, 0, 1)
 slot/0/right_icon = null
 slot/0/draw_stylebox = true
 slot/1/left_enabled = false
@@ -24,23 +46,14 @@ slot/1/right_type = 0
 slot/1/right_color = Color(1, 1, 1, 1)
 slot/1/right_icon = null
 slot/1/draw_stylebox = true
-slot/2/left_enabled = false
-slot/2/left_type = 0
-slot/2/left_color = Color(1, 1, 1, 1)
-slot/2/left_icon = null
-slot/2/right_enabled = false
-slot/2/right_type = 0
-slot/2/right_color = Color(1, 1, 1, 1)
-slot/2/right_icon = null
-slot/2/draw_stylebox = true
 script = ExtResource("1_2u2bm")
 control_container = NodePath("MarginContainer/VBoxContainer")
-caption = NodePath("Caption")
+caption = NodePath("Slot_0/Caption")
 
-[node name="Slot" type="Control" parent="."]
+[node name="Slot_0" type="MarginContainer" parent="."]
 layout_mode = 2
 
-[node name="Caption" type="Label" parent="."]
+[node name="Caption" type="Label" parent="Slot_0"]
 layout_mode = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
@@ -51,4 +64,3 @@ theme_override_constants/margin_bottom = 5
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
-size_flags_vertical = 3

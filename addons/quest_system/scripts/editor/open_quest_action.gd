@@ -52,9 +52,9 @@ func _on_open_file_dialog_file_selected(path: String) -> void:
 		quest_selected.emit(resource)
 
 
-func initiate(quest_data: QuestData) -> void:
+func initiate(quest_data: QuestData, show_confirm_dialog: bool) -> void:
 	_quest_data = quest_data
-	if quest_data.changes_not_saved:
+	if show_confirm_dialog:
 		save_confirm_dialog.popup_centered()
 	else:
 		open_file_dialog.popup_centered_ratio()

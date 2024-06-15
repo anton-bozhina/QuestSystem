@@ -35,7 +35,8 @@ func set_property_hint_string(hint_string: String) -> void:
 
 
 func set_property_value(value: Variant) -> void:
-	_property_control.set(_property_value, value)
+	if value != null:
+		_property_control.set(_property_value, value)
 
 
 func get_property_value() -> Variant:

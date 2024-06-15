@@ -31,25 +31,29 @@ func _add_variable(variable_type: int, variable_name: String = '', variable_valu
 	match variable_type:
 		TYPE_STRING:
 			var variable_item: TreeItem = _create_and_set_item(variable_name)
-			if typeof(variable_value) == TYPE_STRING:
-				variable_item.set_text(1, variable_value)
+			if variable_value == null:
+				variable_value = ''
+			variable_item.set_text(1, variable_value)
 		TYPE_BOOL:
 			var variable_item: TreeItem = _create_and_set_item(variable_name)
 			variable_item.set_cell_mode(1, TreeItem.CELL_MODE_CHECK)
-			if typeof(variable_value) == TYPE_BOOL:
-				variable_item.set_checked(1, variable_value)
+			if variable_value == null:
+				variable_value = false
+			variable_item.set_checked(1, variable_value != null)
 		TYPE_INT:
 			var variable_item: TreeItem = _create_and_set_item(variable_name)
 			variable_item.set_cell_mode(1, TreeItem.CELL_MODE_RANGE)
 			variable_item.set_range_config(1, -99999999, 99999999, 1)
-			if typeof(variable_value) == TYPE_INT:
-				variable_item.set_range(1, variable_value)
+			if variable_value == null:
+				variable_value = 0
+			variable_item.set_range(1, int(variable_value))
 		TYPE_FLOAT:
 			var variable_item: TreeItem = _create_and_set_item(variable_name)
 			variable_item.set_cell_mode(1, TreeItem.CELL_MODE_RANGE)
 			variable_item.set_range_config(1, -99999999, 99999999, 0.1)
-			if typeof(variable_value) == TYPE_FLOAT:
-				variable_item.set_range(1, variable_value)
+			if variable_value == null:
+				variable_value = 0
+			variable_item.set_range(1, float(variable_value))
 
 
 func _create_and_set_item(item_name: String) -> TreeItem:
@@ -73,11 +77,26 @@ func _on_item_edited() -> void:
 		item.set_text(0, variable_name)
 		match item.get_cell_mode(1):
 			TreeItem.CELL_MODE_STRING:
-				variables[variable_name] = item.get_text(1)
+				variables[variable_name] = {
+					'type': TYPE_STRING,
+					'value': item.get_text(1)
+				}
 			TreeItem.CELL_MODE_CHECK:
-				variables[variable_name] = item.is_checked(1)
+				variables[variable_name] = {
+					'type': TYPE_BOOL,
+					'value': item.is_checked(1)
+				}
 			TreeItem.CELL_MODE_RANGE:
-				variables[variable_name] = item.get_range(1)
+				if item.get_range_config(1)['step'] == 1:
+					variables[variable_name] = {
+						'type': TYPE_INT,
+						'value': item.get_range(1)
+					}
+				else:
+					variables[variable_name] = {
+						'type': TYPE_FLOAT,
+						'value': item.get_range(1)
+					}
 	variables_updated.emit(variables)
 
 
@@ -86,9 +105,11 @@ func save_variables() -> void:
 
 
 func load_variables(variables: Dictionary) -> void:
+	clear()
+	create_item()
+
 	for variable in variables:
 		if variable.is_empty():
 			continue
-		var variable_value: Variant = variables[variable]
-		_add_variable(typeof(variable_value), variable, variable_value)
+		_add_variable(variables[variable]['type'], variable, variables[variable]['value'])
 

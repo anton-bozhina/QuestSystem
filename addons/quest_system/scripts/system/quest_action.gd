@@ -1,3 +1,4 @@
+@tool
 class_name QuestAction
 extends RefCounted
 
@@ -6,7 +7,28 @@ var node_caption: String = ''
 var ignore: bool = false
 
 
+var variables: Dictionary : set = set_variables, get = get_variables
 var tree: SceneTree : set = set_tree, get = get_tree
+
+
+func get_variables() -> Dictionary:
+	return variables
+
+
+func set_variables(new_variables: Dictionary) -> void:
+	variables = new_variables
+
+
+func get_variable_value(variable_name: String) -> Variant:
+	return variables.get(variable_name, {'type': TYPE_NIL, 'value': null}).get('value')
+
+
+func set_variable_value(variable_name: String, variable_value: Variant) -> void:
+	variables[variable_name]['value'] = variable_value
+
+
+func get_variable_type(variable_name: String) -> int:
+	return variables.get(variable_name, {'type': TYPE_NIL, 'value': null}).get('type')
 
 
 func get_tree() -> SceneTree:
@@ -15,6 +37,7 @@ func get_tree() -> SceneTree:
 
 func set_tree(value: SceneTree) -> void:
 	tree = value
+
 
 func _init() -> void:
 	ignore = true

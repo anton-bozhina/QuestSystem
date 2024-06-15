@@ -32,7 +32,6 @@ const CONTROLS: Dictionary = {
 var action: QuestAction : set = set_action, get = get_action
 var control_list: Dictionary = {}
 
-
 func _create_controls() -> void:
 	for control in control_list.keys() as Array[QuestEditGraphNodePropertyControl]:
 		control.queue_free()
@@ -59,7 +58,6 @@ func _create_controls() -> void:
 		new_control.update_requested.connect(_create_controls)
 		new_control.set_connection_to_property_signal()
 
-
 	caption.text = action.node_caption
 	caption.visible = not caption.text.is_empty()
 	control_container.get_parent().visible = not control_list.is_empty()
@@ -82,9 +80,17 @@ func _property_filter(property: Dictionary) -> bool:
 func set_action(value: QuestAction) -> void:
 	action = value
 	title = action.name
-	self_modulate = action.node_color
+	var stylebox_titlebar: StyleBoxFlat = self['theme_override_styles/titlebar']
+	var stylebox_titlebar_selected: StyleBoxFlat = self['theme_override_styles/titlebar_selected']
+	stylebox_titlebar.bg_color = action.node_color.darkened(0.25)
+	stylebox_titlebar_selected.bg_color = action.node_color.darkened(0.1)
 	set_slot_enabled_left(0, action.node_show_left_slot)
 	set_slot_enabled_right(0, action.node_show_right_slot)
+
+	if action is QuestActionCheck:
+		set_slot_enabled_right(1, action.node_show_right_slot)
+		set_slot_color_right(1, Color.RED)
+
 	_create_controls()
 
 

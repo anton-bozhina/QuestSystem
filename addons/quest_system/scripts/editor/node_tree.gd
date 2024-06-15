@@ -19,7 +19,6 @@ func _create_quest_action_class_list(parent_class: StringName, class_list: Array
 		if global_class['base'] != parent_class:
 			continue
 		result.append_array(_create_quest_action_class_list(global_class['class'], global_class_list))
-
 		var quest_action: QuestAction = load(global_class['path']).new()
 		if not quest_action.ignore:
 			result.append(quest_action)

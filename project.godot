@@ -14,6 +14,12 @@ config/name="QuestSystem"
 config/features=PackedStringArray("4.2", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/always_on_top=true
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/quest_system/plugin.cfg")

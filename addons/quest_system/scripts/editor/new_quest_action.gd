@@ -44,9 +44,9 @@ func _on_save_file_dialog_files_selected(path: String) -> void:
 	quest_created.emit(QuestData.new())
 
 
-func initiate(quest_data: QuestData) -> void:
+func initiate(quest_data: QuestData, show_confirm_dialog: bool) -> void:
 	_quest_data = quest_data
-	if quest_data.changes_not_saved:
+	if show_confirm_dialog:
 		save_confirm_dialog.popup_centered()
 	else:
 		quest_created.emit(QuestData.new())

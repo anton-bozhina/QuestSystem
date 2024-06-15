@@ -7,7 +7,7 @@ script = ExtResource("1_mjfiw")
 _property_control = NodePath("LineEdit")
 _property_value = &"text"
 _property_hint = &"placeholder_text"
-_property_change_signal = &"text_submitted"
+_property_change_signal = &"text_changed"
 _label = NodePath("Label")
 
 [node name="Label" type="Label" parent="."]

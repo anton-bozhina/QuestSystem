@@ -1,3 +1,4 @@
+@tool
 class_name QuestActionFunction
 extends QuestAction
 
@@ -5,7 +6,7 @@ extends QuestAction
 var folder_name: StringName = 'Functions'
 var folder_position: int = -1
 
-var node_color: Color = Color.CORNFLOWER_BLUE
+var node_color: Color = Color.DARK_GOLDENROD
 var node_show_left_slot: bool = true
 var node_show_right_slot: bool = true
 
