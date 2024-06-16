@@ -15,9 +15,8 @@ extends Resource
 
 
 func _init() -> void:
-	var node_name: StringName = OS.get_unique_id()
-	actions[node_name] = {}
-	actions[node_name]['class'] = QuestActionLogicStart.new()
+	actions[''] = {}
+	actions['']['class'] = QuestActionLogicStart.new()
 
 
 func _to_string() -> String:

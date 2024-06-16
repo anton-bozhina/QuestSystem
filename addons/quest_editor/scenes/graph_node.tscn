@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://bbm37xscdri5y"]
 
-[ext_resource type="Script" path="res://addons/quest_system/scripts/editor/graph_node.gd" id="1_2u2bm"]
+[ext_resource type="Script" path="res://addons/quest_editor/scripts/graph_node.gd" id="1_2u2bm"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uf37k"]
 resource_local_to_scene = true

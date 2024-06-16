@@ -1,5 +1,5 @@
 @tool
-class_name QuestEditorNewQuestAction
+class_name QuestEditorNewQuestController
 extends Node
 
 signal quest_created(quest_data: QuestData)

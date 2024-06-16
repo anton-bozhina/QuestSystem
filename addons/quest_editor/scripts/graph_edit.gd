@@ -11,17 +11,18 @@ var _node_list: Array[QuestEditorGraphNode] = []
 var _quest_data_label: Label
 
 
+func generate_id() -> String:
+	var length: int = 8
+	var result: String
+	for index in range(length):
+		result += '%02x' % (randi() % 256)
+	return result
+
+
 func _create_button(text: String) -> Button:
 	var new_button: Button = Button.new()
 	new_button.text = text
 	return new_button
-
-
-func clear() -> void:
-	var node_names: Array[StringName] = []
-	for node in _node_list:
-		node_names.append(node.name)
-	delete_nodes_request.emit(node_names)
 
 
 func _on_connection_request(from_node: StringName, from_port: int, to_node: StringName, to_port: int) -> void:
@@ -58,7 +59,7 @@ func _on_end_node_move() -> void:
 
 func add_node(action: QuestAction, node_name: StringName = '', node_position: Vector2 = Vector2.INF, node_size: Vector2 = Vector2.INF) -> void:
 	if node_name.is_empty():
-		node_name = OS.get_unique_id()
+		node_name = '%s_%s' % [action.name, generate_id()]
 	if node_position == Vector2.INF:
 		node_position = ((scroll_offset + size / 3) / zoom).snapped(Vector2(snapping_distance, snapping_distance))
 
@@ -80,3 +81,14 @@ func update_variables(variables: Dictionary) -> void:
 	for node in _node_list as Array[QuestEditorGraphNode]:
 		node.action.variables = variables
 		node._create_controls()
+
+
+func get_nodes() -> Array[QuestEditorGraphNode]:
+	return _node_list
+
+
+func clear() -> void:
+	var node_names: Array[StringName] = []
+	for node in _node_list:
+		node_names.append(node.name)
+	delete_nodes_request.emit(node_names)

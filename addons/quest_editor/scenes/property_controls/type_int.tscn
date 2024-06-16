@@ -1,9 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://sdecsn0ffw81"]
+[gd_scene load_steps=2 format=3 uid="uid://bj2tprfs1tt5d"]
 
-[ext_resource type="Script" path="res://addons/quest_system/scripts/editor/property_control.gd" id="1_wpqxs"]
+[ext_resource type="Script" path="res://addons/quest_editor/scripts/properties_controls/property_control.gd" id="1_ccm8u"]
 
-[node name="FloatProperty" type="HBoxContainer" node_paths=PackedStringArray("_property_control", "_label")]
-script = ExtResource("1_wpqxs")
+[node name="IntProperty" type="HBoxContainer" node_paths=PackedStringArray("_property_control", "_label")]
+script = ExtResource("1_ccm8u")
 _property_control = NodePath("SpinBox")
 _property_value = &"value"
 _property_change_signal = &"value_changed"
@@ -16,7 +16,7 @@ size_flags_horizontal = 3
 [node name="SpinBox" type="SpinBox" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
-step = 0.1
+rounded = true
 allow_greater = true
 allow_lesser = true
 select_all_on_focus = true

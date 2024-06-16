@@ -1,5 +1,5 @@
 @tool
-class_name QuestEditorOpenQuestAction
+class_name QuestEditorOpenQuestController
 extends Node
 
 signal quest_selected(quest_data: QuestData)

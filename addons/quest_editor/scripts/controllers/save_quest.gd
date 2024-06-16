@@ -1,5 +1,5 @@
 @tool
-class_name QuestEditorSaveQuestAction
+class_name QuestEditorSaveQuestController
 extends Node
 
 signal quest_saved

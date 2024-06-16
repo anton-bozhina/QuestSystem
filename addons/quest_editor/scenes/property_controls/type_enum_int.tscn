@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://ipnukrpy54fd"]
 
-[ext_resource type="Script" path="res://addons/quest_system/scripts/editor/property_control.gd" id="1_ghdtc"]
-[ext_resource type="Script" path="res://addons/quest_system/scripts/editor/graph_node_enum.gd" id="2_gqq0j"]
+[ext_resource type="Script" path="res://addons/quest_editor/scripts/properties_controls/property_control.gd" id="1_ghdtc"]
+[ext_resource type="Script" path="res://addons/quest_editor/scripts/properties_controls/graph_node_enum.gd" id="2_gqq0j"]
 
 [node name="IntEnumProperty" type="HBoxContainer" node_paths=PackedStringArray("_property_control", "_label")]
 script = ExtResource("1_ghdtc")

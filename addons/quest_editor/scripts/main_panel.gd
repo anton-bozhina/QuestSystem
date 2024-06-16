@@ -12,10 +12,10 @@ const QUEST_CLASS_PARENT = 'QuestAction'
 @export var new_button: Button
 @export var open_button: Button
 @export var save_button: Button
-@export var quest_data_action: QuestEditorQuestDataAction
-@export var open_quest_action: QuestEditorOpenQuestAction
-@export var save_quest_action: QuestEditorSaveQuestAction
-@export var new_quest_action: QuestEditorNewQuestAction
+@export var quest_data_controller: QuestEditorQuestDataController
+@export var open_quest_controller: QuestEditorOpenQuestController
+@export var save_quest_controller: QuestEditorSaveQuestController
+@export var new_quest_controller: QuestEditorNewQuestController
 
 var quest_changed: bool = false :
 	set(value):
@@ -27,11 +27,11 @@ func _ready() -> void:
 	node_tree.tree_item_activated.connect(_on_node_tree_item_activated)
 	graph_edit.graph_edit_changed.connect(_on_graph_edit_changed)
 	# Фикс положения новой ноды, нода создается раньше, чем изменится размер граф эдита
-	graph_edit.resized.connect(_on_new_quest_action_quest_created.bind(QuestData.new()), CONNECT_ONE_SHOT)
+	graph_edit.resized.connect(_on_new_quest_controller_quest_created.bind(QuestData.new()), CONNECT_ONE_SHOT)
 	variable_tree.variables_updated.connect(_on_variable_tree_variables_updated)
-	open_quest_action.quest_selected.connect(_on_open_quest_action_quest_selected)
-	save_quest_action.quest_saved.connect(_on_save_quest_action_quest_saved)
-	new_quest_action.quest_created.connect(_on_new_quest_action_quest_created)
+	open_quest_controller.quest_selected.connect(_on_open_quest_controller_quest_selected)
+	save_quest_controller.quest_saved.connect(_on_save_quest_controller_quest_saved)
+	new_quest_controller.quest_created.connect(_on_new_quest_controller_quest_created)
 
 	new_button.pressed.connect(_on_file_menu_id_pressed.bind(0))
 	open_button.pressed.connect(_on_file_menu_id_pressed.bind(1))
@@ -50,35 +50,35 @@ func update_quest_data_label() -> void:
 func _on_file_menu_id_pressed(id: int) -> void:
 	match id:
 		0:
-			_new_quest_action_initiate()
+			_new_quest_controller_initiate()
 		1:
-			_open_quest_action_initiate()
+			_open_quest_controller_initiate()
 		2:
-			_save_quest_action_initiate()
+			_save_quest_controller_initiate()
 
 
-func _new_quest_action_initiate() -> void:
-	new_quest_action.initiate(quest_data, quest_changed)
+func _new_quest_controller_initiate() -> void:
+	new_quest_controller.initiate(quest_data, quest_changed)
 
 
-func _open_quest_action_initiate() -> void:
-	open_quest_action.initiate(quest_data, quest_changed)
+func _open_quest_controller_initiate() -> void:
+	open_quest_controller.initiate(quest_data, quest_changed)
 
 
-func _save_quest_action_initiate() -> void:
-	quest_data_action.editor_data_to_quest_data(graph_edit, quest_data)
+func _save_quest_controller_initiate() -> void:
+	quest_data_controller.editor_data_to_quest_data(graph_edit, quest_data)
 	variable_tree.save_variables()
-	save_quest_action.initiate(quest_data)
+	save_quest_controller.initiate(quest_data)
 
 
-func _on_open_quest_action_quest_selected(new_quest_data: QuestData) -> void:
+func _on_open_quest_controller_quest_selected(new_quest_data: QuestData) -> void:
 	quest_data = new_quest_data
-	quest_data_action.quest_data_to_editor_data(graph_edit, quest_data)
+	quest_data_controller.quest_data_to_editor_data(graph_edit, quest_data)
 	variable_tree.load_variables(quest_data.quest_variables)
 	quest_changed = false
 
 
-func _on_save_quest_action_quest_saved() -> void:
+func _on_save_quest_controller_quest_saved() -> void:
 	quest_changed = false
 
 
@@ -86,9 +86,9 @@ func _on_graph_edit_changed() -> void:
 	quest_changed = true
 
 
-func _on_new_quest_action_quest_created(new_quest_data: QuestData) -> void:
+func _on_new_quest_controller_quest_created(new_quest_data: QuestData) -> void:
 	quest_data = new_quest_data
-	quest_data_action.quest_data_to_editor_data(graph_edit, QuestData.new())
+	quest_data_controller.quest_data_to_editor_data(graph_edit, QuestData.new())
 	variable_tree.load_variables(quest_data.quest_variables)
 	quest_changed = false
 

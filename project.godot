@@ -22,7 +22,7 @@ window/size/always_on_top=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/quest_system/plugin.cfg")
+enabled=PackedStringArray("res://addons/quest_editor/plugin.cfg", "res://addons/quest_system/plugin.cfg")
 
 [rendering]
 

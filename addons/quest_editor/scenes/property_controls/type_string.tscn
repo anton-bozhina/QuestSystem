@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://gs33p6t7v3uh"]
 
-[ext_resource type="Script" path="res://addons/quest_system/scripts/editor/property_control.gd" id="1_mjfiw"]
+[ext_resource type="Script" path="res://addons/quest_editor/scripts/properties_controls/property_control.gd" id="1_mjfiw"]
 
 [node name="StringProperty" type="HBoxContainer" node_paths=PackedStringArray("_property_control", "_label")]
 script = ExtResource("1_mjfiw")

@@ -6,23 +6,23 @@ signal property_changed
 
 const CONTROLS: Dictionary = {
 	TYPE_INT: {
-		PROPERTY_HINT_NONE: preload('../../scenes/property_controls/type_int.tscn'),
-		PROPERTY_HINT_ENUM: preload('../../scenes/property_controls/type_enum_int.tscn')
+		PROPERTY_HINT_NONE: preload('../scenes/property_controls/type_int.tscn'),
+		PROPERTY_HINT_ENUM: preload('../scenes/property_controls/type_enum_int.tscn')
 	},
 	TYPE_FLOAT: {
-		PROPERTY_HINT_NONE: preload('../../scenes/property_controls/type_float.tscn')
+		PROPERTY_HINT_NONE: preload('../scenes/property_controls/type_float.tscn')
 	},
 	TYPE_BOOL: {
-		PROPERTY_HINT_NONE: preload('../../scenes/property_controls/type_bool.tscn')
+		PROPERTY_HINT_NONE: preload('../scenes/property_controls/type_bool.tscn')
 	},
 	TYPE_STRING: {
-		PROPERTY_HINT_NONE: preload('../../scenes/property_controls/type_string.tscn'),
-		PROPERTY_HINT_PLACEHOLDER_TEXT: preload('../../scenes/property_controls/type_string.tscn'),
-		PROPERTY_HINT_MULTILINE_TEXT: preload('../../scenes/property_controls/type_multiline.tscn'),
-		PROPERTY_HINT_ENUM: preload('../../scenes/property_controls/type_enum_string.tscn')
+		PROPERTY_HINT_NONE: preload('../scenes/property_controls/type_string.tscn'),
+		PROPERTY_HINT_PLACEHOLDER_TEXT: preload('../scenes/property_controls/type_string.tscn'),
+		PROPERTY_HINT_MULTILINE_TEXT: preload('../scenes/property_controls/type_multiline.tscn'),
+		PROPERTY_HINT_ENUM: preload('../scenes/property_controls/type_enum_string.tscn')
 	},
 	TYPE_STRING_NAME: {
-		PROPERTY_HINT_NONE: preload('../../scenes/property_controls/type_string.tscn')
+		PROPERTY_HINT_NONE: preload('../scenes/property_controls/type_string.tscn')
 	}
 }
 
