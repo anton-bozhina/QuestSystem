@@ -27,7 +27,7 @@ func _on_add_button_pressed() -> void:
 	_add_variable(type_selector.get_selected_id())
 
 
-func _add_variable(variable_type: int, variable_name: String = '', variable_value: Variant = null) -> void:
+func _add_variable(variable_type: int, variable_name: String = 'new_variable', variable_value: Variant = null) -> void:
 	match variable_type:
 		TYPE_STRING:
 			var variable_item: TreeItem = _create_and_set_item(variable_name)
@@ -39,7 +39,7 @@ func _add_variable(variable_type: int, variable_name: String = '', variable_valu
 			variable_item.set_cell_mode(1, TreeItem.CELL_MODE_CHECK)
 			if variable_value == null:
 				variable_value = false
-			variable_item.set_checked(1, variable_value != null)
+			variable_item.set_checked(1, variable_value)
 		TYPE_INT:
 			var variable_item: TreeItem = _create_and_set_item(variable_name)
 			variable_item.set_cell_mode(1, TreeItem.CELL_MODE_RANGE)
@@ -112,4 +112,5 @@ func load_variables(variables: Dictionary) -> void:
 		if variable.is_empty():
 			continue
 		_add_variable(variables[variable]['type'], variable, variables[variable]['value'])
+	_on_item_edited()
 

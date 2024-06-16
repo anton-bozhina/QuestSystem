@@ -1,6 +1,7 @@
-[gd_scene load_steps=10 format=3 uid="uid://cnu201dhmsx2j"]
+[gd_scene load_steps=12 format=3 uid="uid://cnu201dhmsx2j"]
 
 [ext_resource type="Script" path="res://addons/quest_system/scripts/editor/main_panel.gd" id="1_gj44q"]
+[ext_resource type="Script" path="res://addons/quest_system/scripts/system/quest_data.gd" id="2_cgn7m"]
 [ext_resource type="Script" path="res://addons/quest_system/scripts/editor/node_tree.gd" id="2_ir3ok"]
 [ext_resource type="Script" path="res://addons/quest_system/scripts/editor/variable_tree.gd" id="3_ly8yu"]
 [ext_resource type="Script" path="res://addons/quest_system/scripts/editor/graph_edit.gd" id="3_rfcal"]
@@ -10,7 +11,22 @@
 [ext_resource type="Script" path="res://addons/quest_system/scripts/editor/save_quest_action.gd" id="8_ucs87"]
 [ext_resource type="Script" path="res://addons/quest_system/scripts/editor/quest_data_action.gd" id="9_a74h3"]
 
-[node name="MainPanel" type="MarginContainer" node_paths=PackedStringArray("node_tree", "graph_edit", "variable_tree", "file_label", "file_menu_button", "quest_data_action", "open_quest_action", "save_quest_action", "new_quest_action")]
+[sub_resource type="Resource" id="Resource_uf6e0"]
+script = ExtResource("2_cgn7m")
+quest_name = ""
+quest_description = ""
+quest_variables = {}
+start_action = &""
+actions = {
+"{a17a27d3-ae71-11ec-9329-806e6f6e6963}": {
+"class": Object(RefCounted,"script":Resource("res://addons/quest_system/scripts/system/actions/logic_start.gd"),"quest_name":"","quest_description":"","folder_name":&"Logic","folder_position":0,"node_color":Color(1, 0.498039, 0.313726, 1),"node_show_left_slot":false,"node_show_right_slot":true,"name":&"QuestStart","node_caption":"","ignore":false,"variables":null)
+
+}
+}
+graph_edit_zoom = 1.0
+graph_edit_scroll_offset = Vector2(0, 0)
+
+[node name="MainPanel" type="MarginContainer" node_paths=PackedStringArray("node_tree", "graph_edit", "variable_tree", "file_label", "new_button", "open_button", "save_button", "quest_data_action", "open_quest_action", "save_quest_action", "new_quest_action")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -23,11 +39,14 @@ theme_override_constants/margin_top = 3
 theme_override_constants/margin_right = 3
 theme_override_constants/margin_bottom = 3
 script = ExtResource("1_gj44q")
+quest_data = SubResource("Resource_uf6e0")
 node_tree = NodePath("WindowContainer/BodyContainer/VBoxContainer/VSplitContainer/NodeTree")
 graph_edit = NodePath("WindowContainer/BodyContainer/GraphEdit")
 variable_tree = NodePath("WindowContainer/BodyContainer/VBoxContainer/VSplitContainer/VBoxContainer/VariableTree")
 file_label = NodePath("WindowContainer/BodyContainer/GraphEdit/MarginContainer/FileLabel")
-file_menu_button = NodePath("WindowContainer/BodyContainer/VBoxContainer/MenuContainer/FileMenu")
+new_button = NodePath("WindowContainer/BodyContainer/VBoxContainer/MenuContainer/New")
+open_button = NodePath("WindowContainer/BodyContainer/VBoxContainer/MenuContainer/Open")
+save_button = NodePath("WindowContainer/BodyContainer/VBoxContainer/MenuContainer/Save")
 quest_data_action = NodePath("Actions/QuestDataAction")
 open_quest_action = NodePath("Actions/OpenQuestAction")
 save_quest_action = NodePath("Actions/SaveQuestAction")
@@ -46,21 +65,24 @@ layout_mode = 2
 
 [node name="MenuContainer" type="HBoxContainer" parent="WindowContainer/BodyContainer/VBoxContainer"]
 layout_mode = 2
+alignment = 1
 
-[node name="FileMenu" type="MenuButton" parent="WindowContainer/BodyContainer/VBoxContainer/MenuContainer"]
+[node name="New" type="Button" parent="WindowContainer/BodyContainer/VBoxContainer/MenuContainer"]
 layout_mode = 2
-text = "File"
-item_count = 3
-popup/item_0/text = "New Quest..."
-popup/item_0/id = 0
-popup/item_1/text = "Open..."
-popup/item_1/id = 1
-popup/item_2/text = "Save"
-popup/item_2/id = 2
+text = "New"
+
+[node name="Open" type="Button" parent="WindowContainer/BodyContainer/VBoxContainer/MenuContainer"]
+layout_mode = 2
+text = "Open"
+
+[node name="Save" type="Button" parent="WindowContainer/BodyContainer/VBoxContainer/MenuContainer"]
+layout_mode = 2
+text = "Save"
 
 [node name="VSplitContainer" type="VSplitContainer" parent="WindowContainer/BodyContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+split_offset = -300
 
 [node name="NodeTree" type="Tree" parent="WindowContainer/BodyContainer/VBoxContainer/VSplitContainer"]
 custom_minimum_size = Vector2(150, 64)
@@ -133,7 +155,7 @@ modulate = Color(1, 1, 1, 0.239216)
 layout_mode = 2
 size_flags_vertical = 1
 theme_override_font_sizes/font_size = 30
-text = "Quest: Not Saved (*)"
+text = "Quest: Not Saved"
 vertical_alignment = 2
 
 [node name="FooterContainer" type="HBoxContainer" parent="WindowContainer"]

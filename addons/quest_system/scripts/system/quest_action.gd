@@ -6,9 +6,7 @@ var name: StringName = 'Action'
 var node_caption: String = ''
 var ignore: bool = false
 
-
 var variables: Dictionary : set = set_variables, get = get_variables
-var tree: SceneTree : set = set_tree, get = get_tree
 
 
 func get_variables() -> Dictionary:
@@ -31,19 +29,11 @@ func get_variable_type(variable_name: String) -> int:
 	return variables.get(variable_name, {'type': TYPE_NIL, 'value': null}).get('type')
 
 
-func get_tree() -> SceneTree:
-	return tree
-
-
-func set_tree(value: SceneTree) -> void:
-	tree = value
-
-
 func _init() -> void:
 	ignore = true
 
 
-class Arguments:
+class Variables:
 	var _properties: Dictionary = {}
 
 	func _get(property: StringName) -> Variant:
@@ -54,12 +44,12 @@ class Arguments:
 		return true
 
 
-func _get_arguments() -> Arguments:
-	return Arguments.new()
+func _get_variables() -> Variables:
+	return Variables.new()
 
 
-func _action_task(_arguments: Arguments) -> void:
-	pass
+#func _action_task(_arguments: Arguments) -> void:
+	#pass
 
 
 func perform() -> void:

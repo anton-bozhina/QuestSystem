@@ -9,13 +9,18 @@ const QUEST_CLASS_PARENT = 'QuestAction'
 @export var graph_edit: QuestEditorGraphEdit
 @export var variable_tree: QuestEditVariableTree
 @export var file_label: Label
-@export var file_menu_button: MenuButton
+@export var new_button: Button
+@export var open_button: Button
+@export var save_button: Button
 @export var quest_data_action: QuestEditorQuestDataAction
 @export var open_quest_action: QuestEditorOpenQuestAction
 @export var save_quest_action: QuestEditorSaveQuestAction
 @export var new_quest_action: QuestEditorNewQuestAction
 
-var quest_changed: bool = false
+var quest_changed: bool = false :
+	set(value):
+		quest_changed = value
+		update_quest_data_label()
 
 
 func _ready() -> void:
@@ -28,7 +33,9 @@ func _ready() -> void:
 	save_quest_action.quest_saved.connect(_on_save_quest_action_quest_saved)
 	new_quest_action.quest_created.connect(_on_new_quest_action_quest_created)
 
-	file_menu_button.get_popup().id_pressed.connect(_on_file_menu_id_pressed)
+	new_button.pressed.connect(_on_file_menu_id_pressed.bind(0))
+	open_button.pressed.connect(_on_file_menu_id_pressed.bind(1))
+	save_button.pressed.connect(_on_file_menu_id_pressed.bind(2))
 
 	update_lists()
 	update_quest_data_label()
@@ -69,17 +76,14 @@ func _on_open_quest_action_quest_selected(new_quest_data: QuestData) -> void:
 	quest_data_action.quest_data_to_editor_data(graph_edit, quest_data)
 	variable_tree.load_variables(quest_data.quest_variables)
 	quest_changed = false
-	update_quest_data_label()
 
 
 func _on_save_quest_action_quest_saved() -> void:
 	quest_changed = false
-	update_quest_data_label()
 
 
 func _on_graph_edit_changed() -> void:
 	quest_changed = true
-	update_quest_data_label()
 
 
 func _on_new_quest_action_quest_created(new_quest_data: QuestData) -> void:
@@ -87,12 +91,10 @@ func _on_new_quest_action_quest_created(new_quest_data: QuestData) -> void:
 	quest_data_action.quest_data_to_editor_data(graph_edit, QuestData.new())
 	variable_tree.load_variables(quest_data.quest_variables)
 	quest_changed = false
-	update_quest_data_label()
 
 
 func _on_node_tree_item_activated(action: QuestAction) -> void:
 	var new_action: QuestAction = action.get_script().new()
-	new_action.set_tree(get_tree())
 	new_action.set_variables(quest_data.quest_variables)
 	graph_edit.add_node(new_action)
 

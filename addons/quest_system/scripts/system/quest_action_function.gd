@@ -11,14 +11,14 @@ var node_show_left_slot: bool = true
 var node_show_right_slot: bool = true
 
 
-func _action_task(arguments: Arguments) -> void:
-	_action_function(arguments)
+#func _action_task(arguments: Arguments) -> void:
+	#_action_function(arguments)
 	#if next_action:
 		#next_action.perform()
 
 
-func _action_function(_arguments: Arguments) -> void:
-	pass
+#func _action_function(_arguments: Arguments) -> void:
+	#pass
 
 
 #func _step_function() -> void:

@@ -49,6 +49,7 @@ func _get_property_list() -> Array[Dictionary]:
 
 
 func _get_singleton_list() -> PackedStringArray:
+	#print(Engine.get_main_loop().get_root().get_children())
 	return ['TestSingleton', 'SecondSingleton']
 	#var result: PackedStringArray = []
 	#for node in get_tree().get_root().get_children():
