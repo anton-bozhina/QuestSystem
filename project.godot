@@ -14,6 +14,10 @@ config/name="QuestSystem"
 config/features=PackedStringArray("4.2", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[autoload]
+
+QuestSystem="*res://addons/quest_system/scripts/quest_system.gd"
+
 [display]
 
 window/size/viewport_width=1280

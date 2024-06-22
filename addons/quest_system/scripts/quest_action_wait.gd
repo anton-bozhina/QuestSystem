@@ -4,8 +4,8 @@ extends QuestAction
 
 signal wait_is_ower
 
-var folder_name: StringName = 'Waiting'
-var folder_position: int = -1
+static var folder_name: StringName = 'Waiting'
+static var folder_position: int = -1
 
 var node_color: Color = Color.CORNFLOWER_BLUE
 var node_show_left_slot: bool = true

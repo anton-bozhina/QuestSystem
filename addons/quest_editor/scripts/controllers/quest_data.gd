@@ -3,6 +3,12 @@ class_name QuestEditorQuestDataController
 extends Node
 
 
+@export var graph_edit: QuestEditorGraphEdit
+@export var variable_tree: QuestEditVariableTree
+
+var quest_file_path: String
+
+
 func _get_editor_version() -> String:
 	return owner.get_meta('version', '0.0')
 
@@ -20,84 +26,122 @@ func _clear_from_node(connection: Dictionary) -> Dictionary:
 	return connection
 
 
-func editor_data_to_quest_data(graph_edit: QuestEditorGraphEdit, quest_data: QuestData) -> void:
-	var result: Dictionary = {
-		'editor': {
-			'version': _get_editor_version(),
-			'graph_edit_zoom': graph_edit.get_zoom(),
-			'graph_edit_scroll_offset': graph_edit.get_scroll_offset(),
-			'nodes': {}
-		},
+func _add_from_node(connection: Dictionary, from_node: StringName) -> Dictionary:
+	connection['from_node'] = from_node
+	return connection
+
+
+func _get_quest_data() -> Dictionary:
+	var quest_data: Dictionary = {
 		'name': '',
 		'description': '',
-		'variables': quest_data.quest_variables,
+		'variables': variable_tree.get_variables().get_variables(),
 		'start_action': '',
 		'actions': {}
 	}
 
-	quest_data.graph_edit_zoom = graph_edit.get_zoom()
-	quest_data.graph_edit_scroll_offset = graph_edit.get_scroll_offset()
-	quest_data.actions = {}
+	var editor_data: Dictionary = {
+		'version': _get_editor_version(),
+		'graph_edit_zoom': graph_edit.get_zoom(),
+		'graph_edit_scroll_offset': var_to_str(graph_edit.get_scroll_offset()),
+		'nodes': {}
+	}
 
 	for node in graph_edit.get_nodes() as Array[QuestEditorGraphNode]:
 		var node_name: StringName = node.name
-		#node.action.variables = {}
-		#node.action.tree = null
-		quest_data.actions[node_name] = {
-			'position': node.get_position_offset(),
-			'size': node.get_size(),
-			'class': node.action,
-			'connections': graph_edit.get_connection_list().filter(_connections_filter.bind(node_name))
-		}
 
-		var action_class_path: String = node.action.get_script().get_path()
-		var filtered_classes: Array[Dictionary] = ProjectSettings.get_global_class_list().filter(_path_filter.bind(action_class_path))
-		if filtered_classes.is_empty():
-			continue
-
-		var action_class_name = filtered_classes[0]['class']
-		result['actions'][node_name] = {
-			'class': action_class_name,
+		quest_data['actions'][node_name] = {
+			'class': QuestSystem.get_action_class_name(node.action.get_script()),
 			'connections': graph_edit.get_connection_list().filter(_connections_filter.bind(node_name)).map(_clear_from_node),
-			'properties': {}
+			'properties': []
 		}
-		result['editor']['nodes'][node_name] = {
-			'position': node.get_position_offset(),
-			'size': node.get_size(),
+
+		editor_data['nodes'][node_name] = {
+			'position': var_to_str(node.get_position_offset()),
+			'size': var_to_str(node.get_size()),
 		}
 		for control in node.control_list:
-			result['actions'][node_name]['properties'][node.control_list[control]] = control.get_property_value()
-
+			quest_data['actions'][node_name]['properties'].append({
+				'name': node.control_list[control],
+				'value': control.get_property_value()
+			})
 
 		if node.action is QuestActionLogicStart:
-			quest_data.quest_name = node.action.get('quest_name')
-			quest_data.quest_description = node.action.get('quest_description')
-			quest_data.start_action = node_name
+			quest_data['name'] = node.action.get('quest_name')
+			quest_data['description'] = node.action.get('quest_description')
+			quest_data['start_action'] = node_name
 
-			result['name'] = node.action.get('quest_name')
-			result['description'] = node.action.get('quest_description')
-			result['start_action'] = node_name
-
-
-	var file = FileAccess.open('res://new_quest_system.quest', FileAccess.WRITE)
-	file.store_string(JSON.stringify(result, '\t'))
-	file.close()
+	return {
+		'quest_data': quest_data,
+		'editor_data': editor_data
+	}
 
 
-func quest_data_to_editor_data(graph_edit: QuestEditorGraphEdit, quest_data: QuestData) -> void:
+func get_quest_name() -> String:
+	return _get_quest_data()['quest_data'].get('name', '')
+
+
+func get_quest_file_path() -> String:
+	return quest_file_path
+
+
+func save_quest_data(save_path: String) -> void:
+	var quest_data: Dictionary = _get_quest_data()
+
+	var quest_data_file: FileAccess = FileAccess.open(save_path, FileAccess.WRITE)
+	quest_data_file.store_string(JSON.stringify(quest_data['quest_data'], '\t'))
+	quest_data_file.close()
+
+	var editor_data_file: FileAccess = FileAccess.open(save_path + '.editor', FileAccess.WRITE)
+	editor_data_file.store_string(JSON.stringify(quest_data['editor_data'], '\t'))
+	editor_data_file.close()
+
+
+func load_quest_data(load_path: String) -> void:
 	var connection_list: Array[Dictionary] = []
 
-	graph_edit.clear()
-	graph_edit.set_zoom(quest_data.graph_edit_zoom)
-	graph_edit.set_scroll_offset(quest_data.graph_edit_scroll_offset)
+	var json: JSON = JSON.new()
+	var quest_data: Dictionary = {}
+	var editor_data: Dictionary = {}
 
-	for action_name in quest_data.actions:
-		var action_class: QuestAction = quest_data.actions[action_name]['class']
-		var size: Vector2 = quest_data.actions[action_name].get('size', Vector2.INF)
-		var position: Vector2 = quest_data.actions[action_name].get('position', Vector2.INF)
-		var connections: Array = quest_data.actions[action_name].get('connections', [])
-		graph_edit.add_node(action_class, action_name, position, size)
-		connection_list.append_array(connections)
+	var quest_data_file: FileAccess = FileAccess.open(load_path, FileAccess.READ)
+	if quest_data_file:
+		if json.parse(quest_data_file.get_as_text()) == OK:
+			quest_data = json.data
+		quest_data_file.close()
+
+
+	var editor_data_file: FileAccess = FileAccess.open(load_path + '.editor', FileAccess.READ)
+	if editor_data_file:
+		if json.parse(editor_data_file.get_as_text()) == OK:
+			editor_data = json.data
+		editor_data_file.close()
+
+	graph_edit.clear()
+	graph_edit.set_zoom(editor_data.get('graph_edit_zoom', 0))
+	graph_edit.set_scroll_offset(str_to_var(editor_data.get('graph_edit_scroll_offset', Vector2.ZERO)))
+
+	variable_tree.set_variables(QuestVariables.new(quest_data.get('variables', {})))
+
+	var actions: Dictionary = quest_data.get('actions', {})
+	var nodes: Dictionary = editor_data.get('nodes', {})
+
+	for action_name in actions:
+		var action_record: Dictionary = actions.get(action_name, {})
+		var action_class_script: GDScript = QuestSystem.get_action_script(action_record.get('class', ''))
+		var action: QuestAction
+		if not action_class_script:
+			action = QuestAction.new(variable_tree.get_variables())
+		else:
+			action = action_class_script.new(variable_tree.get_variables(), action_record.get('properties', []))
+
+		var size: Vector2 = str_to_var(nodes.get(action_name, {}).get('size', Vector2.INF))
+		var position: Vector2 = str_to_var(nodes.get(action_name, {}).get('position', Vector2.INF))
+		graph_edit.add_node(action, action_name, position, size)
+
+		connection_list.append_array(action_record.get('connections', []).map(_add_from_node.bind(action_name)))
 
 	for connection in connection_list:
 		graph_edit.connect_node(connection['from_node'], connection['from_port'], connection['to_node'], connection['to_port'])
+
+	quest_file_path = load_path

@@ -3,31 +3,12 @@ class_name QuestEditorNodeTree
 extends Tree
 
 
-signal tree_item_activated(quest_action: QuestAction)
-
-
-func _create_quest_action_class_list(parent_class: StringName, class_list: Array = []) -> Array[QuestAction]:
-	var result: Array[QuestAction] = []
-	var global_class_list: Array[Dictionary] = []
-
-	if class_list.is_empty():
-		global_class_list = ProjectSettings.get_global_class_list()
-	else:
-		global_class_list = class_list
-
-	for global_class in global_class_list:
-		if global_class['base'] != parent_class:
-			continue
-		result.append_array(_create_quest_action_class_list(global_class['class'], global_class_list))
-		var quest_action: QuestAction = load(global_class['path']).new()
-		if not quest_action.ignore:
-			result.append(quest_action)
-	return result
+signal tree_item_activated(action_class: GDScript)
 
 
 func _on_item_activated() -> void:
-	if get_selected().has_meta('action'):
-		tree_item_activated.emit(get_selected().get_meta('action'))
+	if get_selected().has_meta('action_class'):
+		tree_item_activated.emit(get_selected().get_meta('action_class'))
 
 
 func _get_folder_by_name(folder_name: StringName, index: int = 0) -> TreeItem:
@@ -41,17 +22,17 @@ func _get_folder_by_name(folder_name: StringName, index: int = 0) -> TreeItem:
 	return new_folder
 
 
-func _create_tree_items(action_list: Array[QuestAction]) -> void:
-	for action in action_list:
+func _create_tree_items() -> void:
+	for action in QuestSystem.get_action_script_list() as Array[GDScript]:
 		var folder: TreeItem = _get_folder_by_name(action.folder_name, action.folder_position)
 		var new_node: TreeItem = folder.create_child()
-		new_node.set_text(0, action.name)
-		new_node.set_meta('action', action)
+		new_node.set_text(0, action.node_name)
+		new_node.set_meta('action_class', action)
 
 
-func create_tree(parent_class: StringName) -> void:
+func create_tree() -> void:
 	clear()
 	create_item()
 
-	var action_list: Array[QuestAction] = _create_quest_action_class_list(parent_class)
-	_create_tree_items(action_list)
+	#var action_list: Array[QuestAction] = _create_quest_action_class_list(parent_class)
+	_create_tree_items()

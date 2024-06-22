@@ -3,8 +3,8 @@ class_name QuestActionLogic
 extends QuestAction
 
 
-var folder_name: StringName = 'Logic'
-var folder_position: int = 0
+static var folder_name: StringName = 'Logic'
+static var folder_position: int = 0
 
 var node_color: Color = Color.CORAL
 var node_show_left_slot: bool = false

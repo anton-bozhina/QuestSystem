@@ -3,8 +3,8 @@ class_name QuestActionFunction
 extends QuestAction
 
 
-var folder_name: StringName = 'Functions'
-var folder_position: int = -1
+static var folder_name: StringName = 'Functions'
+static var folder_position: int = -1
 
 var node_color: Color = Color.DARK_GOLDENROD
 var node_show_left_slot: bool = true

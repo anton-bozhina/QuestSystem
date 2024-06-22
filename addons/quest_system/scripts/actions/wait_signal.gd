@@ -3,15 +3,14 @@ class_name QuestActionWaitSignal
 extends QuestActionWait
 
 
+static var node_name = 'WaitSignal'
+
+
 var singleton: StringName = '':
 	set(value):
 		singleton = value
 		signal_name = ''
 var signal_name: StringName = ''
-
-
-func _init() -> void:
-	name = 'WaitSignal'
 
 
 func _get_property_list() -> Array[Dictionary]:

@@ -2,50 +2,30 @@
 class_name QuestAction
 extends RefCounted
 
-var name: StringName = 'Action'
 var node_caption: String = ''
-var ignore: bool = false
 
-var variables: Dictionary : set = set_variables, get = get_variables
-
-
-func get_variables() -> Dictionary:
-	return variables
+var variables: QuestVariables
 
 
-func set_variables(new_variables: Dictionary) -> void:
-	variables = new_variables
+func _init(quest_variables: QuestVariables, properties: Array = []) -> void:
+	variables = quest_variables
+	for property in properties:
+		set(property['name'], property['value'])
+
+	#if Engine.is_editor_hint():
+		#_node_init()
+	_node_init()
+	_action_init()
 
 
-func get_variable_value(variable_name: String) -> Variant:
-	return variables.get(variable_name, {'type': TYPE_NIL, 'value': null}).get('value')
+func _node_init() -> void:
+	pass
 
 
-func set_variable_value(variable_name: String, variable_value: Variant) -> void:
-	variables[variable_name]['value'] = variable_value
+func _action_init() -> void:
+	pass
 
 
-func get_variable_type(variable_name: String) -> int:
-	return variables.get(variable_name, {'type': TYPE_NIL, 'value': null}).get('type')
-
-
-func _init() -> void:
-	ignore = true
-
-
-class Variables:
-	var _properties: Dictionary = {}
-
-	func _get(property: StringName) -> Variant:
-		return _properties.get(property)
-
-	func _set(property: StringName, value: Variant) -> bool:
-		_properties[property] = value
-		return true
-
-
-func _get_variables() -> Variables:
-	return Variables.new()
 
 
 #func _action_task(_arguments: Arguments) -> void:

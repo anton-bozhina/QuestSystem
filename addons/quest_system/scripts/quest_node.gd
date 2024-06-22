@@ -28,7 +28,6 @@ func _process_action() -> void:
 	for connection in connections:
 		if not active_quest_actions.has(connection['to_node']):
 			active_quest_actions.append(connection['to_node'])
-	print(first_action_name)
 
 
 func set_active(value: bool) -> void:

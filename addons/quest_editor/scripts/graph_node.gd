@@ -78,8 +78,13 @@ func _property_filter(property: Dictionary) -> bool:
 
 
 func set_action(value: QuestAction) -> void:
+	if not value.get('node_name'):
+		set_slot_enabled_left(0, true)
+		set_slot_enabled_right(0, true)
+		return
+
 	action = value
-	title = action.name
+	title = action.node_name
 	var stylebox_titlebar: StyleBoxFlat = self['theme_override_styles/titlebar']
 	var stylebox_titlebar_selected: StyleBoxFlat = self['theme_override_styles/titlebar_selected']
 	stylebox_titlebar.bg_color = action.node_color.darkened(0.25)

@@ -3,6 +3,9 @@ class_name QuestActionFunctionExecute
 extends QuestActionFunction
 
 
+static var node_name = 'Execute'
+
+
 var singleton: StringName = '':
 	set(value):
 		singleton = value
@@ -13,10 +16,6 @@ var method: StringName = '':
 		method = value
 		attributes = ''
 var attributes: String = ''
-
-
-func _init() -> void:
-	name = 'Execute'
 
 
 func _get_property_list() -> Array[Dictionary]:

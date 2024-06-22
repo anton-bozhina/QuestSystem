@@ -59,7 +59,7 @@ func _on_end_node_move() -> void:
 
 func add_node(action: QuestAction, node_name: StringName = '', node_position: Vector2 = Vector2.INF, node_size: Vector2 = Vector2.INF) -> void:
 	if node_name.is_empty():
-		node_name = '%s_%s' % [action.name, generate_id()]
+		node_name = '%s_%s' % [action.node_name, generate_id()]
 	if node_position == Vector2.INF:
 		node_position = ((scroll_offset + size / 3) / zoom).snapped(Vector2(snapping_distance, snapping_distance))
 
@@ -68,6 +68,7 @@ func add_node(action: QuestAction, node_name: StringName = '', node_position: Ve
 	new_node.set_position_offset(node_position)
 	if not node_size == Vector2.INF:
 		new_node.set_size(node_size)
+
 	new_node.set_action(action)
 	add_child(new_node)
 	_node_list.append(new_node)
@@ -75,7 +76,7 @@ func add_node(action: QuestAction, node_name: StringName = '', node_position: Ve
 	graph_edit_changed.emit()
 
 
-func update_variables(variables: Dictionary) -> void:
+func update_variables(variables: QuestVariables) -> void:
 	graph_edit_changed.emit()
 
 	for node in _node_list as Array[QuestEditorGraphNode]:

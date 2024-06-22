@@ -1,32 +1,26 @@
 @tool
-class_name QuestEditorSaveQuestController
+class_name QuestEditorSaveDialogController
 extends Node
 
-signal quest_saved
+signal file_selected(quest_file: String)
 
 @onready var save_file_dialog: FileDialog = $SaveFileDialog
-
-var _quest_data: QuestData
 
 
 func _ready() -> void:
 	save_file_dialog.file_selected.connect(_on_save_file_dialog_files_selected)
 
 
-func _on_save_file_dialog_files_selected(path: String) -> void:
-	ResourceSaver.save(_quest_data, path)
-	quest_saved.emit()
+func _on_save_file_dialog_files_selected(quest_file: String) -> void:
+	file_selected.emit(quest_file)
 
 
-func initiate(quest_data: QuestData) -> void:
-	_quest_data = quest_data
-	var quest_data_path: String = _quest_data.get_path()
-	if quest_data_path.is_empty():
-		var quest_name: String = _quest_data.quest_name.to_snake_case()
-		if quest_name.is_empty():
-			quest_name = 'new_quest'
-		save_file_dialog.set_current_file(quest_name)
+func initiate(quest_name: String, quest_file: String = '') -> void:
+	if quest_name.is_empty():
+		quest_name = 'new_quest'
+
+	if quest_file.is_empty():
+		save_file_dialog.set_current_file(quest_name.to_snake_case())
 		save_file_dialog.popup_centered_ratio()
 	else:
-		ResourceSaver.save(_quest_data, quest_data_path)
-		quest_saved.emit()
+		file_selected.emit(quest_file)

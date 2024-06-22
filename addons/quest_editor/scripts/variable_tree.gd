@@ -3,31 +3,33 @@ class_name QuestEditVariableTree
 extends Tree
 
 
-signal variables_updated(variables: Dictionary)
+signal variables_updated(variables: QuestVariables)
 
 
-@export var add_button: Button
-@export var type_selector: OptionButton
+@export var add_button: MenuButton
 @export var delete_button: Button
+
+var variables: QuestVariables
 
 
 func _ready() -> void:
-	add_button.pressed.connect(_on_add_button_pressed)
+	add_button.get_popup().id_pressed.connect(_on_add_button_id_pressed)
 	delete_button.pressed.connect(_on_delete_button_pressed)
 
 	create_item()
 	set_column_title(0, 'Name')
 	set_column_title(1, 'Value')
-	set_column_custom_minimum_width(0, 100)
+	#set_column_custom_minimum_width(0, 100)
 	set_column_expand(1, true)
-	set_column_expand(0, false)
+	set_column_expand(0, true)
 
 
-func _on_add_button_pressed() -> void:
-	_add_variable(type_selector.get_selected_id())
+func _on_add_button_id_pressed(id: int) -> void:
+	_add_variable(id, 'new_%s' % add_button.get_popup().get_item_text(add_button.get_popup().get_item_index(id)).to_lower())
+	item_edited.emit()
 
 
-func _add_variable(variable_type: int, variable_name: String = 'new_variable', variable_value: Variant = null) -> void:
+func _add_variable(variable_type: int, variable_name: String, variable_value: Variant = null) -> void:
 	match variable_type:
 		TYPE_STRING:
 			var variable_item: TreeItem = _create_and_set_item(variable_name)
@@ -50,7 +52,7 @@ func _add_variable(variable_type: int, variable_name: String = 'new_variable', v
 		TYPE_FLOAT:
 			var variable_item: TreeItem = _create_and_set_item(variable_name)
 			variable_item.set_cell_mode(1, TreeItem.CELL_MODE_RANGE)
-			variable_item.set_range_config(1, -99999999, 99999999, 0.1)
+			variable_item.set_range_config(1, -99999999, 99999999, 0.001)
 			if variable_value == null:
 				variable_value = 0
 			variable_item.set_range(1, float(variable_value))
@@ -58,7 +60,6 @@ func _add_variable(variable_type: int, variable_name: String = 'new_variable', v
 
 func _create_and_set_item(item_name: String) -> TreeItem:
 	var item: TreeItem = create_item(get_root())
-	item.set_editable(0, true)
 	item.set_editable(1, true)
 	item.set_text(0, item_name)
 
@@ -67,50 +68,44 @@ func _create_and_set_item(item_name: String) -> TreeItem:
 
 func _on_delete_button_pressed() -> void:
 	get_selected().free()
-	_on_item_edited()
+	item_edited.emit()
 
 
 func _on_item_edited() -> void:
-	var variables: Dictionary = {}
+	_update_variables()
+	variables_updated.emit(variables)
+
+
+func _on_item_activated() -> void:
+	edit_selected(true)
+
+
+func _update_variables() -> void:
+	variables.clear()
 	for item in get_root().get_children():
 		var variable_name: String = item.get_text(0).validate_node_name().replace(' ', '_')
 		item.set_text(0, variable_name)
 		match item.get_cell_mode(1):
 			TreeItem.CELL_MODE_STRING:
-				variables[variable_name] = {
-					'type': TYPE_STRING,
-					'value': item.get_text(1)
-				}
+				variables.set_variable(variable_name, item.get_text(1), TYPE_STRING)
 			TreeItem.CELL_MODE_CHECK:
-				variables[variable_name] = {
-					'type': TYPE_BOOL,
-					'value': item.is_checked(1)
-				}
+				variables.set_variable(variable_name, item.is_checked(1), TYPE_BOOL)
 			TreeItem.CELL_MODE_RANGE:
 				if item.get_range_config(1)['step'] == 1:
-					variables[variable_name] = {
-						'type': TYPE_INT,
-						'value': item.get_range(1)
-					}
+					variables.set_variable(variable_name, item.get_range(1), TYPE_INT)
 				else:
-					variables[variable_name] = {
-						'type': TYPE_FLOAT,
-						'value': item.get_range(1)
-					}
-	variables_updated.emit(variables)
+					variables.set_variable(variable_name, item.get_range(1), TYPE_FLOAT)
 
 
-func save_variables() -> void:
-	_on_item_edited()
+func get_variables() -> QuestVariables:
+	return variables
 
 
-func load_variables(variables: Dictionary) -> void:
+func set_variables(new_variables: QuestVariables) -> void:
 	clear()
 	create_item()
 
-	for variable in variables:
-		if variable.is_empty():
-			continue
-		_add_variable(variables[variable]['type'], variable, variables[variable]['value'])
-	_on_item_edited()
-
+	variables = new_variables
+	for variable in variables.get_variable_list():
+		_add_variable(variables.get_variable_type(variable), variable, variables.get_variable(variable))
+	item_edited.emit()

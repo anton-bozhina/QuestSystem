@@ -26,7 +26,7 @@ func _has_main_screen() -> bool:
 
 func _make_visible(visible: bool) -> void:
 	if main_panel_instance:
-		main_panel_instance.update_lists()
+		#main_panel_instance.update_lists()
 		main_panel_instance.visible = visible
 
 

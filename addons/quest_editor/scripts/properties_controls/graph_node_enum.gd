@@ -23,4 +23,7 @@ func set_selected_text(value: String) -> void:
 
 
 func get_selected_text() -> String:
-	return get_item_text(get_selected_id())
+	if get_selected_id() == -1:
+		return ''
+	else:
+		return get_item_text(get_selected_id())
