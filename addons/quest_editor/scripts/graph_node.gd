@@ -32,6 +32,7 @@ const CONTROLS: Dictionary = {
 var action: QuestAction : set = set_action, get = get_action
 var control_list: Dictionary = {}
 
+
 func _create_controls() -> void:
 	for control in control_list.keys() as Array[QuestEditGraphNodePropertyControl]:
 		control.queue_free()
@@ -70,7 +71,7 @@ func _on_control_property_changed(control: QuestEditGraphNodePropertyControl) ->
 
 func _property_filter(property: Dictionary) -> bool:
 	var available_usage: PackedInt32Array = [
-		PROPERTY_USAGE_EDITOR,
+		#PROPERTY_USAGE_EDITOR,
 		PROPERTY_USAGE_SCRIPT_VARIABLE + PROPERTY_USAGE_STORAGE + PROPERTY_USAGE_EDITOR,
 		PROPERTY_USAGE_SCRIPT_VARIABLE + PROPERTY_USAGE_STORAGE + PROPERTY_USAGE_EDITOR + PROPERTY_USAGE_CLASS_IS_ENUM,
 	]

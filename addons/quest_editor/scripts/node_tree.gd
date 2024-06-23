@@ -4,10 +4,20 @@ extends Tree
 
 
 signal tree_item_activated(action_class: GDScript)
+signal tree_item_gragged(action_class: GDScript)
+
+
+func _get_drag_data(at_position: Vector2) -> Variant:
+	if get_selected() and get_selected().has_meta('action_class'):
+		var data: GDScript = get_selected().get_meta('action_class')
+		tree_item_gragged.emit(data)
+		return data
+	else:
+		return null
 
 
 func _on_item_activated() -> void:
-	if get_selected().has_meta('action_class'):
+	if get_selected() and get_selected().has_meta('action_class'):
 		tree_item_activated.emit(get_selected().get_meta('action_class'))
 
 
@@ -33,6 +43,4 @@ func _create_tree_items() -> void:
 func create_tree() -> void:
 	clear()
 	create_item()
-
-	#var action_list: Array[QuestAction] = _create_quest_action_class_list(parent_class)
 	_create_tree_items()

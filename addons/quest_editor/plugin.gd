@@ -12,8 +12,6 @@ func _enter_tree() -> void:
 	EditorInterface.get_editor_main_screen().add_child(main_panel_instance)
 	_make_visible(false)
 
-	EditorInterface.get_current_feature_profile()
-
 
 func _exit_tree() -> void:
 	if main_panel_instance:
@@ -26,8 +24,10 @@ func _has_main_screen() -> bool:
 
 func _make_visible(visible: bool) -> void:
 	if main_panel_instance:
-		#main_panel_instance.update_lists()
 		main_panel_instance.visible = visible
+
+		if visible:
+			main_panel_instance.update_window()
 
 
 func _get_plugin_name() -> String:

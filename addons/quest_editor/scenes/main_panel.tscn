@@ -18,17 +18,17 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/margin_left = 3
-theme_override_constants/margin_top = 3
-theme_override_constants/margin_right = 3
-theme_override_constants/margin_bottom = 3
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 0
 script = ExtResource("1_o83av")
 node_tree = NodePath("WindowContainer/BodyContainer/VBoxContainer/VSplitContainer/NodeTree")
 graph_edit = NodePath("WindowContainer/BodyContainer/GraphEdit")
 variable_tree = NodePath("WindowContainer/BodyContainer/VBoxContainer/VSplitContainer/VBoxContainer/VariableTree")
 file_label = NodePath("WindowContainer/BodyContainer/GraphEdit/MarginContainer/FileLabel")
-file_menu_button = NodePath("WindowContainer/BodyContainer/VBoxContainer/MenuContainer/File")
-quest_data_controller = NodePath("Controllers/QuestLoadSaver")
+file_menu_button = NodePath("WindowContainer/MenuContainer/File")
+quest_data_controller = NodePath("Controllers/QuestData")
 open_quest_controller = NodePath("Controllers/OpenQuest")
 save_dialog_controller = NodePath("Controllers/SaveQuest")
 new_quest_controller = NodePath("Controllers/NewQuest")
@@ -36,20 +36,13 @@ new_quest_controller = NodePath("Controllers/NewQuest")
 [node name="WindowContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="BodyContainer" type="HSplitContainer" parent="WindowContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-split_offset = 200
-
-[node name="VBoxContainer" type="VBoxContainer" parent="WindowContainer/BodyContainer"]
+[node name="MenuContainer" type="HBoxContainer" parent="WindowContainer"]
 layout_mode = 2
 
-[node name="MenuContainer" type="HBoxContainer" parent="WindowContainer/BodyContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="File" type="MenuButton" parent="WindowContainer/BodyContainer/VBoxContainer/MenuContainer"]
+[node name="File" type="MenuButton" parent="WindowContainer/MenuContainer"]
 layout_mode = 2
 text = "File"
+switch_on_hover = true
 item_count = 6
 popup/item_0/text = "New Quest..."
 popup/item_0/id = 0
@@ -65,6 +58,71 @@ popup/item_4/id = 999
 popup/item_4/separator = true
 popup/item_5/text = "Reload Actions..."
 popup/item_5/id = 3
+
+[node name="Edit" type="MenuButton" parent="WindowContainer/MenuContainer"]
+layout_mode = 2
+text = "Edit"
+switch_on_hover = true
+item_count = 9
+popup/item_0/text = "Undo"
+popup/item_0/id = 0
+popup/item_0/disabled = true
+popup/item_1/text = "Redo"
+popup/item_1/id = 1
+popup/item_1/disabled = true
+popup/item_2/text = ""
+popup/item_2/id = 999
+popup/item_2/separator = true
+popup/item_3/text = "Cut"
+popup/item_3/id = 2
+popup/item_3/disabled = true
+popup/item_4/text = "Copy"
+popup/item_4/id = 999
+popup/item_4/disabled = true
+popup/item_5/text = "Paste"
+popup/item_5/id = 3
+popup/item_5/disabled = true
+popup/item_6/text = ""
+popup/item_6/id = 6
+popup/item_6/separator = true
+popup/item_7/text = "Select All"
+popup/item_7/id = 7
+popup/item_7/disabled = true
+popup/item_8/text = "Duplicate Selected"
+popup/item_8/id = 8
+popup/item_8/disabled = true
+
+[node name="Search" type="MenuButton" parent="WindowContainer/MenuContainer"]
+layout_mode = 2
+text = "Search"
+switch_on_hover = true
+item_count = 2
+popup/item_0/text = "Find..."
+popup/item_0/id = 0
+popup/item_0/disabled = true
+popup/item_1/text = "Go To"
+popup/item_1/id = 1
+popup/item_1/disabled = true
+
+[node name="RightButtons" type="HBoxContainer" parent="WindowContainer/MenuContainer"]
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_vertical = 4
+alignment = 2
+
+[node name="Docs" type="Button" parent="WindowContainer/MenuContainer/RightButtons"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Docs"
+flat = true
+
+[node name="BodyContainer" type="HSplitContainer" parent="WindowContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+split_offset = 300
+
+[node name="VBoxContainer" type="VBoxContainer" parent="WindowContainer/BodyContainer"]
+layout_mode = 2
 
 [node name="VSplitContainer" type="VSplitContainer" parent="WindowContainer/BodyContainer/VBoxContainer"]
 layout_mode = 2
@@ -118,6 +176,7 @@ text = "Delete"
 
 [node name="GraphEdit" type="GraphEdit" parent="WindowContainer/BodyContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 right_disconnects = true
 script = ExtResource("4_dms14")
@@ -197,7 +256,7 @@ ok_button_text = "Save"
 dialog_hide_on_ok = true
 filters = PackedStringArray("*.quest ; Quest Data")
 
-[node name="QuestLoadSaver" type="Node" parent="Controllers" node_paths=PackedStringArray("graph_edit", "variable_tree")]
+[node name="QuestData" type="Node" parent="Controllers" node_paths=PackedStringArray("graph_edit", "variable_tree")]
 script = ExtResource("9_t1g7p")
 graph_edit = NodePath("../../WindowContainer/BodyContainer/GraphEdit")
 variable_tree = NodePath("../../WindowContainer/BodyContainer/VBoxContainer/VSplitContainer/VBoxContainer/VariableTree")

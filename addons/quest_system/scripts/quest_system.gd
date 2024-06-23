@@ -3,7 +3,7 @@ extends Node
 
 const QUEST_CLASS_PARENT = 'QuestAction'
 
-
+var _global_variables: QuestVariables = QuestVariables.new()
 var _action_class_name_dict: Dictionary = {}
 var _action_class_script_dict: Dictionary = {}
 
@@ -28,6 +28,8 @@ func _class_filter(class_dict: Dictionary, parent_class: StringName) -> bool:
 
 
 func update_action_class_list() -> void:
+	_action_class_name_dict = {}
+	_action_class_script_dict = {}
 	_create_action_class_list(QUEST_CLASS_PARENT, ProjectSettings.get_global_class_list())
 
 
@@ -40,4 +42,8 @@ func get_action_script(quest_action_class_name: StringName) -> GDScript:
 
 
 func get_action_class_name(quest_action_script: GDScript) -> StringName:
-	return _action_class_script_dict.get(quest_action_script)
+	return _action_class_script_dict.get(quest_action_script, '')
+
+
+func get_global_variables() -> QuestVariables:
+	return _global_variables

@@ -67,8 +67,9 @@ func _create_and_set_item(item_name: String) -> TreeItem:
 
 
 func _on_delete_button_pressed() -> void:
-	get_selected().free()
-	item_edited.emit()
+	if get_selected():
+		get_selected().free()
+		item_edited.emit()
 
 
 func _on_item_edited() -> void:
@@ -109,3 +110,4 @@ func set_variables(new_variables: QuestVariables) -> void:
 	for variable in variables.get_variable_list():
 		_add_variable(variables.get_variable_type(variable), variable, variables.get_variable(variable))
 	item_edited.emit()
+

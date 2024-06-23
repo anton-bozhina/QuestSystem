@@ -8,9 +8,6 @@ const QUEST_CLASS_PARENT = 'QuestAction'
 @export var graph_edit: QuestEditorGraphEdit
 @export var variable_tree: QuestEditVariableTree
 @export var file_label: Label
-#@export var new_button: Button
-#@export var open_button: Button
-#@export var save_button: Button
 @export var file_menu_button: MenuButton
 @export var quest_data_controller: QuestEditorQuestDataController
 @export var open_quest_controller: QuestEditorOpenQuestController
@@ -21,12 +18,14 @@ const QUEST_CLASS_PARENT = 'QuestAction'
 var quest_changed: bool = false :
 	set(value):
 		quest_changed = value
-		update_quest_data_label()
+		_update_quest_data_label()
 
 
 func _ready() -> void:
 	node_tree.tree_item_activated.connect(_on_node_tree_item_activated)
+	node_tree.tree_item_gragged.connect(_on_node_tree_item_dragged)
 	graph_edit.graph_edit_changed.connect(_on_graph_edit_changed)
+	graph_edit.node_data_dropped.connect(_on_graph_edit_node_data_dropped)
 	file_menu_button.get_popup().id_pressed.connect(_on_file_menu_id_pressed)
 
 	new_quest_controller.quest_created.connect(_create_new_quest)
@@ -39,11 +38,13 @@ func _ready() -> void:
 
 	variable_tree.variables_updated.connect(_on_variable_tree_variables_updated)
 
-	node_tree.create_tree()
-	update_quest_data_label()
+	## Только после того как граф поменяет размер, загружаем дефолтный квест
+	#graph_edit.resized.connect(_create_new_quest, CONNECT_ONE_SHOT)
 
-	# Только после того как граф поменяет размер, загружаем дефолтный квест
-	graph_edit.resized.connect(_create_new_quest, CONNECT_ONE_SHOT)
+	_create_new_quest()
+
+	if not Engine.is_editor_hint():
+		update_window()
 
 
 func _on_node_tree_item_activated(action: GDScript) -> void:
@@ -51,8 +52,20 @@ func _on_node_tree_item_activated(action: GDScript) -> void:
 	graph_edit.add_node(new_action)
 
 
+func _on_node_tree_item_dragged(action_class: GDScript) -> void:
+	var preview_node: QuestEditorGraphNode = graph_edit.graph_node.instantiate()
+	preview_node.action = action_class.new(variable_tree.get_variables())
+	preview_node.set_scale(preview_node.get_scale() * graph_edit.zoom)
+	set_drag_preview(preview_node)
+
+
 func _on_graph_edit_changed() -> void:
 	quest_changed = true
+
+
+func _on_graph_edit_node_data_dropped(at_position: Vector2, data: Variant) -> void:
+	var new_action: QuestAction = data.new(variable_tree.get_variables())
+	graph_edit.add_node(new_action, '', graph_edit.get_new_node_position(at_position))
 
 
 func _on_file_menu_id_pressed(id: int) -> void:
@@ -67,7 +80,7 @@ func _on_file_menu_id_pressed(id: int) -> void:
 		2:
 			save_dialog_controller.initiate(quest_name, quest_file_path)
 		3:
-			node_tree.create_tree()
+			update_window()
 
 
 func _create_new_quest() -> void:
@@ -93,9 +106,15 @@ func _on_variable_tree_variables_updated(variables: QuestVariables) -> void:
 	graph_edit.update_variables(variables)
 
 
-func update_quest_data_label() -> void:
+func _update_quest_data_label() -> void:
 	var quest_file_path: String = quest_data_controller.get_quest_file_path()
 	if quest_file_path.is_empty():
 		quest_file_path = 'New Quest'
 	var saved_text: String = '' if not quest_changed else ' (*)'
 	file_label.text = '%s%s' % [quest_file_path, saved_text]
+
+
+func update_window() -> void:
+	QuestSystem.update_action_class_list()
+	node_tree.create_tree()
+	_update_quest_data_label()

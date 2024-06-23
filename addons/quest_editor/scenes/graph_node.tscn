@@ -23,8 +23,6 @@ corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 
 [node name="GraphNode" type="GraphNode" node_paths=PackedStringArray("control_container", "caption")]
-size_flags_horizontal = 3
-size_flags_vertical = 3
 theme_override_styles/titlebar = SubResource("StyleBoxFlat_uf37k")
 theme_override_styles/titlebar_selected = SubResource("StyleBoxFlat_rfjw0")
 title = "Empty Action"
@@ -58,7 +56,6 @@ layout_mode = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
-size_flags_vertical = 3
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_bottom = 5
 

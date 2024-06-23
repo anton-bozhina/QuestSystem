@@ -9,28 +9,6 @@ extends Node
 var quest_file_path: String
 
 
-func _get_editor_version() -> String:
-	return owner.get_meta('version', '0.0')
-
-
-func _path_filter(class_data: Dictionary, class_path: String) -> bool:
-	return class_data['path'] == class_path
-
-
-func _connections_filter(connection: Dictionary, node_name: StringName) -> bool:
-	return connection['from_node'] == node_name
-
-
-func _clear_from_node(connection: Dictionary) -> Dictionary:
-	connection.erase('from_node')
-	return connection
-
-
-func _add_from_node(connection: Dictionary, from_node: StringName) -> Dictionary:
-	connection['from_node'] = from_node
-	return connection
-
-
 func _get_quest_data() -> Dictionary:
 	var quest_data: Dictionary = {
 		'name': '',
@@ -52,7 +30,7 @@ func _get_quest_data() -> Dictionary:
 
 		quest_data['actions'][node_name] = {
 			'class': QuestSystem.get_action_class_name(node.action.get_script()),
-			'connections': graph_edit.get_connection_list().filter(_connections_filter.bind(node_name)).map(_clear_from_node),
+			'connections': graph_edit.get_connection_list().filter(_connections_filter.bind(node_name)).map(_clear_connection),
 			'properties': []
 		}
 
@@ -75,6 +53,30 @@ func _get_quest_data() -> Dictionary:
 		'quest_data': quest_data,
 		'editor_data': editor_data
 	}
+
+
+func _get_editor_version() -> String:
+	return owner.get_meta('version', '0.0')
+
+
+func _path_filter(class_data: Dictionary, class_path: String) -> bool:
+	return class_data['path'] == class_path
+
+
+func _connections_filter(connection: Dictionary, node_name: StringName) -> bool:
+	return connection['from_node'] == node_name
+
+
+func _clear_connection(connection: Dictionary) -> Dictionary:
+	connection.erase('from_node')
+	connection.erase('to_port')
+	return connection
+
+
+func _add_from_node(connection: Dictionary, from_node: StringName) -> Dictionary:
+	connection['from_node'] = from_node
+	connection['to_port'] = 0
+	return connection
 
 
 func get_quest_name() -> String:

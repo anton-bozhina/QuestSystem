@@ -6,4 +6,4 @@ extends QuestActionFunction
 static var node_name  = 'Print'
 
 
-@export var message: String
+@export_multiline var message: String
