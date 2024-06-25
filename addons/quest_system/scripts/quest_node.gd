@@ -1,113 +1,92 @@
 class_name QuestNode
 extends Node
 
-enum Status {
-	INACTIVE,
-	ACTIVE,
-	FINISHED
-}
-
 @export var quest_data: QuestData
-@export var active: bool = true
+@export var activate_on_start: bool = true
+@export var call_perform_deferred: bool = false
 
-var quest_status: Status = Status.INACTIVE
 
+var active: bool = false : set = set_active, get = is_active
+var active_nodes: Dictionary = {}
 var quest_variables: QuestVariables
-var active_actions: Array[StringName] = []
-var next_to_activate: StringName
+
+var _actions_to_process: Array[QuestAction] = []
 
 
 func _ready() -> void:
-	_process_action(quest_data.start_action)
+	_add_action_to_process(quest_data.start_action)
+	quest_variables = QuestVariables.new(quest_data.variables)
+	set_active(activate_on_start)
 
 
-func _process_action(action_name: String) -> void:
-	if not active:
+func _process(delta: float) -> void:
+	if not active or _actions_to_process.is_empty():
 		return
 
-	active_actions.append(action_name)
+	var action := _actions_to_process.pop_front() as QuestAction
+	if call_perform_deferred:
+		action.perform.call_deferred()
+	else:
+		action.perform()
+
+
+func _add_action_to_process(action_name: StringName) -> void:
+	var action_data: Dictionary = _get_action_data(action_name)
+	var action: QuestAction = action_data['action']
+	action.performed.connect(_on_action_performed.bind(action_name), CONNECT_ONE_SHOT)
+	active_nodes[action_name] = action_data
+	_actions_to_process.append(action)
+
+
+func _get_action_data(action_name: StringName) -> Dictionary:
 	var action_record: Dictionary = quest_data.actions.get(action_name, {})
 	var action_class_name: StringName = action_record.get('class', 'QuestAction')
 	var action_connections: Array = action_record.get('connections', [])
 	var action_properties: Array = action_record.get('properties', [])
 	var action_class := QuestSystem.get_action_script(action_class_name).new(quest_variables, action_properties) as QuestAction
-	action_class.performed.connect(_on_action_performed.bind(action_name))
-	print('Выполняем задачу ', action_class_name)
-	action_class.perform()
+	return {
+		'action': action_class,
+		'class': action_class_name,
+		'connections': action_connections
+	}
 
 
-func _on_action_performed(action_name: String) -> void:
-	prints('задача выполнена')
-	var action_record: Dictionary = quest_data.actions.get(action_name, {})
-	var action_connections: Array = action_record.get('connections', [])
+func _on_action_performed(action_name: StringName) -> void:
+	prints('Performed', action_name)
+	var action_connections: Array = active_nodes[action_name]['connections']
+	active_nodes.erase(action_name)
 	for connection in action_connections:
-		_process_action(connection['to_node'])
+		_add_action_to_process(connection['to_node'])
 
-		#if not active_quest_actions.has(connection['to_node']):
-			#active_quest_actions.append(connection['to_node'])
 
-	#pass
+func set_active(value: bool) -> void:
+	active = value
 
+
+func is_active() -> bool:
+	return active
 
 
 func set_save_data(save_data: Dictionary) -> void:
-	pass
+	set_active(false)
+	for action_name in active_nodes:
+		var action: QuestAction = active_nodes[action_name]['action']
+		action.free()
+	active_nodes.clear()
+
+	quest_data = load(save_data['quest_data'])
+	quest_variables = QuestVariables.new(save_data['quest_variables'])
+	call_perform_deferred = save_data['call_perform_deferred']
+	for action_name in save_data['active_nodes']:
+		_add_action_to_process(action_name)
+	set_active(save_data['active'])
 
 
 func get_save_data() -> Dictionary:
-	return {}
-
-
-#var wait_actions: Array[StringName] = []
-#var active_quest_actions: Array[StringName] = []
-#var quest_variables: QuestVariables
-#
-#
-#func _ready() -> void:
-	#if wait_actions.is_empty():
-		#wait_actions.append(quest_data.start_action)
-	#set_active(active)
-#
-#
-#func _process(delta: float) -> void:
-	#if not active:
-		#return
-#
-	#_process_action()
-#
-#
-#func _process_action() -> void:
-	#if active_quest_actions.is_empty():
-		#return
-#
-	#var action_name: StringName = active_quest_actions.pop_front()
-	#var action_record: Dictionary = quest_data.actions.get(action_name, {})
-	#var action_class_name: StringName = action_record.get('class', 'QuestAction')
-	#var action_connections: Array = action_record.get('connections', [])
-	#var action_properties: Array = action_record.get('properties', [])
-	##print(action_record)
-	#var action_class := QuestSystem.get_action_script(action_class_name).new(quest_variables, action_properties) as QuestAction
-	#action_class.performed.connect(_on_action_performed.bind(action_connections))
-	#print('Выполняем задачу ', action_class_name)
-	#action_class.perform()
-#
-#
-#func _on_action_performed(connections: Array) -> void:
-	## Тут выбираем следующую ноду и активируем её
-	#for connection in connections:
-		#if not active_quest_actions.has(connection['to_node']):
-			#active_quest_actions.append(connection['to_node'])
-	#prints('задача выполнена')
-	#pass
-#
-#
-#func set_active(value: bool) -> void:
-	#if not quest_data:
-		#active = false
-#
-	#active_quest_actions.append(quest_data.start_action)
-	#active = value
-#
-#
-#func is_active() -> bool:
-	#return active
+	return {
+		'quest_data': quest_data.get_path(),
+		'quest_variables': quest_variables.get_variables(),
+		'active_nodes': active_nodes.keys(),
+		'call_perform_deferred': call_perform_deferred,
+		'active': is_active()
+	}

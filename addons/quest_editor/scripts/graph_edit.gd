@@ -14,6 +14,14 @@ var _node_list: Array[QuestEditorGraphNode] = []
 var _quest_data_label: Label
 
 
+func _generate_id() -> String:
+	var length: int = 8
+	var result: String
+	for index in range(length):
+		result += '%02x' % (randi() % 256)
+	return result
+
+
 func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
 	return data is GDScript
 
@@ -50,6 +58,10 @@ func _on_end_node_move() -> void:
 	graph_edit_changed.emit()
 
 
+func _on_node_property_changed() -> void:
+	graph_edit_changed.emit()
+
+
 func add_node(action: QuestAction, node_name: StringName = '', node_position: Vector2 = Vector2.INF, node_size: Vector2 = Vector2.INF) -> void:
 	if node_name.is_empty():
 		node_name = '%s_%s' % [action.node_name, _generate_id()]
@@ -64,21 +76,14 @@ func add_node(action: QuestAction, node_name: StringName = '', node_position: Ve
 		new_node.set_size(node_size)
 
 	new_node.set_action(action)
+
+	var debug_name_label: Label = Label.new()
+	debug_name_label.text = node_name
+	new_node.add_child(debug_name_label)
+
 	add_child(new_node)
 	_node_list.append(new_node)
 	new_node.property_changed.connect(_on_node_property_changed)
-	graph_edit_changed.emit()
-
-
-func _generate_id() -> String:
-	var length: int = 8
-	var result: String
-	for index in range(length):
-		result += '%02x' % (randi() % 256)
-	return result
-
-
-func _on_node_property_changed() -> void:
 	graph_edit_changed.emit()
 
 
