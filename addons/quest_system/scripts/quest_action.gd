@@ -2,10 +2,10 @@
 class_name QuestAction
 extends Resource
 
-signal performed
+
+signal performed(from_port: int)
 
 var node_caption: String = ''
-
 var variables: QuestVariables
 
 
@@ -26,12 +26,9 @@ func _action_init() -> void:
 	pass
 
 
-func _action_task() -> void:
-	pass
+func _perform_task() -> void:
+	performed.emit(0)
 
 
 func perform() -> void:
-	_action_task()
-	performed.emit()
-
-#get_tree().process_frame.connect(callable, CONNECT_ONE_SHOT)
+	_perform_task()

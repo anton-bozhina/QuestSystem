@@ -51,12 +51,13 @@ func _get_action_data(action_name: StringName) -> Dictionary:
 	}
 
 
-func _on_action_performed(action_name: StringName) -> void:
-	prints('Performed', action_name)
+func _on_action_performed(from_slot: int, action_name: StringName) -> void:
+	#prints('Performed', action_name)
 	var action_connections: Array = active_nodes[action_name]['connections']
 	active_nodes.erase(action_name)
 	for connection in action_connections:
-		_add_action_to_process(connection['to_node'])
+		if connection['from_port'] == from_slot:
+			_add_action_to_process(connection['to_node'])
 
 
 func set_active(value: bool) -> void:

@@ -2,6 +2,9 @@ class_name QuestVariables
 extends RefCounted
 
 
+signal variable_updated(variable: StringName)
+
+
 var _variables: Dictionary
 
 
@@ -20,6 +23,7 @@ func set_variable(name: StringName, value: Variant, type: int = TYPE_NIL) -> voi
 		'value': value,
 		'type': typeof(value) if type == TYPE_NIL else type
 	}
+	variable_updated.emit(name)
 
 
 func get_variables() -> Dictionary:
@@ -40,6 +44,7 @@ func get_variable_list() -> PackedStringArray:
 
 func remove_variable(name: StringName) -> void:
 	_variables.erase(name)
+	variable_updated.emit(name)
 
 
 func has_variable(name: StringName) -> bool:
@@ -47,4 +52,5 @@ func has_variable(name: StringName) -> bool:
 
 
 func clear() -> void:
-	_variables.clear()
+	for variable in _variables:
+		remove_variable(variable)

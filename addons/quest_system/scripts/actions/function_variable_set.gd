@@ -5,7 +5,6 @@ extends QuestActionFunction
 
 static var node_name = 'VariableSet'
 
-
 var variable: String = ''
 var value: Variant
 
@@ -26,3 +25,15 @@ func _get_property_list() -> Array[Dictionary]:
 			'usage': PROPERTY_USAGE_SCRIPT_VARIABLE + PROPERTY_USAGE_STORAGE + PROPERTY_USAGE_EDITOR
 		})
 	return property_list
+
+
+func _node_init() -> void:
+	pass
+
+
+func _action_init() -> void:
+	pass
+
+
+func _perform_function() -> void:
+	variables.set_variable(variable, value)

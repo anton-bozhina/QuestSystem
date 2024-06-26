@@ -18,3 +18,13 @@ func _get_property_list() -> Array[Dictionary]:
 	})
 
 	return property_list
+
+
+func _perform_wait() -> void:
+	variables.variable_updated.connect(_on_variable_updated)
+
+
+func _on_variable_updated(updated_variable: StringName) -> void:
+	if updated_variable == variable:
+		variables.variable_updated.disconnect(_on_variable_updated)
+		waited.emit()

@@ -2,7 +2,7 @@
 class_name QuestActionWait
 extends QuestAction
 
-signal wait_is_ower
+signal waited
 
 static var folder_name: StringName = 'Waiting'
 static var folder_position: int = -1
@@ -12,15 +12,22 @@ var node_show_left_slot: bool = true
 var node_show_right_slot: bool = true
 
 
-#@export var next_action: QuestAction
+func _node_init() -> void:
+	pass
 
 
-#func _action_task(arguments: Arguments) -> void:
-	#_action_wait(arguments)
-##
-	##if next_action:
-		##wait_is_ower.connect(next_action.perform)
-#
-#
-#func _action_wait(_arguments: Arguments) -> void:
-	#wait_is_ower.emit()
+func _action_init() -> void:
+	pass
+
+
+func _perform_wait() -> void:
+	pass
+
+
+func _perform_task() -> void:
+	waited.connect(_on_waited, CONNECT_ONE_SHOT)
+	_perform_wait()
+
+
+func _on_waited() -> void:
+	performed.emit(0)

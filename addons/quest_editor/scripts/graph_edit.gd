@@ -77,9 +77,9 @@ func add_node(action: QuestAction, node_name: StringName = '', node_position: Ve
 
 	new_node.set_action(action)
 
-	var debug_name_label: Label = Label.new()
-	debug_name_label.text = node_name
-	new_node.add_child(debug_name_label)
+	#var debug_name_label: Label = Label.new()
+	#debug_name_label.text = node_name
+	#new_node.add_child(debug_name_label)
 
 	add_child(new_node)
 	_node_list.append(new_node)
