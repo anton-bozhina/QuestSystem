@@ -32,3 +32,11 @@ func _perform_task() -> void:
 
 func perform() -> void:
 	_perform_task()
+
+
+func get_mainLoop() -> MainLoop:
+	return Engine.get_main_loop()
+
+
+func get_singltones() -> void:
+	print(Engine.get_main_loop().get_root().get_children())
