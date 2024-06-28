@@ -1,11 +1,16 @@
 @tool
 extends Node
 
+
+signal log_updated
+
+const QUEST_LOG_LINE_COUNT = 100
 const QUEST_CLASS_PARENT = 'QuestAction'
 
 var _global_variables: QuestVariables = QuestVariables.new()
 var _action_class_name_dict: Dictionary = {}
 var _action_class_script_dict: Dictionary = {}
+var _quest_log: Dictionary = {}
 
 
 func _ready() -> void:
@@ -47,3 +52,16 @@ func get_action_class_name(quest_action_script: GDScript) -> StringName:
 
 func get_global_variables() -> QuestVariables:
 	return _global_variables
+
+
+func add_log(quest_name: String, log_text: String) -> void:
+	if not _quest_log.has(quest_name):
+		_quest_log[quest_name] = []
+	_quest_log[quest_name].append([Time.get_unix_time_from_system(), log_text])
+	if _quest_log[quest_name].size() > QUEST_LOG_LINE_COUNT:
+		_quest_log[quest_name].pop_front()
+	log_updated.emit()
+
+
+func get_log() -> Dictionary:
+	return _quest_log

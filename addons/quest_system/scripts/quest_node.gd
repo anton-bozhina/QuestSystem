@@ -35,6 +35,7 @@ func _add_action_to_process(action_name: StringName) -> void:
 	var action: QuestAction = action_data['action']
 	action.performed.connect(_on_action_performed.bind(action_name), CONNECT_ONE_SHOT)
 	active_nodes[action_name] = action_data
+	_add_log('[%s] Action %s perform planned.' % [action_name, action_data['class']])
 	_actions_to_process.append(action)
 
 
@@ -52,7 +53,7 @@ func _get_action_data(action_name: StringName) -> Dictionary:
 
 
 func _on_action_performed(from_slot: int, action_name: StringName) -> void:
-	#prints('Performed', action_name)
+	_add_log('[%s] Action performed.' % [action_name])
 	var action_connections: Array = active_nodes[action_name]['connections']
 	active_nodes.erase(action_name)
 	for connection in action_connections:
@@ -60,8 +61,13 @@ func _on_action_performed(from_slot: int, action_name: StringName) -> void:
 			_add_action_to_process(connection['to_node'])
 
 
+func _add_log(log_text: String) -> void:
+	QuestSystem.add_log(quest_data.get_path(), log_text)
+
+
 func set_active(value: bool) -> void:
 	active = value
+	_add_log('Quest activation set to %s.' % active)
 
 
 func is_active() -> bool:
@@ -69,6 +75,7 @@ func is_active() -> bool:
 
 
 func set_save_data(save_data: Dictionary) -> void:
+	_add_log('Quest is loading.')
 	set_active(false)
 	for action_name in active_nodes:
 		var action: QuestAction = active_nodes[action_name]['action']
@@ -80,6 +87,8 @@ func set_save_data(save_data: Dictionary) -> void:
 	call_perform_deferred = save_data['call_perform_deferred']
 	for action_name in save_data['active_nodes']:
 		_add_action_to_process(action_name)
+
+	_add_log('Quest loaded.')
 	set_active(save_data['active'])
 
 
