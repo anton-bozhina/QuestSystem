@@ -3,7 +3,7 @@ extends Tree
 
 
 enum Columns {
-	TITLE,
+	NAME,
 	VALUE
 }
 enum Buttons {
@@ -12,15 +12,11 @@ enum Buttons {
 	REMOVE
 }
 enum ItemType {
-	FOLDER,
-	ITEM,
-	ITEM_VALUE,
-	ITEM_NAME,
-	ITEM_INIT
-}
-enum FolderType {
-	LOCAL,
-	GLOBAL
+	FOLDER_LOCAL,
+	FOLDER_GLOBAL,
+	VARIABLE_LOCAL,
+	VARIABLE_GLOBAL,
+	OPTION_INIT
 }
 
 const ADD_BUTTON_TEXTURE: Texture2D = preload('res://addons/quest_editor/icons/ToolAddNode.svg')
@@ -37,14 +33,12 @@ const TYPE_TITLE: Dictionary = {
 	TYPE_INT: 'Integer',
 	TYPE_FLOAT: 'Float'
 }
-const ITEM_TYPE_TITLE: Dictionary = {
-	ItemType.ITEM_VALUE: 'Value',
-	ItemType.ITEM_NAME: 'Name',
-	ItemType.ITEM_INIT: 'Init'
-}
-const FOLDER_TITLE: Dictionary = {
-	FolderType.LOCAL: 'Local Variables',
-	FolderType.GLOBAL: 'Global Variables',
+const ITEM_TITLE: Dictionary = {
+	ItemType.FOLDER_LOCAL: 'Local',
+	ItemType.FOLDER_GLOBAL: 'Global',
+	ItemType.VARIABLE_LOCAL: 'new_%s',
+	ItemType.VARIABLE_GLOBAL: 'new_%s',
+	ItemType.OPTION_INIT: 'Init',
 }
 
 @export var variable_add_menu: PopupMenu
@@ -55,88 +49,139 @@ var _global_folder: TreeItem
 
 func _ready() -> void:
 	_create_tree()
-	set_column_expand(Columns.TITLE, false)
 	button_clicked.connect(_on_button_clicked)
+	item_activated.connect(_on_item_activated)
 	item_edited.connect(_on_item_edited)
+
+	set_variables({
+		'variables': {
+			'local': {
+				'name': {
+					'type': 0,
+					'value': 1,
+					'init': true
+				}
+			},
+			'global': {
+				'name': {
+					'type': 0,
+					'value': 1,
+					'init': true
+				}
+			}
+		}
+	})
 
 
 func _create_tree() -> void:
 	create_item()
-	_local_folder = _create_folder(FolderType.LOCAL)
-	_global_folder = _create_folder(FolderType.GLOBAL)
+	_local_folder = _create_folder(ItemType.FOLDER_LOCAL)
+	_global_folder = _create_folder(ItemType.FOLDER_GLOBAL)
 
 
-func _create_folder(folder_type: FolderType) -> TreeItem:
+func _create_folder(item_type: ItemType) -> TreeItem:
 	var folder_item = get_root().create_child()
-	folder_item.set_text(Columns.TITLE, FOLDER_TITLE[folder_type])
-	folder_item.set_selectable(Columns.TITLE, false)
+	folder_item.set_text(Columns.NAME, ITEM_TITLE[item_type])
+	folder_item.set_selectable(Columns.NAME, false)
 	folder_item.set_selectable(Columns.VALUE, false)
-	folder_item.add_button(Columns.VALUE, ADD_BUTTON_TEXTURE, folder_type)
-	folder_item.set_meta('type', ItemType.FOLDER)
+	folder_item.add_button(Columns.VALUE, ADD_BUTTON_TEXTURE, item_type)
+	_set_item_type(folder_item, item_type)
 	return folder_item
+
+
+func _set_item_type(item: TreeItem, item_type: ItemType) -> void:
+	item.set_meta('type', item_type)
+
+
+func _get_item_type(item: TreeItem) -> ItemType:
+	return item.get_meta('type', -1)
 
 
 func _on_button_clicked(item: TreeItem, column: int, id: int, mouse_button_index: int) -> void:
 	match id:
 		Buttons.ADD_LOCAL, Buttons.ADD_GLOBAL:
-			_popup_menu(item, column, id)
+			_popup_menu(item, column)
 		Buttons.REMOVE:
 			item.free()
 
 
-func _popup_menu(item: TreeItem, column: int, id: int) -> void:
+func _popup_menu(item: TreeItem, column: int) -> void:
 	var item_area_rect: Rect2 = get_item_area_rect(item, column)
 	if variable_add_menu.id_pressed.is_connected(_on_variable_add_menu_pressed):
 		variable_add_menu.id_pressed.disconnect(_on_variable_add_menu_pressed)
-	variable_add_menu.id_pressed.connect(_on_variable_add_menu_pressed.bind(item, id))
+	variable_add_menu.id_pressed.connect(_on_variable_add_menu_pressed.bind(item))
 	item_area_rect.position += global_position + item_area_rect.size
 	variable_add_menu.popup(item_area_rect)
 
 
-func _on_variable_add_menu_pressed(menu_id: int, item: TreeItem, button_id: Buttons) -> void:
-	_create_variable_item(item, menu_id, button_id)
+func _on_variable_add_menu_pressed(menu_id: int, item: TreeItem) -> void:
+	_create_variable(item, menu_id)
 
 
-func _create_variable_item(folder_item: TreeItem, id: int, button_id: Buttons) -> void:
-	var item: TreeItem = folder_item.create_child()
-	item.set_icon(Columns.TITLE, TYPE_TEXTURE[id])
-	item.set_text(Columns.TITLE, '')
-	item.set_selectable(Columns.TITLE, false)
-	item.set_selectable(Columns.VALUE, false)
-	item.add_button(Columns.VALUE, REMOVE_BUTTON_TEXTURE, Buttons.REMOVE)
-	item.set_meta('type', ItemType.ITEM)
-
-	_add_variable_item_elements(item, TYPE_STRING, ItemType.ITEM_NAME)
-	_add_variable_item_elements(item, id, ItemType.ITEM_VALUE)
-	if button_id == Buttons.ADD_GLOBAL:
-		_add_variable_item_elements(item, TYPE_BOOL, ItemType.ITEM_INIT)
-
-
-func _add_variable_item_elements(item: TreeItem, id: int, item_element: ItemType) -> void:
-	var element: TreeItem = item.create_child()
-	element.set_text(Columns.TITLE, ITEM_TYPE_TITLE[item_element])
-	element.set_selectable(Columns.TITLE, false)
-	element.set_editable(Columns.VALUE, true)
-	element.set_custom_bg_color(Columns.VALUE, Color.DARK_GRAY, true)
-	element.set_meta('type', item_element)
-	match id:
+func _create_variable(item_folder: TreeItem, variable_type: int, variable_name: String = '', variable_value: Variant = null) -> void:
+	var variable_item: TreeItem = _create_variable_item(item_folder, variable_type, variable_name)
+	match variable_type:
 		TYPE_STRING:
-			element.set_text(Columns.VALUE, '')
+			if variable_value == null:
+				variable_value = ''
+			variable_item.set_text(Columns.VALUE, variable_value)
 		TYPE_BOOL:
-			element.set_cell_mode(Columns.VALUE, TreeItem.CELL_MODE_CHECK)
-			element.set_checked(Columns.VALUE, false)
+			if variable_value == null:
+				variable_value = false
+			variable_item.set_cell_mode(Columns.VALUE, TreeItem.CELL_MODE_CHECK)
+			variable_item.set_checked(Columns.VALUE, variable_value)
 		TYPE_INT:
-			element.set_cell_mode(Columns.VALUE, TreeItem.CELL_MODE_RANGE)
-			element.set_range_config(Columns.VALUE, -99999999, 99999999, 1)
-			element.set_range(Columns.VALUE, 0)
+			if variable_value == null:
+				variable_value = 0
+			variable_item.set_cell_mode(Columns.VALUE, TreeItem.CELL_MODE_RANGE)
+			variable_item.set_range_config(Columns.VALUE, -99999999, 99999999, 1)
+			variable_item.set_range(Columns.VALUE, variable_value)
 		TYPE_FLOAT:
-			element.set_cell_mode(Columns.VALUE, TreeItem.CELL_MODE_RANGE)
-			element.set_range_config(Columns.VALUE, -99999999, 99999999, 0.001)
-			element.set_range(Columns.VALUE, 0)
+			if variable_value == null:
+				variable_value = 0
+			variable_item.set_cell_mode(Columns.VALUE, TreeItem.CELL_MODE_RANGE)
+			variable_item.set_range_config(Columns.VALUE, -99999999, 99999999, 0.001)
+			variable_item.set_range(Columns.VALUE, variable_value)
+
+
+func _create_variable_item(item_folder: TreeItem, variable_type: int, variable_name: String = '') -> TreeItem:
+	if variable_name.is_empty():
+		variable_name = ('new_%s' % TYPE_TITLE[variable_type]).to_lower()
+	var item_type: ItemType = ItemType.VARIABLE_LOCAL if _get_item_type(item_folder) == ItemType.FOLDER_LOCAL else ItemType.VARIABLE_GLOBAL
+	var item: TreeItem = item_folder.create_child()
+	item.set_icon(Columns.NAME, TYPE_TEXTURE[variable_type])
+	item.set_text(Columns.NAME, variable_name)
+	item.set_editable(Columns.VALUE, true)
+	item.add_button(Columns.VALUE, REMOVE_BUTTON_TEXTURE, Buttons.REMOVE)
+	_set_item_type(item, item_type)
+
+	if item_type == ItemType.VARIABLE_GLOBAL:
+		_create_option(item, ItemType.OPTION_INIT)
+
+	return item
+
+
+func _create_option(item: TreeItem, option_type: ItemType) -> void:
+	var option: TreeItem = item.create_child()
+	option.set_text(Columns.NAME, ITEM_TITLE[option_type])
+	option.set_selectable(Columns.NAME, false)
+	option.set_editable(Columns.VALUE, true)
+	option.set_cell_mode(Columns.VALUE, TreeItem.CELL_MODE_CHECK)
+	_set_item_type(option, option_type)
+
+
+func _on_item_activated() -> void:
+	if get_selected():
+		edit_selected(true)
 
 
 func _on_item_edited() -> void:
-	var edited_element: TreeItem = get_edited()
-	var edited_item: TreeItem = edited_element.get_parent()
-	if edited_element.get_meta('type') == ItemType.ITEM_NAME:
-		edited_item.set_text(Columns.TITLE, edited_element.get_text(Columns.VALUE))
+	pass
+
+
+func set_variables(variables: Dictionary) -> void:
+	pass
+
+
+func get_variables() -> Dictionary:
+	return {}
