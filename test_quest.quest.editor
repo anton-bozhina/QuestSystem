@@ -1,0 +1,75 @@
+{
+	"graph_edit_scroll_offset": "Vector2(-531.896, -1155.51)",
+	"graph_edit_zoom": 0.385543048381805,
+	"nodes": {
+		"GlobalVariableCheck_3e58075cacc381aa": {
+			"position": "Vector2(1940, -1660)",
+			"size": "Vector2(310, 196)"
+		},
+		"GlobalVariableSet_05dca615ee48f54f": {
+			"position": "Vector2(2660, -1520)",
+			"size": "Vector2(310, 144)"
+		},
+		"Print_408e952a6c435771": {
+			"position": "Vector2(3120, -1800)",
+			"size": "Vector2(242, 195)"
+		},
+		"Print_624d5440efd56da9": {
+			"position": "Vector2(2340, -1800)",
+			"size": "Vector2(242, 195)"
+		},
+		"Print_67079cf7d7ff66cf": {
+			"position": "Vector2(2340, -1520)",
+			"size": "Vector2(242, 195)"
+		},
+		"Print_75595d26b1b3405e": {
+			"position": "Vector2(1260, -1000)",
+			"size": "Vector2(242, 195)"
+		},
+		"Print_8b6a8386b517f634": {
+			"position": "Vector2(1280, -1660)",
+			"size": "Vector2(242, 195)"
+		},
+		"Print_ab416dd878659e0a": {
+			"position": "Vector2(1280, -1320)",
+			"size": "Vector2(242, 195)"
+		},
+		"Print_ce543ad737ac893f": {
+			"position": "Vector2(460, -1000)",
+			"size": "Vector2(242, 195)"
+		},
+		"Print_eb4316814da216ce": {
+			"position": "Vector2(60, -1460)",
+			"size": "Vector2(242, 195)"
+		},
+		"Print_f0354ed5e4ad9457": {
+			"position": "Vector2(460, -1460)",
+			"size": "Vector2(242, 195)"
+		},
+		"QuestFinish_5d90ee19f1dfbb86": {
+			"position": "Vector2(3440, -1820)",
+			"size": "Vector2(272, 80)"
+		},
+		"QuestStart_af007e88ca2d4bee": {
+			"position": "Vector2(-380, -1460)",
+			"size": "Vector2(324, 245)"
+		},
+		"VariableCheck_df0b7b83291a8a65": {
+			"position": "Vector2(800, -1460)",
+			"size": "Vector2(304, 196)"
+		},
+		"VariableSet_b70350a80138444b": {
+			"position": "Vector2(1600, -1320)",
+			"size": "Vector2(304, 144)"
+		},
+		"WaitTime_f4ad495680590943": {
+			"position": "Vector2(2660, -1800)",
+			"size": "Vector2(276, 92)"
+		},
+		"WaitVarUpdate_cf3d925bbe796107": {
+			"position": "Vector2(780, -1000)",
+			"size": "Vector2(304, 94)"
+		}
+	},
+	"version": "1.0"
+}

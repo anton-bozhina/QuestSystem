@@ -1,0 +1,319 @@
+{
+	"actions": {
+		"GlobalVariableCheck_3e58075cacc381aa": {
+			"class": "QuestActionCheckGlobalVariable",
+			"connections": [
+				{
+					"from_port": 1,
+					"to_node": "Print_67079cf7d7ff66cf"
+				},
+				{
+					"from_port": 0,
+					"to_node": "Print_624d5440efd56da9"
+				}
+			],
+			"properties": [
+				{
+					"name": "variable",
+					"value": "global_string"
+				},
+				{
+					"name": "operator",
+					"value": 0
+				},
+				{
+					"name": "value",
+					"value": "lol"
+				}
+			]
+		},
+		"GlobalVariableSet_05dca615ee48f54f": {
+			"class": "QuestActionFunctionGlobalVariableSet",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Print_8b6a8386b517f634"
+				}
+			],
+			"properties": [
+				{
+					"name": "variable",
+					"value": "global_string"
+				},
+				{
+					"name": "value",
+					"value": "lol"
+				}
+			]
+		},
+		"Print_408e952a6c435771": {
+			"class": "QuestActionFunctionPrint",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "QuestFinish_5d90ee19f1dfbb86"
+				}
+			],
+			"properties": [
+				{
+					"name": "message",
+					"value": "time waited\nquest finish!"
+				}
+			]
+		},
+		"Print_624d5440efd56da9": {
+			"class": "QuestActionFunctionPrint",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "WaitTime_f4ad495680590943"
+				}
+			],
+			"properties": [
+				{
+					"name": "message",
+					"value": "global_string is lol"
+				}
+			]
+		},
+		"Print_67079cf7d7ff66cf": {
+			"class": "QuestActionFunctionPrint",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "GlobalVariableSet_05dca615ee48f54f"
+				}
+			],
+			"properties": [
+				{
+					"name": "message",
+					"value": "global_string not lol"
+				}
+			]
+		},
+		"Print_75595d26b1b3405e": {
+			"class": "QuestActionFunctionPrint",
+			"connections": [],
+			"properties": [
+				{
+					"name": "message",
+					"value": "new_integer is change"
+				}
+			]
+		},
+		"Print_8b6a8386b517f634": {
+			"class": "QuestActionFunctionPrint",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "GlobalVariableCheck_3e58075cacc381aa"
+				}
+			],
+			"properties": [
+				{
+					"name": "message",
+					"value": "new_integer is 1000\ncheck global string"
+				}
+			]
+		},
+		"Print_ab416dd878659e0a": {
+			"class": "QuestActionFunctionPrint",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "VariableSet_b70350a80138444b"
+				}
+			],
+			"properties": [
+				{
+					"name": "message",
+					"value": "new_integer is not 1000"
+				}
+			]
+		},
+		"Print_ce543ad737ac893f": {
+			"class": "QuestActionFunctionPrint",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "WaitVarUpdate_cf3d925bbe796107"
+				}
+			],
+			"properties": [
+				{
+					"name": "message",
+					"value": "waiting new_integer changed"
+				}
+			]
+		},
+		"Print_eb4316814da216ce": {
+			"class": "QuestActionFunctionPrint",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Print_ce543ad737ac893f"
+				},
+				{
+					"from_port": 0,
+					"to_node": "Print_f0354ed5e4ad9457"
+				}
+			],
+			"properties": [
+				{
+					"name": "message",
+					"value": "quest start!"
+				}
+			]
+		},
+		"Print_f0354ed5e4ad9457": {
+			"class": "QuestActionFunctionPrint",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "VariableCheck_df0b7b83291a8a65"
+				}
+			],
+			"properties": [
+				{
+					"name": "message",
+					"value": "check new_integer"
+				}
+			]
+		},
+		"QuestFinish_5d90ee19f1dfbb86": {
+			"class": "QuestActionLogicFinish",
+			"connections": [],
+			"properties": []
+		},
+		"QuestStart_af007e88ca2d4bee": {
+			"class": "QuestActionLogicStart",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Print_eb4316814da216ce"
+				}
+			],
+			"properties": [
+				{
+					"name": "quest_name",
+					"value": "Test Quest"
+				},
+				{
+					"name": "quest_description",
+					"value": "Test Description"
+				}
+			]
+		},
+		"VariableCheck_df0b7b83291a8a65": {
+			"class": "QuestActionCheckVariable",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Print_8b6a8386b517f634"
+				},
+				{
+					"from_port": 1,
+					"to_node": "Print_ab416dd878659e0a"
+				}
+			],
+			"properties": [
+				{
+					"name": "variable",
+					"value": "new_integer"
+				},
+				{
+					"name": "operator",
+					"value": 0
+				},
+				{
+					"name": "value",
+					"value": 1000
+				}
+			]
+		},
+		"VariableSet_b70350a80138444b": {
+			"class": "QuestActionFunctionVariableSet",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Print_f0354ed5e4ad9457"
+				}
+			],
+			"properties": [
+				{
+					"name": "variable",
+					"value": "new_integer"
+				},
+				{
+					"name": "value",
+					"value": 1000
+				}
+			]
+		},
+		"WaitTime_f4ad495680590943": {
+			"class": "QuestActionWaitTime",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Print_408e952a6c435771"
+				}
+			],
+			"properties": [
+				{
+					"name": "wait_time",
+					"value": 10
+				}
+			]
+		},
+		"WaitVarUpdate_cf3d925bbe796107": {
+			"class": "QuestActionWaitVariableUpdate",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Print_75595d26b1b3405e"
+				}
+			],
+			"properties": [
+				{
+					"name": "variable",
+					"value": "new_integer"
+				}
+			]
+		}
+	},
+	"description": "Test Description",
+	"name": "Test Quest",
+	"start_action": "QuestStart_af007e88ca2d4bee",
+	"variables": {
+		"global": {
+			"global_string": {
+				"options": {
+					"init": {
+						"type": 1,
+						"value": true
+					}
+				},
+				"type": 4,
+				"value": "string"
+			}
+		},
+		"local": {
+			"new_bool": {
+				"type": 1,
+				"value": true
+			},
+			"new_float": {
+				"type": 3,
+				"value": 99.999
+			},
+			"new_integer": {
+				"type": 2,
+				"value": 100
+			},
+			"new_string": {
+				"type": 4,
+				"value": "string"
+			}
+		}
+	}
+}

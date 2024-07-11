@@ -1,9 +1,9 @@
 @tool
-class_name QuestActionWaitVariableUpdate
+class_name QuestActionWaitGlobalVariableUpdate
 extends QuestActionWait
 
 
-static var node_name: StringName = 'WaitVariableUpdate'
+static var node_name: StringName = 'WaitGlobalVariableUpdate'
 
 var variable: String = ''
 
@@ -13,7 +13,7 @@ func _get_property_list() -> Array[Dictionary]:
 		'name': 'variable',
 		'type': TYPE_STRING,
 		'hint': PROPERTY_HINT_ENUM,
-		'hint_string': ','.join(variables[Variable.LOCAL].get_variable_list()),
+		'hint_string': ','.join(variables[Variable.GLOBAL].get_variable_list()),
 		'usage': PROPERTY_USAGE_SCRIPT_VARIABLE + PROPERTY_USAGE_STORAGE + PROPERTY_USAGE_EDITOR
 	})
 
@@ -21,10 +21,10 @@ func _get_property_list() -> Array[Dictionary]:
 
 
 func _perform_wait() -> void:
-	variables[Variable.LOCAL].variable_updated.connect(_on_variable_updated)
+	variables[Variable.GLOBAL].variable_updated.connect(_on_variable_updated)
 
 
 func _on_variable_updated(updated_variable: StringName) -> void:
 	if updated_variable == variable:
-		variables[Variable.LOCAL].variable_updated.disconnect(_on_variable_updated)
+		variables[Variable.GLOBAL].variable_updated.disconnect(_on_variable_updated)
 		waited.emit()

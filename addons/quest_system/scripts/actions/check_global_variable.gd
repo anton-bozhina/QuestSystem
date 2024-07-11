@@ -1,9 +1,9 @@
 @tool
-class_name QuestActionCheckVariable
+class_name QuestActionCheckGlobalVariable
 extends QuestActionCheck
 
 
-static var node_name = 'VariableCheck'
+static var node_name = 'GlobalVariableCheck'
 
 
 var variable: String = ''
@@ -30,7 +30,7 @@ func _get_property_list() -> Array[Dictionary]:
 		'name': 'variable',
 		'type': TYPE_STRING,
 		'hint': PROPERTY_HINT_ENUM,
-		'hint_string': ','.join(variables[Variable.LOCAL].get_variable_list()),
+		'hint_string': ','.join(variables[Variable.GLOBAL].get_variable_list()),
 		'usage': PROPERTY_USAGE_SCRIPT_VARIABLE + PROPERTY_USAGE_STORAGE + PROPERTY_USAGE_EDITOR
 	})
 	if variable_is_number():
@@ -49,31 +49,31 @@ func _get_property_list() -> Array[Dictionary]:
 			'hint_string': ','.join(operators_equal),
 			'usage': PROPERTY_USAGE_SCRIPT_VARIABLE + PROPERTY_USAGE_STORAGE + PROPERTY_USAGE_EDITOR
 		})
-	if not variables[Variable.LOCAL].get_variable_type(variable) == TYPE_NIL:
+	if not variables[Variable.GLOBAL].get_variable_type(variable) == TYPE_NIL:
 		property_list.append({
 			'name': 'value',
-			'type': variables[Variable.LOCAL].get_variable_type(variable),
+			'type': variables[Variable.GLOBAL].get_variable_type(variable),
 			'usage': PROPERTY_USAGE_SCRIPT_VARIABLE + PROPERTY_USAGE_STORAGE + PROPERTY_USAGE_EDITOR
 		})
 	return property_list
 
 
 func variable_is_number() -> bool:
-	return variables[Variable.LOCAL].get_variable_type(variable) == TYPE_INT or variables[Variable.LOCAL].get_variable_type(variable) == TYPE_FLOAT
+	return variables[Variable.GLOBAL].get_variable_type(variable) == TYPE_INT or variables[Variable.GLOBAL].get_variable_type(variable) == TYPE_FLOAT
 
 
 func _perform_check() -> bool:
 	match operator:
 		Variant.Operator.OP_EQUAL:
-			return variables[Variable.LOCAL].get_variable(variable) == value
+			return variables[Variable.GLOBAL].get_variable(variable) == value
 		Variant.Operator.OP_NOT_EQUAL:
-			return variables[Variable.LOCAL].get_variable(variable) != value
+			return variables[Variable.GLOBAL].get_variable(variable) != value
 		Variant.Operator.OP_LESS when variable_is_number():
-			return variables[Variable.LOCAL].get_variable(variable) < value
+			return variables[Variable.GLOBAL].get_variable(variable) < value
 		Variant.Operator.OP_LESS_EQUAL when variable_is_number():
-			return variables[Variable.LOCAL].get_variable(variable) <= value
+			return variables[Variable.GLOBAL].get_variable(variable) <= value
 		Variant.Operator.OP_GREATER when variable_is_number():
-			return variables[Variable.LOCAL].get_variable(variable) > value
+			return variables[Variable.GLOBAL].get_variable(variable) > value
 		Variant.Operator.OP_GREATER_EQUAL when variable_is_number():
-			return variables[Variable.LOCAL].get_variable(variable) >= value
+			return variables[Variable.GLOBAL].get_variable(variable) >= value
 	return false

@@ -8,14 +8,15 @@ extends Node
 
 var active: bool = false : set = set_active, get = is_active
 var active_nodes: Dictionary = {}
-var quest_variables: QuestVariables
+var quest_variables: QuestVariables = QuestVariables.new()
 
 var _actions_to_process: Array[QuestAction] = []
 
 
 func _ready() -> void:
 	_add_action_to_process(quest_data.start_action)
-	quest_variables = QuestVariables.new(quest_data.variables)
+	quest_variables.set_variables(quest_data.variables.get('local', {}))
+	QuestSystem.set_global_variables(quest_data.variables.get('global', {}))
 	set_active(activate_on_start)
 
 
@@ -44,7 +45,8 @@ func _get_action_data(action_name: StringName) -> Dictionary:
 	var action_class_name: StringName = action_record.get('class', 'QuestAction')
 	var action_connections: Array = action_record.get('connections', [])
 	var action_properties: Array = action_record.get('properties', [])
-	var action_class := QuestSystem.get_action_script(action_class_name).new(quest_variables, action_properties) as QuestAction
+	var variables: Array[QuestVariables] = [quest_variables, QuestSystem.get_global_variables()]
+	var action_class := QuestSystem.get_action_script(action_class_name).new(variables, action_properties) as QuestAction
 	return {
 		'action': action_class,
 		'class': action_class_name,

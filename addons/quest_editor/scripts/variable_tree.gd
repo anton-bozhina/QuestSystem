@@ -3,111 +3,242 @@ class_name QuestEditVariableTree
 extends Tree
 
 
-signal variables_updated(variables: QuestVariables)
+signal variables_updated
 
 
 enum Columns {
 	NAME,
 	VALUE
 }
+enum Buttons {
+	ADD,
+	REMOVE
+}
 
-@export var add_button: MenuButton
-@export var delete_button: Button
+const ADD_BUTTON_TEXTURE: Texture2D = preload('../icons/ToolAddNode.svg')
+const REMOVE_BUTTON_TEXTURE: Texture2D = preload('../icons/Remove.svg')
+const TYPE_TEXTURE: Dictionary = {
+	TYPE_STRING: preload('../icons/String.svg'),
+	TYPE_BOOL: preload('../icons/bool.svg'),
+	TYPE_INT: preload('../icons/int.svg'),
+	TYPE_FLOAT: preload('../icons/float.svg'),
+	-1: preload('../icons/Tools.svg')
+}
 
-var variables: QuestVariables
+@export var variable_add_menu: PopupMenu
+@export var variable_group: Array[StringName] = []
+@export var variable_group_options: Array[Dictionary] = []
+
+@export var variable_groups: Dictionary = {}
+
+var _group_folders: Array[TreeItem] = []
+
+
+class VariableItemData:
+	const NAME_TYPE: Dictionary = {
+		TYPE_STRING: 'string',
+		TYPE_BOOL: 'bool',
+		TYPE_INT: 'integer',
+		TYPE_FLOAT: 'float'
+	}
+	const NAME_TEMPLATE: StringName = 'new_%s'
+
+	var type: Variant.Type
+	var name: StringName
+	var value: Variant
+	var options: Array[VariableItemData] = []
+
+	func _init(variable_type: Variant.Type = TYPE_NIL, variable_name: StringName = '', variable_value: Variant = null) -> void:
+		type = variable_type
+		name = variable_name
+
+		if variable_value == null:
+			if type == TYPE_STRING:
+				value = ''
+			elif type == TYPE_BOOL:
+				value = false
+			elif type == TYPE_INT or type == TYPE_FLOAT:
+				value = 0
+		else:
+			value = variable_value
+
+		if variable_name.is_empty():
+			name = NAME_TEMPLATE % NAME_TYPE[type]
+
+	func add_option(variable: VariableItemData) -> void:
+		options.append(variable)
 
 
 func _ready() -> void:
-	add_button.get_popup().id_pressed.connect(_on_add_button_id_pressed)
-	delete_button.pressed.connect(_on_delete_button_pressed)
+	_tree_initialize()
+	item_activated.connect(_on_item_activated)
+	item_edited.connect(_on_item_edited)
+	button_clicked.connect(_on_button_clicked)
 
+
+func _tree_initialize() -> void:
+	clear()
 	create_item()
-
-	set_column_title(Columns.NAME, 'Name')
-	set_column_title(Columns.VALUE, 'Value')
-
-
-func _on_add_button_id_pressed(id: int) -> void:
-	var item_text: String = add_button.get_popup().get_item_text(add_button.get_popup().get_item_index(id)).to_lower()
-	_add_variable(id, 'new_%s' % item_text)
-	item_edited.emit()
+	_group_folders.clear()
+	for group_name in variable_group:
+		_group_folders.append(_create_folder(group_name))
 
 
-func _add_variable(variable_type: int, variable_name: String, variable_value: Variant = null) -> void:
-	var variable_item: TreeItem = _create_and_set_item(variable_name)
-	match variable_type:
-		TYPE_STRING:
-			if variable_value == null:
-				variable_value = ''
-			variable_item.set_text(Columns.VALUE, variable_value)
-		TYPE_BOOL:
-			variable_item.set_cell_mode(Columns.VALUE, TreeItem.CELL_MODE_CHECK)
-			if variable_value == null:
-				variable_value = false
-			variable_item.set_checked(Columns.VALUE, variable_value)
-		TYPE_INT:
-			variable_item.set_cell_mode(Columns.VALUE, TreeItem.CELL_MODE_RANGE)
-			variable_item.set_range_config(Columns.VALUE, -99999999, 99999999, 1)
-			if variable_value == null:
-				variable_value = 0
-			variable_item.set_range(Columns.VALUE, int(variable_value))
-		TYPE_FLOAT:
-			variable_item.set_cell_mode(Columns.VALUE, TreeItem.CELL_MODE_RANGE)
-			variable_item.set_range_config(Columns.VALUE, -99999999, 99999999, 0.001)
-			if variable_value == null:
-				variable_value = 0
-			variable_item.set_range(Columns.VALUE, float(variable_value))
-
-
-func _create_and_set_item(item_name: String) -> TreeItem:
-	var item: TreeItem = get_root().create_child()
-	item.set_editable(Columns.VALUE, true)
-	item.set_text(Columns.NAME, item_name)
-
-	return item
-
-
-func _on_delete_button_pressed() -> void:
-	if get_selected():
-		get_selected().free()
-		item_edited.emit()
-
-
-func _on_item_edited() -> void:
-	_update_variables()
-	variables_updated.emit(variables)
+func _create_folder(folder_name: StringName) -> TreeItem:
+	var folder_item = get_root().create_child()
+	folder_item.set_text(Columns.NAME, folder_name.to_pascal_case())
+	folder_item.set_selectable(Columns.NAME, false)
+	folder_item.set_selectable(Columns.VALUE, false)
+	folder_item.add_button(Columns.VALUE, ADD_BUTTON_TEXTURE, Buttons.ADD)
+	return folder_item
 
 
 func _on_item_activated() -> void:
-	edit_selected(true)
+	if get_selected():
+		edit_selected(true)
 
 
-func _update_variables() -> void:
-	variables.clear()
-	for item in get_root().get_children():
-		var variable_name: String = item.get_text(Columns.NAME).validate_node_name().replace(' ', '_')
-		item.set_text(Columns.NAME, variable_name)
-		match item.get_cell_mode(Columns.VALUE):
+func _on_item_edited() -> void:
+	variables_updated.emit()
+
+
+func _on_button_clicked(tree_item: TreeItem, column: int, button_id: int, mouse_button_index: int) -> void:
+	match button_id:
+		Buttons.ADD:
+			_popup_menu(tree_item, column)
+		Buttons.REMOVE:
+			tree_item.free()
+			item_edited.emit()
+
+
+func _popup_menu(folder: TreeItem, column: int) -> void:
+	var folder_icon_rect: Rect2 = get_item_area_rect(folder, column)
+	if variable_add_menu.id_pressed.is_connected(_on_variable_add_menu_pressed):
+		variable_add_menu.id_pressed.disconnect(_on_variable_add_menu_pressed)
+	variable_add_menu.id_pressed.connect(_on_variable_add_menu_pressed.bind(folder))
+	folder_icon_rect.position += global_position + folder_icon_rect.size
+	variable_add_menu.popup(folder_icon_rect)
+
+
+func _on_variable_add_menu_pressed(menu_id: int, folder: TreeItem) -> void:
+	var variable_item_data: VariableItemData = VariableItemData.new(menu_id, '', null)
+	var folder_id: int = _group_folders.find(folder)
+	if variable_group_options.size() - 1 >= folder_id and typeof(variable_group_options[folder_id]) == TYPE_DICTIONARY:
+		var variable_options: Dictionary = variable_group_options[folder_id]
+		if not variable_options.is_empty():
+			for option_name in variable_options:
+				var option_type: int = variable_options[option_name].get('type', 0)
+				var option_value: Variant = variable_options[option_name].get('value', null)
+				variable_item_data.add_option(VariableItemData.new(option_type, option_name, option_value))
+	_add_variable_item_to_tree(variable_item_data, folder)
+	item_edited.emit()
+
+
+func _add_variable_item_to_tree(variable_item_data: VariableItemData, folder: TreeItem, removable: bool = true) -> TreeItem:
+	var variable_item: TreeItem = folder.create_child()
+	variable_item.set_icon(Columns.NAME, TYPE_TEXTURE[variable_item_data.type])
+	variable_item.set_text(Columns.NAME, variable_item_data.name)
+	variable_item.set_editable(Columns.VALUE, true)
+	if removable:
+		variable_item.add_button(Columns.VALUE, REMOVE_BUTTON_TEXTURE, Buttons.REMOVE)
+
+	_set_variable_item_value(variable_item, variable_item_data)
+
+	for option in variable_item_data.options:
+		var option_item: TreeItem = _add_variable_item_to_tree(option, variable_item, false)
+		option_item.set_icon(Columns.NAME, TYPE_TEXTURE[-1])
+		option_item.set_selectable(Columns.NAME, false)
+		option_item.set_editable(Columns.VALUE, true)
+
+	return variable_item
+
+
+func _set_variable_item_value(variable_item: TreeItem, variable_item_data: VariableItemData) -> void:
+	match variable_item_data.type:
+		TYPE_STRING:
+			variable_item.set_text(Columns.VALUE, variable_item_data.value)
+		TYPE_BOOL:
+			variable_item.set_cell_mode(Columns.VALUE, TreeItem.CELL_MODE_CHECK)
+			variable_item.set_checked(Columns.VALUE, variable_item_data.value)
+		TYPE_INT:
+			variable_item.set_cell_mode(Columns.VALUE, TreeItem.CELL_MODE_RANGE)
+			variable_item.set_range_config(Columns.VALUE, -99999999, 99999999, 1)
+			variable_item.set_range(Columns.VALUE, variable_item_data.value)
+		TYPE_FLOAT:
+			variable_item.set_cell_mode(Columns.VALUE, TreeItem.CELL_MODE_RANGE)
+			variable_item.set_range_config(Columns.VALUE, -99999999, 99999999, 0.001)
+			variable_item.set_range(Columns.VALUE, variable_item_data.value)
+
+
+func _set_variables(variables_dict: Dictionary) -> void:
+	for group_name in variables_dict:
+		var group_id: int = variable_group.find(group_name)
+		if group_id == -1:
+			continue
+		for variable_name in variables_dict[group_name]:
+			var variable_item_data: VariableItemData = _dict_to_variable_item_data(variable_name, variables_dict[group_name][variable_name])
+			_add_variable_item_to_tree(variable_item_data, _group_folders[group_id])
+
+
+func _dict_to_variable_item_data(variable_name: StringName, variable_data: Dictionary) -> VariableItemData:
+	var variable_type: Variant.Type = variable_data.get('type', TYPE_NIL)
+	var variable_value: Variant = variable_data.get('value')
+	var options: Dictionary = variable_data.get('options', {})
+	var variable: VariableItemData = VariableItemData.new(variable_type, variable_name, variable_value)
+	for option_name in options:
+		variable.add_option(_dict_to_variable_item_data(option_name.capitalize(), options[option_name]))
+	return variable
+
+
+func _get_variables(folder_item: TreeItem, options: bool = false) -> Dictionary:
+	var result: Dictionary = {}
+	for variable_tree_item in folder_item.get_children():
+		var variable_name: StringName = variable_tree_item.get_text(Columns.NAME).to_snake_case()
+		var variable_value: Variant = null
+		var variable_type: Variant.Type = TYPE_NIL
+		match variable_tree_item.get_cell_mode(Columns.VALUE):
 			TreeItem.CELL_MODE_STRING:
-				variables.set_variable(variable_name, item.get_text(Columns.VALUE), TYPE_STRING)
+				variable_value = variable_tree_item.get_text(Columns.VALUE)
+				variable_type = TYPE_STRING
 			TreeItem.CELL_MODE_CHECK:
-				variables.set_variable(variable_name, item.is_checked(Columns.VALUE), TYPE_BOOL)
+				variable_value = variable_tree_item.is_checked(Columns.VALUE)
+				variable_type = TYPE_BOOL
 			TreeItem.CELL_MODE_RANGE:
-				if item.get_range_config(Columns.VALUE)['step'] == 1:
-					variables.set_variable(variable_name, item.get_range(Columns.VALUE), TYPE_INT)
+				if variable_tree_item.get_range_config(Columns.VALUE)['step'] == 1:
+					variable_value = variable_tree_item.get_range(Columns.VALUE)
+					variable_type = TYPE_INT
 				else:
-					variables.set_variable(variable_name, item.get_range(Columns.VALUE), TYPE_FLOAT)
+					variable_value = variable_tree_item.get_range(Columns.VALUE)
+					variable_type = TYPE_FLOAT
+
+		result[variable_name] = {
+			'type': variable_type,
+			'value': variable_value
+		}
+
+		if variable_tree_item.get_child_count() > 0:
+			result[variable_name]['options'] = _get_variables(variable_tree_item, true)
+#
+	return result
 
 
-func get_variables() -> QuestVariables:
+func set_variables(variables: Dictionary) -> void:
+	_tree_initialize()
+	_set_variables(variables)
+	item_edited.emit()
+
+
+func get_variables() -> Dictionary:
+	var variables: Dictionary = {}
+	for folder_index in range(_group_folders.size()):
+		variables[variable_group[folder_index]] = _get_variables(_group_folders[folder_index])
 	return variables
 
 
-func set_variables(new_variables: QuestVariables) -> void:
-	clear()
-	create_item()
+func get_quest_variables() -> Array[QuestVariables]:
+	var result: Array[QuestVariables] = []
+	var variables_dict: Dictionary = get_variables()
+	for group_name in variables_dict:
+		result.append(QuestVariables.new(variables_dict[group_name]))
 
-	variables = new_variables
-	for variable in variables.get_variable_list():
-		_add_variable(variables.get_variable_type(variable), variable, variables.get_variable(variable))
-	item_edited.emit()
+	return result

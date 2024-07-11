@@ -5,11 +5,16 @@ extends Resource
 
 signal performed(from_port: int)
 
+enum Variable {
+	LOCAL,
+	GLOBAL
+}
+
 var node_caption: String = ''
-var variables: QuestVariables
+var variables: Array[QuestVariables]
 
 
-func _init(quest_variables: QuestVariables, properties: Array = []) -> void:
+func _init(quest_variables: Array[QuestVariables], properties: Array = []) -> void:
 	variables = quest_variables
 	for property in properties:
 		set(property['name'], property['value'])
@@ -37,6 +42,3 @@ func perform() -> void:
 func get_mainLoop() -> MainLoop:
 	return Engine.get_main_loop()
 
-
-func get_singltones() -> void:
-	print(Engine.get_main_loop().get_root().get_children())

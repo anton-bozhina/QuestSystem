@@ -2,6 +2,7 @@
 extends EditorPlugin
 
 const MainPanel = preload('scenes/main_panel.tscn')
+const ICON: Texture2D = preload('icons/GraphEdit.svg')
 
 var main_panel_instance: QuestEditor
 
@@ -35,4 +36,4 @@ func _get_plugin_name() -> String:
 
 
 func _get_plugin_icon() -> Texture2D:
-	return EditorInterface.get_editor_theme().get_icon('Node', 'EditorIcons')
+	return ICON

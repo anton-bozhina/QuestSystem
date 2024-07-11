@@ -91,7 +91,7 @@ func get_new_node_position(at_position: Vector2) -> Vector2:
 	return ((scroll_offset + at_position) / zoom).snapped(Vector2(snapping_distance, snapping_distance))
 
 
-func update_variables(variables: QuestVariables) -> void:
+func update_variables(variables: Array[QuestVariables]) -> void:
 	graph_edit_changed.emit()
 	for node in _node_list as Array[QuestEditorGraphNode]:
 		node.action.variables = variables

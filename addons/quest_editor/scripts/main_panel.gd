@@ -48,13 +48,13 @@ func _ready() -> void:
 
 
 func _on_node_tree_item_activated(action: GDScript) -> void:
-	var new_action: QuestAction = action.new(variable_tree.get_variables())
+	var new_action: QuestAction = action.new(variable_tree.get_quest_variables())
 	graph_edit.add_node(new_action)
 
 
 func _on_node_tree_item_dragged(action_class: GDScript) -> void:
 	var preview_node: QuestEditorGraphNode = graph_edit.graph_node.instantiate()
-	preview_node.action = action_class.new(variable_tree.get_variables())
+	preview_node.action = action_class.new(variable_tree.get_quest_variables())
 	preview_node.set_scale(preview_node.get_scale() * graph_edit.zoom)
 	set_drag_preview(preview_node)
 
@@ -64,7 +64,7 @@ func _on_graph_edit_changed() -> void:
 
 
 func _on_graph_edit_node_data_dropped(at_position: Vector2, data: Variant) -> void:
-	var new_action: QuestAction = data.new(variable_tree.get_variables())
+	var new_action: QuestAction = data.new(variable_tree.get_quest_variables())
 	graph_edit.add_node(new_action, '', graph_edit.get_new_node_position(at_position))
 
 
@@ -84,10 +84,9 @@ func _on_file_menu_id_pressed(id: int) -> void:
 
 
 func _create_new_quest() -> void:
-	var varibles: QuestVariables = QuestVariables.new()
-	variable_tree.set_variables(varibles)
+	variable_tree.set_variables({})
 	graph_edit.clear()
-	graph_edit.add_node(QuestActionLogicStart.new(varibles))
+	graph_edit.add_node(QuestActionLogicStart.new([]))
 	quest_data_controller.quest_file_path = ''
 	quest_changed = false
 
@@ -102,8 +101,8 @@ func _on_save_file_selected(file_path: String) -> void:
 	quest_changed = false
 
 
-func _on_variable_tree_variables_updated(variables: QuestVariables) -> void:
-	graph_edit.update_variables(variables)
+func _on_variable_tree_variables_updated() -> void:
+	graph_edit.update_variables(variable_tree.get_quest_variables())
 
 
 func _update_quest_data_label() -> void:
