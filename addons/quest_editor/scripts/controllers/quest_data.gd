@@ -121,7 +121,7 @@ func load_quest_data(load_path: String) -> void:
 
 	graph_edit.clear()
 	graph_edit.set_zoom(editor_data.get('graph_edit_zoom', 0))
-	graph_edit.set_scroll_offset(str_to_var(editor_data.get('graph_edit_scroll_offset', Vector2.ZERO)))
+	graph_edit.set_scroll_offset(str_to_var(editor_data.get('graph_edit_scroll_offset', var_to_str(Vector2.ZERO))))
 
 	variable_tree.set_variables(quest_data.get('variables', {}))
 

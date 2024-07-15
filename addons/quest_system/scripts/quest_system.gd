@@ -56,9 +56,9 @@ func get_global_variables() -> QuestVariables:
 
 func set_global_variables(variables: Dictionary) -> void:
 	for variable_name in variables:
-		var variable_type: Variant.Type = variables.get('type', TYPE_NIL)
-		var variable_value: Variant = variables.get('value', null)
-		var variable_options: Dictionary = variables.get('options', {})
+		var variable_type: Variant.Type = variables[variable_name].get('type', TYPE_NIL)
+		var variable_value: Variant = variables[variable_name].get('value', null)
+		var variable_options: Dictionary = variables[variable_name].get('options', {})
 		var variable_init: bool = variable_options.get('init', {}).get('value', false)
 		if not _global_variables.has_variable(variable_name) or (_global_variables.has_variable(variable_name) and variable_init):
 			_global_variables.set_variable(variable_name, variable_value, variable_type)
