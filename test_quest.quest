@@ -46,6 +46,114 @@
 				}
 			]
 		},
+		"Math Add_3e925290d7fc4133": {
+			"class": "QuestActionFunctionMathAdd",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Print_eb4316814da216ce"
+				}
+			],
+			"properties": [
+				{
+					"name": "first_source",
+					"value": 0
+				},
+				{
+					"name": "second_source",
+					"value": 2
+				},
+				{
+					"name": "first_operand",
+					"value": "new_float"
+				},
+				{
+					"name": "second_operand",
+					"value": 100.5
+				}
+			]
+		},
+		"Math Divide_3eaa1ed7238b80f2": {
+			"class": "QuestActionFunctionMathDivide",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Math Add_3e925290d7fc4133"
+				}
+			],
+			"properties": [
+				{
+					"name": "first_source",
+					"value": 0
+				},
+				{
+					"name": "second_source",
+					"value": 2
+				},
+				{
+					"name": "first_operand",
+					"value": "new_integer"
+				},
+				{
+					"name": "second_operand",
+					"value": 0
+				}
+			]
+		},
+		"Math Multiply_8210c1ce36bdad19": {
+			"class": "QuestActionFunctionMathMultiply",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Math Divide_3eaa1ed7238b80f2"
+				}
+			],
+			"properties": [
+				{
+					"name": "first_source",
+					"value": 0
+				},
+				{
+					"name": "second_source",
+					"value": 0
+				},
+				{
+					"name": "first_operand",
+					"value": "new_float"
+				},
+				{
+					"name": "second_operand",
+					"value": "new_float"
+				}
+			]
+		},
+		"Math Subtract_ba140aa8b052985c": {
+			"class": "QuestActionFunctionMathSubtract",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Math Multiply_8210c1ce36bdad19"
+				}
+			],
+			"properties": [
+				{
+					"name": "first_source",
+					"value": 0
+				},
+				{
+					"name": "second_source",
+					"value": 0
+				},
+				{
+					"name": "first_operand",
+					"value": "new_float"
+				},
+				{
+					"name": "second_operand",
+					"value": "new_float"
+				}
+			]
+		},
 		"Print_408e952a6c435771": {
 			"class": "QuestActionFunctionPrint",
 			"connections": [
@@ -190,7 +298,7 @@
 			"connections": [
 				{
 					"from_port": 0,
-					"to_node": "Print_eb4316814da216ce"
+					"to_node": "Math Subtract_ba140aa8b052985c"
 				}
 			],
 			"properties": [
@@ -314,6 +422,9 @@
 				"type": 4,
 				"value": "string"
 			}
+		},
+		"nodes": {
+
 		}
 	}
 }

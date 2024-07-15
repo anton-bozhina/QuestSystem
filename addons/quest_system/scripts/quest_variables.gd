@@ -43,8 +43,15 @@ func get_variable_type(name: String) -> Variant.Type:
 	return _variables.get(name, {'value': null, 'type': TYPE_NIL})['type']
 
 
-func get_variable_list() -> PackedStringArray:
-	return _variables.keys()
+func get_variable_list(types: Array[Variant.Type] = []) -> PackedStringArray:
+	if types.is_empty():
+		return _variables.keys()
+	else:
+		var result: PackedStringArray = []
+		for variable in _variables:
+			if _variables[variable]['type'] in types:
+				result.append(variable)
+		return result
 
 
 func remove_variable(name: StringName) -> void:

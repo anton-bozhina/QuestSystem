@@ -1,6 +1,6 @@
 {
-	"graph_edit_scroll_offset": "Vector2(-531.896, -1155.51)",
-	"graph_edit_zoom": 0.385543048381805,
+	"graph_edit_scroll_offset": "Vector2(-1593.29, -1738.16)",
+	"graph_edit_zoom": 0.909090578556061,
 	"nodes": {
 		"GlobalVariableCheck_3e58075cacc381aa": {
 			"position": "Vector2(1940, -1660)",
@@ -8,7 +8,23 @@
 		},
 		"GlobalVariableSet_05dca615ee48f54f": {
 			"position": "Vector2(2660, -1520)",
-			"size": "Vector2(310, 144)"
+			"size": "Vector2(310.001, 144)"
+		},
+		"Math Add_3e925290d7fc4133": {
+			"position": "Vector2(-420, -1460)",
+			"size": "Vector2(389, 250)"
+		},
+		"Math Divide_3eaa1ed7238b80f2": {
+			"position": "Vector2(-920, -1460)",
+			"size": "Vector2(389, 250)"
+		},
+		"Math Multiply_8210c1ce36bdad19": {
+			"position": "Vector2(-1400, -1460)",
+			"size": "Vector2(389, 250)"
+		},
+		"Math Subtract_ba140aa8b052985c": {
+			"position": "Vector2(-1860, -1460)",
+			"size": "Vector2(389, 250)"
 		},
 		"Print_408e952a6c435771": {
 			"position": "Vector2(3120, -1800)",
@@ -51,7 +67,7 @@
 			"size": "Vector2(272, 80)"
 		},
 		"QuestStart_af007e88ca2d4bee": {
-			"position": "Vector2(-380, -1460)",
+			"position": "Vector2(-2280, -1460)",
 			"size": "Vector2(324, 245)"
 		},
 		"VariableCheck_df0b7b83291a8a65": {
@@ -64,7 +80,7 @@
 		},
 		"WaitTime_f4ad495680590943": {
 			"position": "Vector2(2660, -1800)",
-			"size": "Vector2(276, 92)"
+			"size": "Vector2(276.001, 92)"
 		},
 		"WaitVarUpdate_cf3d925bbe796107": {
 			"position": "Vector2(780, -1000)",
