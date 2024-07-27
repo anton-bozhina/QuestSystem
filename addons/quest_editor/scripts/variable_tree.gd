@@ -70,18 +70,30 @@ class VariableItemData:
 
 
 func _ready() -> void:
-	_tree_initialize()
-	item_activated.connect(_on_item_activated)
-	item_edited.connect(_on_item_edited)
+	pass
+	#_tree_initialize()
+	#item_activated.connect(_on_item_activated)
+	#item_edited.connect(_on_item_edited)
 	button_clicked.connect(_on_button_clicked)
+
+	create_item()
+	for group_name in variable_groups:
+		var folder: TreeItem = _create_folder(group_name)
+		var group_add_menu: PopupMenu = PopupMenu.new()
+		for type_name in variable_groups[group_name]['types']:
+			var type: Variant.Type = variable_groups[group_name]['types'][type_name]['type']
+			group_add_menu.add_icon_item(TYPE_TEXTURE[type], type_name.capitalize(), type)
+		group_add_menu.id_pressed.connect(_on_variable_add_menu_pressed.bind(folder))
+		folder.set_meta('menu', group_add_menu)
+		add_child(group_add_menu)
 
 
 func _tree_initialize() -> void:
 	clear()
-	create_item()
-	_group_folders.clear()
-	for group_name in variable_group:
-		_group_folders.append(_create_folder(group_name))
+	#create_item()
+	#_group_folders.clear()
+	#for group_name in variable_group:
+		#_group_folders.append(_create_folder(group_name))
 
 
 func _create_folder(folder_name: StringName) -> TreeItem:
@@ -104,20 +116,17 @@ func _on_item_edited() -> void:
 
 func _on_button_clicked(tree_item: TreeItem, column: int, button_id: int, mouse_button_index: int) -> void:
 	match button_id:
-		Buttons.ADD:
-			_popup_menu(tree_item, column)
 		Buttons.REMOVE:
 			tree_item.free()
 			item_edited.emit()
+		Buttons.ADD:
+			_popup_menu(tree_item, column)
 
 
 func _popup_menu(folder: TreeItem, column: int) -> void:
 	var folder_icon_rect: Rect2 = get_item_area_rect(folder, column)
-	if variable_add_menu.id_pressed.is_connected(_on_variable_add_menu_pressed):
-		variable_add_menu.id_pressed.disconnect(_on_variable_add_menu_pressed)
-	variable_add_menu.id_pressed.connect(_on_variable_add_menu_pressed.bind(folder))
 	folder_icon_rect.position += global_position + folder_icon_rect.size
-	variable_add_menu.popup(folder_icon_rect)
+	folder.get_meta('menu').popup(folder_icon_rect)
 
 
 func _on_variable_add_menu_pressed(menu_id: int, folder: TreeItem) -> void:
@@ -140,7 +149,7 @@ func _add_variable_item_to_tree(variable_item_data: VariableItemData, folder: Tr
 	variable_item.set_text(Columns.NAME, variable_item_data.name)
 	variable_item.set_editable(Columns.VALUE, true)
 	if removable:
-		variable_item.add_button(Columns.VALUE, REMOVE_BUTTON_TEXTURE, Buttons.REMOVE)
+		variable_item.add_button(Columns.VALUE, REMOVE_BUTTON_TEXTURE, 0)
 
 	_set_variable_item_value(variable_item, variable_item_data)
 
@@ -223,8 +232,8 @@ func _get_variables(folder_item: TreeItem, options: bool = false) -> Dictionary:
 
 
 func set_variables(variables: Dictionary) -> void:
-	_tree_initialize()
-	_set_variables(variables)
+	#_tree_initialize()
+	#_set_variables(variables)
 	item_edited.emit()
 
 
