@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="QuestographContext" load_steps=2 format=3 uid="uid://bkkurwb2b6pq2"]
+
+[ext_resource type="Script" path="res://addons/quest_system/scripts/new_variables.gd" id="1_w705i"]
+
+[resource]
+script = ExtResource("1_w705i")
+name = "string"
+type = 4
+add_variable = false
+variables = {
+"bool": {
+"type": 1,
+"value": false
+},
+"float": {
+"type": 3,
+"value": 123.123
+},
+"int": {
+"type": 2,
+"value": 5
+},
+"string": {
+"type": 4,
+"value": "<null>"
+}
+}
