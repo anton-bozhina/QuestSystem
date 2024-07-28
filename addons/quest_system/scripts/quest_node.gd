@@ -1,20 +1,37 @@
+@tool
 class_name QuestNode
 extends Node
 
-@export var quest_data: QuestData
+@export var quest_data: QuestData:
+	set(value):
+		quest_data = value
+		if Engine.is_editor_hint():
+			if value:
+				node_references = value.node_references
+				for reference in node_references:
+					node_references[reference] = NodePath()
+			else:
+				node_references = {}
+@export var node_references: Dictionary
 @export var activate_on_start: bool = true
 @export var call_perform_deferred: bool = false
-
 
 var active: bool = false : set = set_active, get = is_active
 var active_nodes: Dictionary = {}
 var quest_variables: QuestVariables = QuestVariables.new()
 
 var _actions_to_process: Array[QuestAction] = []
+var _node_objects: Dictionary = {}
 
 
 func _ready() -> void:
+	if not quest_data or Engine.is_editor_hint():
+		return
+
 	_add_action_to_process(quest_data.start_action)
+	for reference in node_references:
+		if node_references[reference] is NodePath:
+			_node_objects[reference] = get_node_or_null(node_references[reference])
 	quest_variables.set_variables(quest_data.variables.get('local', {}))
 	QuestSystem.set_global_variables(quest_data.variables.get('global', {}))
 	set_active(activate_on_start)
@@ -46,7 +63,7 @@ func _get_action_data(action_name: StringName) -> Dictionary:
 	var action_connections: Array = action_record.get('connections', [])
 	var action_properties: Array = action_record.get('properties', [])
 	var variables: Array[QuestVariables] = [quest_variables, QuestSystem.get_global_variables()]
-	var action_class := QuestSystem.get_action_script(action_class_name).new(variables, action_properties) as QuestAction
+	var action_class := QuestSystem.get_action_script(action_class_name).new(variables, _node_objects, action_properties) as QuestAction
 	return {
 		'action': action_class,
 		'class': action_class_name,
@@ -81,11 +98,16 @@ func set_save_data(save_data: Dictionary) -> void:
 	set_active(false)
 	for action_name in active_nodes:
 		var action: QuestAction = active_nodes[action_name]['action']
-		action.free()
+		#action.free()
 	active_nodes.clear()
 
 	quest_data = load(save_data['quest_data'])
 	quest_variables = QuestVariables.new(save_data['quest_variables'])
+	node_references = save_data['node_references']
+	for reference in node_references:
+		if node_references[reference] is NodePath:
+			_node_objects[reference] = get_node_or_null(node_references[reference])
+
 	call_perform_deferred = save_data['call_perform_deferred']
 	for action_name in save_data['active_nodes']:
 		_add_action_to_process(action_name)
@@ -98,6 +120,7 @@ func get_save_data() -> Dictionary:
 	return {
 		'quest_data': quest_data.get_path(),
 		'quest_variables': quest_variables.get_variables(),
+		'node_references': node_references,
 		'active_nodes': active_nodes.keys(),
 		'call_perform_deferred': call_perform_deferred,
 		'active': is_active()

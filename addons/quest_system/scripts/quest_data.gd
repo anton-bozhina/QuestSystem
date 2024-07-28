@@ -4,6 +4,7 @@ extends Resource
 @export var name: String
 @export_multiline var description: String
 @export var variables: Dictionary = {}
+@export var node_references: Dictionary = {}
 @export_group('Actions')
 @export var start_action: StringName
 @export var actions: Dictionary = {}

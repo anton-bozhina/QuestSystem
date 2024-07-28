@@ -12,10 +12,12 @@ enum Variable {
 
 var node_caption: String = ''
 var variables: Array[QuestVariables]
+var node_references: Dictionary
 
 
-func _init(quest_variables: Array[QuestVariables], properties: Array = []) -> void:
+func _init(quest_variables: Array[QuestVariables], references: Dictionary, properties: Array = []) -> void:
 	variables = quest_variables
+	node_references = references
 	for property in properties:
 		set(property['name'], property['value'])
 
@@ -41,4 +43,3 @@ func perform() -> void:
 
 func get_mainLoop() -> MainLoop:
 	return Engine.get_main_loop()
-

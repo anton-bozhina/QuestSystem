@@ -14,6 +14,7 @@ func _get_quest_data() -> Dictionary:
 		'name': '',
 		'description': '',
 		'variables': variable_tree.get_variables(),
+		'node_references': variable_tree.get_references(),
 		'start_action': '',
 		'actions': {}
 	}
@@ -124,6 +125,7 @@ func load_quest_data(load_path: String) -> void:
 	graph_edit.set_scroll_offset(str_to_var(editor_data.get('graph_edit_scroll_offset', var_to_str(Vector2.ZERO))))
 
 	variable_tree.set_variables(quest_data.get('variables', {}))
+	variable_tree.set_references(quest_data.get('node_references', {}).keys())
 
 	var actions: Dictionary = quest_data.get('actions', {})
 	var nodes: Dictionary = editor_data.get('nodes', {})
@@ -133,9 +135,9 @@ func load_quest_data(load_path: String) -> void:
 		var action_class_script: GDScript = QuestSystem.get_action_script(action_record.get('class', ''))
 		var action: QuestAction
 		if not action_class_script:
-			action = QuestAction.new(variable_tree.get_quest_variables())
+			action = QuestAction.new(variable_tree.get_quest_variables(), variable_tree.get_references())
 		else:
-			action = action_class_script.new(variable_tree.get_quest_variables(), action_record.get('properties', []))
+			action = action_class_script.new(variable_tree.get_quest_variables(), variable_tree.get_references(), action_record.get('properties', []))
 
 		var size: Vector2 = str_to_var(nodes.get(action_name, {}).get('size', var_to_str(Vector2.INF)))
 		var position: Vector2 = str_to_var(nodes.get(action_name, {}).get('position', var_to_str(Vector2.INF)))

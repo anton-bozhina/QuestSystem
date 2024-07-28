@@ -154,6 +154,71 @@
 				}
 			]
 		},
+		"NodeProcessModeCheck_6f359f7c81746845": {
+			"class": "QuestActionCheckNodeProcessMode",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "NodeProcessModeSet_d0bdce96b0061b88"
+				},
+				{
+					"from_port": 1,
+					"to_node": "NodeProcessModeSet_befd4b97fcf38092"
+				}
+			],
+			"properties": [
+				{
+					"name": "reference",
+					"value": "test_ref_1"
+				},
+				{
+					"name": "operator",
+					"value": 0
+				},
+				{
+					"name": "mode",
+					"value": 4
+				}
+			]
+		},
+		"NodeProcessModeSet_befd4b97fcf38092": {
+			"class": "QuestActionFunctionSetProcessMode",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Math Subtract_ba140aa8b052985c"
+				}
+			],
+			"properties": [
+				{
+					"name": "reference",
+					"value": "test_ref_2"
+				},
+				{
+					"name": "mode",
+					"value": 0
+				}
+			]
+		},
+		"NodeProcessModeSet_d0bdce96b0061b88": {
+			"class": "QuestActionFunctionSetProcessMode",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Math Subtract_ba140aa8b052985c"
+				}
+			],
+			"properties": [
+				{
+					"name": "reference",
+					"value": "test_ref_1"
+				},
+				{
+					"name": "mode",
+					"value": 0
+				}
+			]
+		},
 		"Print_408e952a6c435771": {
 			"class": "QuestActionFunctionPrint",
 			"connections": [
@@ -298,7 +363,7 @@
 			"connections": [
 				{
 					"from_port": 0,
-					"to_node": "Math Subtract_ba140aa8b052985c"
+					"to_node": "NodeProcessModeCheck_6f359f7c81746845"
 				}
 			],
 			"properties": [
@@ -391,6 +456,10 @@
 	},
 	"description": "Test Description",
 	"name": "Test Quest",
+	"node_references": {
+		"test_ref_1": null,
+		"test_ref_2": null
+	},
 	"start_action": "QuestStart_af007e88ca2d4bee",
 	"variables": {
 		"global": {
@@ -422,9 +491,6 @@
 				"type": 4,
 				"value": "string"
 			}
-		},
-		"nodes": {
-
 		}
 	}
 }

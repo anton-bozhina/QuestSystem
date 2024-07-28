@@ -12,6 +12,7 @@ enum Columns {
 }
 enum Buttons {
 	ADD,
+	ADD_REFERENCE,
 	REMOVE
 }
 
@@ -22,17 +23,17 @@ const TYPE_TEXTURE: Dictionary = {
 	TYPE_BOOL: preload('../icons/bool.svg'),
 	TYPE_INT: preload('../icons/int.svg'),
 	TYPE_FLOAT: preload('../icons/float.svg'),
+	TYPE_OBJECT: preload('../icons/MiniObject.svg'),
 	-1: preload('../icons/Tools.svg')
 }
+const REFERENCES_FOLDER_NAME: StringName = 'NodeReferences'
 
 @export var variable_add_menu: PopupMenu
 @export var variable_group: Array[StringName] = []
 @export var variable_group_options: Array[Dictionary] = []
 
-@export var variable_groups: Dictionary = {}
-
 var _group_folders: Array[TreeItem] = []
-
+var _references_folder: TreeItem
 
 class VariableItemData:
 	const NAME_TYPE: Dictionary = {
@@ -83,13 +84,15 @@ func _tree_initialize() -> void:
 	for group_name in variable_group:
 		_group_folders.append(_create_folder(group_name))
 
+	_references_folder = _create_folder(REFERENCES_FOLDER_NAME, Buttons.ADD_REFERENCE)
 
-func _create_folder(folder_name: StringName) -> TreeItem:
+
+func _create_folder(folder_name: StringName, button_id: int = Buttons.ADD) -> TreeItem:
 	var folder_item = get_root().create_child()
 	folder_item.set_text(Columns.NAME, folder_name.to_pascal_case())
 	folder_item.set_selectable(Columns.NAME, false)
 	folder_item.set_selectable(Columns.VALUE, false)
-	folder_item.add_button(Columns.VALUE, ADD_BUTTON_TEXTURE, Buttons.ADD)
+	folder_item.add_button(Columns.VALUE, ADD_BUTTON_TEXTURE, button_id)
 	return folder_item
 
 
@@ -104,11 +107,22 @@ func _on_item_edited() -> void:
 
 func _on_button_clicked(tree_item: TreeItem, column: int, button_id: int, mouse_button_index: int) -> void:
 	match button_id:
+		Buttons.ADD_REFERENCE:
+			_add_reference_item()
 		Buttons.ADD:
 			_popup_menu(tree_item, column)
 		Buttons.REMOVE:
 			tree_item.free()
 			item_edited.emit()
+
+
+func _add_reference_item(reference_name: StringName = 'new_reference') -> void:
+	var reference_item: TreeItem = _references_folder.create_child()
+	reference_item.set_icon(Columns.NAME, TYPE_TEXTURE[TYPE_OBJECT])
+	reference_item.set_text(Columns.NAME, reference_name)
+	reference_item.set_selectable(Columns.VALUE, false)
+	reference_item.add_button(Columns.VALUE, REMOVE_BUTTON_TEXTURE, Buttons.REMOVE)
+	item_edited.emit()
 
 
 func _popup_menu(folder: TreeItem, column: int) -> void:
@@ -241,4 +255,16 @@ func get_quest_variables() -> Array[QuestVariables]:
 	for group_name in variables_dict:
 		result.append(QuestVariables.new(variables_dict[group_name]))
 
+	return result
+
+
+func set_references(references_list: PackedStringArray) -> void:
+	for reference_name in references_list:
+		_add_reference_item(reference_name)
+
+
+func get_references() -> Dictionary:
+	var result: Dictionary = {}
+	for reference_item in _references_folder.get_children():
+		result[reference_item.get_text(Columns.NAME)] = null
 	return result

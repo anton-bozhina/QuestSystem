@@ -140,70 +140,13 @@ columns = 2
 hide_root = true
 script = ExtResource("3_n8wbe")
 variable_add_menu = NodePath("AddVariableMenu")
-variable_group = Array[StringName]([&"local", &"global", &"nodes"])
+variable_group = Array[StringName]([&"local", &"global"])
 variable_group_options = Array[Dictionary]([{}, {
 "init": {
 "type": 1,
 "value": false
 }
 }])
-variable_groups = {
-"global": {
-"options": {
-"init": {
-"type": 1,
-"value": false
-}
-},
-"types": {
-"bool": {
-"type": 1,
-"value": false
-},
-"float": {
-"type": 3,
-"value": 0
-},
-"integer": {
-"type": 2,
-"value": 0
-},
-"string": {
-"type": 4,
-"value": ""
-}
-}
-},
-"local": {
-"options": {},
-"types": {
-"bool": {
-"type": 1,
-"value": false
-},
-"float": {
-"type": 3,
-"value": 0
-},
-"integer": {
-"type": 2,
-"value": 0
-},
-"string": {
-"type": 4,
-"value": ""
-}
-}
-},
-"nodes": {
-"options": {},
-"types": {
-"string": {
-"type": 4
-}
-}
-}
-}
 
 [node name="AddVariableMenu" type="PopupMenu" parent="WindowContainer/BodyContainer/VSplitContainer/VariableTree"]
 item_count = 4

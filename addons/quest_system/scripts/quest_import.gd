@@ -55,6 +55,7 @@ func _import(source_file: String, save_path: String, options: Dictionary, platfo
 	resource.description = json_data.get('description', '')
 	resource.start_action = json_data.get('start_action', '')
 	resource.variables = json_data.get('variables', {})
+	resource.node_references = json_data.get('node_references', {})
 	resource.actions = json_data.get('actions', {})
 
 	return ResourceSaver.save(resource, resource_filepath)
