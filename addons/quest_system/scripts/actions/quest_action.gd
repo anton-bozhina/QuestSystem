@@ -37,6 +37,22 @@ func _perform_task() -> void:
 	performed.emit(0)
 
 
+func _get_action_data() -> Dictionary:
+	return {}
+
+
+func _set_action_data(data: Dictionary) -> void:
+	pass
+
+
+func get_action_data() -> Dictionary:
+	return _get_action_data()
+
+
+func set_action_data(data: Dictionary) -> void:
+	_set_action_data(data)
+
+
 func perform() -> void:
 	_perform_task()
 
