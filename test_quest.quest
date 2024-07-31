@@ -1,5 +1,47 @@
 {
 	"actions": {
+		"Execute_1cf22461ebf68d16": {
+			"class": "QuestActionFunctionExecute",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Execute_36859a2d1acc2577"
+				}
+			],
+			"properties": [
+				{
+					"name": "singleton",
+					"value": "FirstAutoload"
+				},
+				{
+					"name": "method",
+					"value": "set_scene"
+				}
+			]
+		},
+		"Execute_36859a2d1acc2577": {
+			"class": "QuestActionFunctionExecute",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "NodeProcessModeCheck_6f359f7c81746845"
+				}
+			],
+			"properties": [
+				{
+					"name": "singleton",
+					"value": "SecondAutoload"
+				},
+				{
+					"name": "method",
+					"value": "set_all_second_nodes"
+				},
+				{
+					"name": "arguments",
+					"value": "test auto"
+				}
+			]
+		},
 		"GlobalVariableCheck_3e58075cacc381aa": {
 			"class": "QuestActionCheckGlobalVariable",
 			"connections": [
@@ -363,7 +405,7 @@
 			"connections": [
 				{
 					"from_port": 0,
-					"to_node": "NodeProcessModeCheck_6f359f7c81746845"
+					"to_node": "Execute_1cf22461ebf68d16"
 				}
 			],
 			"properties": [

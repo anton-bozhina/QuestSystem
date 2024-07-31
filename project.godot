@@ -17,6 +17,8 @@ config/icon="res://icon.svg"
 [autoload]
 
 QuestSystem="*res://addons/quest_system/scripts/quest_system.gd"
+FirstAutoload="*res://examples/first_autoload.gd"
+SecondAutoload="*res://examples/second_autoload.gd"
 
 [display]
 

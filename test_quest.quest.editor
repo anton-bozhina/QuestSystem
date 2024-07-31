@@ -1,7 +1,15 @@
 {
-	"graph_edit_scroll_offset": "Vector2(-3102.65, -1692.33)",
-	"graph_edit_zoom": 0.999999642372131,
+	"graph_edit_scroll_offset": "Vector2(-3563.05, -1595.68)",
+	"graph_edit_zoom": 0.802887916564941,
 	"nodes": {
+		"Execute_1cf22461ebf68d16": {
+			"position": "Vector2(-3580, -1460)",
+			"size": "Vector2(359, 146)"
+		},
+		"Execute_36859a2d1acc2577": {
+			"position": "Vector2(-3120, -1460)",
+			"size": "Vector2(391, 196)"
+		},
 		"GlobalVariableCheck_3e58075cacc381aa": {
 			"position": "Vector2(1940, -1660)",
 			"size": "Vector2(310, 196)"
@@ -79,7 +87,7 @@
 			"size": "Vector2(272, 80)"
 		},
 		"QuestStart_af007e88ca2d4bee": {
-			"position": "Vector2(-3060, -1460)",
+			"position": "Vector2(-4000, -1460)",
 			"size": "Vector2(324, 245)"
 		},
 		"VariableCheck_df0b7b83291a8a65": {

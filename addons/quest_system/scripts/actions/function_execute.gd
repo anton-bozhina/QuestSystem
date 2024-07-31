@@ -24,7 +24,7 @@ func _perform_function() -> void:
 	var singleton: Node = _get_root().get_node_or_null(str(singleton))
 	if not singleton:
 		return
-	var arguments_array: Array = arguments.split(';')
+	var arguments_array: Array = [] if arguments.is_empty() else arguments.split(';')
 	singleton.callv(method, arguments_array)
 
 
