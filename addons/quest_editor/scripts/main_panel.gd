@@ -49,7 +49,7 @@ func _ready() -> void:
 
 func _on_node_tree_item_activated(action: GDScript) -> void:
 	var new_action: QuestAction = action.new(variable_tree.get_quest_variables(), variable_tree.get_references())
-	graph_edit.add_node(new_action)
+	graph_edit.add_node(new_action, '', graph_edit.get_new_node_position(graph_edit._node_default_position))
 
 
 func _on_node_tree_item_dragged(action_class: GDScript) -> void:

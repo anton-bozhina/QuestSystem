@@ -108,3 +108,52 @@ func clear() -> void:
 	for node in _node_list:
 		node_names.append(node.name)
 	delete_nodes_request.emit(node_names)
+
+
+func _on_cut_nodes_request() -> void:
+	_create_node_clipboard(true)
+
+
+func _on_copy_nodes_request() -> void:
+	_create_node_clipboard(false)
+
+
+func _create_node_clipboard(delete_node: bool) -> void:
+	var clipboard: Array[Array] = []
+	for node in _node_list:
+		if not node.selected:
+			continue
+		clipboard.append([QuestSystem.get_action_class_name(node.action.get_script()), node.position_offset])
+		if delete_node:
+			delete_nodes_request.emit([node.name])
+
+	clipboard.sort_custom(_sort_nodes)
+	DisplayServer.clipboard_set(var_to_str(clipboard))
+
+
+func _sort_nodes(first: Array, second: Array) -> bool:
+	return first[1].x < second[1].x
+
+
+func _on_paste_nodes_request() -> void:
+	if typeof(str_to_var(DisplayServer.clipboard_get())) != TYPE_ARRAY:
+		return
+
+	set_selected(null)
+	var clipboard: Array = str_to_var(DisplayServer.clipboard_get())
+
+	var start_position: Vector2 = (scroll_offset + get_local_mouse_position()) / zoom
+	var first_position: Vector2 = Vector2.INF
+	for node in clipboard:
+		if typeof(node) != TYPE_ARRAY:
+			continue
+		elif node.size() != 2:
+			continue
+		elif not node[0] in QuestSystem.get_action_script_list() and typeof(node[1]) != TYPE_VECTOR2:
+			continue
+
+		if first_position == Vector2.INF:
+			first_position = node[1]
+
+		var action: QuestAction = QuestSystem.get_action_script(node[0]).new($'../VSplitContainer/VariableTree'.get_quest_variables(), $'../VSplitContainer/VariableTree'.get_references())
+		add_node(action, '', start_position + node[1] - first_position)
