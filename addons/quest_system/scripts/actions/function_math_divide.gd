@@ -3,7 +3,7 @@ class_name QuestActionFunctionMathDivide
 extends QuestActionFunction
 
 
-static var node_name  = 'Math Divide'
+static var node_name  = 'MathDivide'
 
 enum FirstOperandSource {
 	LOCAL,

@@ -15,7 +15,7 @@ var variables: Array[QuestVariables]
 var node_references: Dictionary
 
 
-func _init(quest_variables: Array[QuestVariables], references: Dictionary, properties: Array = []) -> void:
+func _init(quest_variables: Array[QuestVariables] = [QuestVariables.new({}), QuestVariables.new({})], references: Dictionary = {}, properties: Array = []) -> void:
 	variables = quest_variables
 	node_references = references
 	for property in properties:

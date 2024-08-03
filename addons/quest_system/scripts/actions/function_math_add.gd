@@ -3,7 +3,7 @@ class_name QuestActionFunctionMathAdd
 extends QuestActionFunction
 
 
-static var node_name  = 'Math Add'
+static var node_name  = 'MathAdd'
 
 enum FirstOperandSource {
 	LOCAL,

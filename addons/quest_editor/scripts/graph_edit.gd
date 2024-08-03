@@ -62,7 +62,7 @@ func _on_node_property_changed() -> void:
 	graph_edit_changed.emit()
 
 
-func add_node(action: QuestAction, node_name: StringName = '', node_position: Vector2 = Vector2.INF, node_size: Vector2 = Vector2.INF) -> void:
+func add_node(action: QuestAction, node_name: StringName = '', node_position: Vector2 = Vector2.INF, node_size: Vector2 = Vector2.INF) -> QuestEditorGraphNode:
 	if node_name.is_empty():
 		node_name = '%s_%s' % [action.node_name, _generate_id()]
 
@@ -85,6 +85,8 @@ func add_node(action: QuestAction, node_name: StringName = '', node_position: Ve
 	_node_list.append(new_node)
 	new_node.property_changed.connect(_on_node_property_changed)
 	graph_edit_changed.emit()
+
+	return new_node
 
 
 func get_new_node_position(at_position: Vector2) -> Vector2:
@@ -119,41 +121,62 @@ func _on_copy_nodes_request() -> void:
 
 
 func _create_node_clipboard(delete_node: bool) -> void:
-	var clipboard: Array[Array] = []
+	var clipboard: Dictionary = {}
 	for node in _node_list:
 		if not node.selected:
 			continue
-		clipboard.append([QuestSystem.get_action_class_name(node.action.get_script()), node.position_offset])
+
+		clipboard[node.name] = {
+			'connections': get_connection_list().filter(_connections_filter.bind(node.name)),
+			'position': node.get_position_offset(),
+			'size': node.get_size(),
+			'action': node.action
+		}
+
 		if delete_node:
 			delete_nodes_request.emit([node.name])
 
-	clipboard.sort_custom(_sort_nodes)
 	DisplayServer.clipboard_set(var_to_str(clipboard))
 
 
-func _sort_nodes(first: Array, second: Array) -> bool:
-	return first[1].x < second[1].x
+func _connections_filter(connection: Dictionary, node_name: StringName) -> bool:
+	return connection['from_node'] == node_name
+
+
+func _sort_nodes(first: StringName, second: StringName, data: Dictionary) -> bool:
+	return data[first].get('position', Vector2.ZERO).x < data[second].get('position', Vector2.ZERO).x
 
 
 func _on_paste_nodes_request() -> void:
-	if typeof(str_to_var(DisplayServer.clipboard_get())) != TYPE_ARRAY:
+	if typeof(str_to_var(DisplayServer.clipboard_get())) != TYPE_DICTIONARY:
 		return
 
 	set_selected(null)
-	var clipboard: Array = str_to_var(DisplayServer.clipboard_get())
 
+	var clipboard: Dictionary = str_to_var(DisplayServer.clipboard_get())
 	var start_position: Vector2 = (scroll_offset + get_local_mouse_position()) / zoom
 	var first_position: Vector2 = Vector2.INF
-	for node in clipboard:
-		if typeof(node) != TYPE_ARRAY:
-			continue
-		elif node.size() != 2:
-			continue
-		elif not node[0] in QuestSystem.get_action_script_list() and typeof(node[1]) != TYPE_VECTOR2:
+	var connections: Array[Dictionary] = []
+	var node_names: Dictionary = {}
+
+	var sorted_keys: Array = clipboard.keys()
+	sorted_keys.sort_custom(_sort_nodes.bind(clipboard))
+
+	for node in sorted_keys:
+		if not clipboard[node].get('action') is QuestAction:
 			continue
 
+		var node_position: Vector2 = clipboard[node].get('position', Vector2.ZERO)
+		var node_size: Vector2 = clipboard[node].get('size', Vector2.ZERO)
+		var node_connections: Array[Dictionary] = clipboard[node].get('connections', [])
 		if first_position == Vector2.INF:
-			first_position = node[1]
+			first_position = node_position
+		var new_node = add_node(clipboard[node]['action'], '', start_position + node_position - first_position, node_size)
+		node_names[node] = new_node.name
+		connections.append_array(node_connections)
 
-		var action: QuestAction = QuestSystem.get_action_script(node[0]).new($'../VSplitContainer/VariableTree'.get_quest_variables(), $'../VSplitContainer/VariableTree'.get_references())
-		add_node(action, '', start_position + node[1] - first_position)
+
+	for connection in connections:
+		if not node_names.has(connection['from_node']) or not node_names.has(connection['to_node']):
+			continue
+		connect_node(node_names[connection['from_node']], connection['from_port'], node_names[connection['to_node']], connection['to_port'])
