@@ -7,14 +7,13 @@ enum EditMenuIds {
 	CUT,
 	COPY,
 	PASTE,
-	SELECT_ALL,
 	DUPLICATE
 }
 
 const DOCS_URL: String = 'https://github.com/anton-bozhina/QuestSystem/wiki'
 
 const FILE_MENU_SHORTCUTS: Dictionary = {
-	3: preload('../shortcuts/save.tres')
+	2: preload('../shortcuts/save.tres')
 }
 const EDIT_MENU_SHORTCUTS: Dictionary = {
 	EditMenuIds.UNDO: preload('../shortcuts/undo.tres'),
@@ -22,7 +21,6 @@ const EDIT_MENU_SHORTCUTS: Dictionary = {
 	EditMenuIds.CUT: preload('../shortcuts/cut.tres'),
 	EditMenuIds.COPY: preload('../shortcuts/copy.tres'),
 	EditMenuIds.PASTE: preload('../shortcuts/paste.tres'),
-	EditMenuIds.SELECT_ALL: preload('../shortcuts/select_all.tres'),
 	EditMenuIds.DUPLICATE: preload('../shortcuts/duplicate.tres')
 }
 const SEARCH_MENU_SHORTCUTS: Dictionary = {
@@ -30,6 +28,7 @@ const SEARCH_MENU_SHORTCUTS: Dictionary = {
 }
 
 
+@export var graph_edit: QuestEditorGraphEdit
 @export var docs_button: Button
 @export var file_menu_button: MenuButton
 @export var edit_menu_button: MenuButton
@@ -56,15 +55,13 @@ func _on_edit_menu_pressed(id: int, menu: Dictionary) -> void:
 		EditMenuIds.REDO when menu == EditMenuIds:
 			printt(menu, id)
 		EditMenuIds.CUT when menu == EditMenuIds:
-			printt(menu, id)
+			graph_edit.cut_node_request.emit()
 		EditMenuIds.COPY when menu == EditMenuIds:
-			printt(menu, id)
+			graph_edit.copy_nodes_request.emit()
 		EditMenuIds.PASTE when menu == EditMenuIds:
-			printt(menu, id)
-		EditMenuIds.SELECT_ALL when menu == EditMenuIds:
-			printt(menu, id)
+			graph_edit.paste_nodes_request.emit()
 		EditMenuIds.DUPLICATE when menu == EditMenuIds:
-			printt(menu, id)
+			graph_edit.duplicate_nodes_request.emit()
 
 
 func _on_docs_button_pressed() -> void:
