@@ -13,7 +13,11 @@ const QUEST_CLASS_PARENT = 'QuestAction'
 @export var open_quest_controller: QuestEditorOpenQuestController
 @export var save_dialog_controller: QuestEditorSaveDialogController
 @export var new_quest_controller: QuestEditorNewQuestController
+@export var main_menu: QuestEditorMainMenu
 
+var _edit_history_undo: Array = []
+var _edit_history_do: Array = []
+var _apply_from_history: bool = false
 
 var quest_changed: bool = false :
 	set(value):
@@ -25,6 +29,7 @@ func _ready() -> void:
 	node_tree.tree_item_activated.connect(_on_node_tree_item_activated)
 	node_tree.tree_item_gragged.connect(_on_node_tree_item_dragged)
 	graph_edit.graph_edit_changed.connect(_on_graph_edit_changed)
+	graph_edit.graph_edit_before_changed.connect(_on_graph_edit_before_changed)
 	graph_edit.node_data_dropped.connect(_on_graph_edit_node_data_dropped)
 	file_menu_button.get_popup().id_pressed.connect(_on_file_menu_id_pressed)
 
@@ -38,6 +43,9 @@ func _ready() -> void:
 
 	variable_tree.variables_updated.connect(_on_variable_tree_variables_updated)
 
+	main_menu.undo.connect(_on_main_menu_undo)
+	main_menu.redo.connect(_on_main_menu_redo)
+
 	## Только после того как граф поменяет размер, загружаем дефолтный квест
 	#graph_edit.resized.connect(_create_new_quest, CONNECT_ONE_SHOT)
 
@@ -45,6 +53,24 @@ func _ready() -> void:
 
 	if not Engine.is_editor_hint():
 		update_window()
+
+
+func _on_main_menu_undo() -> void:
+	_apply_from_history = true
+	if not _edit_history_undo.is_empty():
+		_edit_history_do.append(quest_data_controller.get_quest_data())
+		quest_data_controller.apply_quest_data(_edit_history_undo.pop_back())
+		main_menu.disable_undo_redo(_edit_history_undo.is_empty(), _edit_history_do.is_empty())
+	_apply_from_history = false
+
+
+func _on_main_menu_redo() -> void:
+	_apply_from_history = true
+	if not _edit_history_do.is_empty():
+		_edit_history_undo.append(quest_data_controller.get_quest_data())
+		quest_data_controller.apply_quest_data(_edit_history_do.pop_back())
+		main_menu.disable_undo_redo(_edit_history_undo.is_empty(), _edit_history_do.is_empty())
+	_apply_from_history = false
 
 
 func _on_node_tree_item_activated(action: GDScript) -> void:
@@ -57,6 +83,13 @@ func _on_node_tree_item_dragged(action_class: GDScript) -> void:
 	preview_node.action = action_class.new(variable_tree.get_quest_variables(), variable_tree.get_references())
 	preview_node.set_scale(preview_node.get_scale() * graph_edit.zoom)
 	set_drag_preview(preview_node)
+
+
+func _on_graph_edit_before_changed() -> void:
+	if not _apply_from_history:
+		_edit_history_undo.append(quest_data_controller.get_quest_data())
+		_edit_history_do.clear()
+		main_menu.disable_undo_redo(_edit_history_undo.is_empty(), _edit_history_do.is_empty())
 
 
 func _on_graph_edit_changed() -> void:
@@ -90,11 +123,17 @@ func _create_new_quest() -> void:
 	graph_edit.add_node(QuestActionLogicStart.new([], {}))
 	quest_data_controller.quest_file_path = ''
 	quest_changed = false
+	_edit_history_undo.clear()
+	_edit_history_do.clear()
+	main_menu.disable_undo_redo(_edit_history_undo.is_empty(), _edit_history_do.is_empty())
 
 
 func _on_open_quest_controller_open_file_selected(quest_file: String) -> void:
 	quest_data_controller.load_quest_data(quest_file)
 	quest_changed = false
+	_edit_history_undo.clear()
+	_edit_history_do.clear()
+	main_menu.disable_undo_redo(_edit_history_undo.is_empty(), _edit_history_do.is_empty())
 
 
 func _on_save_file_selected(file_path: String) -> void:

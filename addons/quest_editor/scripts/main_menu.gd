@@ -1,5 +1,9 @@
 @tool
+class_name QuestEditorMainMenu
 extends Node
+
+signal undo
+signal redo
 
 enum EditMenuIds {
 	UNDO,
@@ -51,9 +55,9 @@ func _set_up_shortcuts(menu: MenuButton, shortcut_data: Dictionary) -> void:
 func _on_edit_menu_pressed(id: int, menu: Dictionary) -> void:
 	match id:
 		EditMenuIds.UNDO when menu == EditMenuIds:
-			printt(menu, id)
+			undo.emit()
 		EditMenuIds.REDO when menu == EditMenuIds:
-			printt(menu, id)
+			redo.emit()
 		EditMenuIds.CUT when menu == EditMenuIds:
 			graph_edit.cut_node_request.emit()
 		EditMenuIds.COPY when menu == EditMenuIds:
@@ -66,3 +70,8 @@ func _on_edit_menu_pressed(id: int, menu: Dictionary) -> void:
 
 func _on_docs_button_pressed() -> void:
 	OS.shell_open(DOCS_URL)
+
+
+func disable_undo_redo(disable_undo: bool, disable_redo: bool) -> void:
+	edit_menu_button.get_popup().set_item_disabled(EditMenuIds.UNDO, disable_undo)
+	edit_menu_button.get_popup().set_item_disabled(EditMenuIds.REDO, disable_redo)

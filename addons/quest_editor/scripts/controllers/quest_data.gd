@@ -9,7 +9,7 @@ extends Node
 var quest_file_path: String
 
 
-func _get_quest_data() -> Dictionary:
+func get_quest_data() -> Dictionary:
 	var quest_data: Dictionary = {
 		'name': '',
 		'description': '',
@@ -81,7 +81,7 @@ func _add_from_node(connection: Dictionary, from_node: StringName) -> Dictionary
 
 
 func get_quest_name() -> String:
-	return _get_quest_data()['quest_data'].get('name', '')
+	return get_quest_data()['quest_data'].get('name', '')
 
 
 func get_quest_file_path() -> String:
@@ -89,7 +89,7 @@ func get_quest_file_path() -> String:
 
 
 func save_quest_data(save_path: String) -> void:
-	var quest_data: Dictionary = _get_quest_data()
+	var quest_data: Dictionary = get_quest_data()
 
 	var quest_data_file: FileAccess = FileAccess.open(save_path, FileAccess.WRITE)
 	quest_data_file.store_string(JSON.stringify(quest_data['quest_data'], '\t'))
@@ -149,3 +149,36 @@ func load_quest_data(load_path: String) -> void:
 		graph_edit.connect_node(connection['from_node'], connection['from_port'], connection['to_node'], connection['to_port'])
 
 	quest_file_path = load_path
+
+
+func apply_quest_data(all_data: Dictionary) -> void:
+	var connection_list: Array[Dictionary] = []
+
+	var editor_data: Dictionary = all_data.get('editor_data', {})
+	var quest_data: Dictionary = all_data.get('quest_data', {})
+
+	graph_edit.clear()
+
+	variable_tree.set_variables(quest_data.get('variables', {}))
+	variable_tree.set_references(quest_data.get('node_references', {}).keys())
+
+	var actions: Dictionary = quest_data.get('actions', {})
+	var nodes: Dictionary = editor_data.get('nodes', {})
+
+	for action_name in actions:
+		var action_record: Dictionary = actions.get(action_name, {})
+		var action_class_script: GDScript = QuestSystem.get_action_script(action_record.get('class', ''))
+		var action: QuestAction
+		if not action_class_script:
+			action = QuestAction.new(variable_tree.get_quest_variables(), variable_tree.get_references())
+		else:
+			action = action_class_script.new(variable_tree.get_quest_variables(), variable_tree.get_references(), action_record.get('properties', []))
+
+		var size: Vector2 = str_to_var(nodes.get(action_name, {}).get('size', var_to_str(Vector2.INF)))
+		var position: Vector2 = str_to_var(nodes.get(action_name, {}).get('position', var_to_str(Vector2.INF)))
+		graph_edit.add_node(action, action_name, position, size)
+
+		connection_list.append_array(action_record.get('connections', []).map(_add_from_node.bind(action_name)))
+
+	for connection in connection_list:
+		graph_edit.connect_node(connection['from_node'], connection['from_port'], connection['to_node'], connection['to_port'])

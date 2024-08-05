@@ -3,6 +3,7 @@ class_name QuestEditorGraphEdit
 extends GraphEdit
 
 
+signal graph_edit_before_changed
 signal graph_edit_changed
 signal node_data_dropped(at_position: Vector2, data: Variant)
 signal cut_node_request
@@ -44,11 +45,13 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 
 func _on_connection_request(from_node: StringName, from_port: int, to_node: StringName, to_port: int) -> void:
 	if from_node != to_node:
+		graph_edit_before_changed.emit()
 		connect_node(from_node, from_port, to_node, to_port)
 		graph_edit_changed.emit()
 
 
 func _on_delete_nodes_request(node_names: Array[StringName]) -> void:
+	graph_edit_before_changed.emit()
 	for node_name in node_names:
 		for connection in get_connection_list():
 			if connection['from_node'] == node_name or connection['to_node'] == node_name:
@@ -58,12 +61,17 @@ func _on_delete_nodes_request(node_names: Array[StringName]) -> void:
 		_node_list.erase(node)
 		node.name = node.name + '_to_delete'
 		node.queue_free()
-		graph_edit_changed.emit()
+	graph_edit_changed.emit()
 
 
 func _on_disconnection_request(from_node: StringName, from_port: int, to_node: StringName, to_port: int) -> void:
+	graph_edit_before_changed.emit()
 	disconnect_node(from_node, from_port, to_node, to_port)
 	graph_edit_changed.emit()
+
+
+func _on_begin_node_move() -> void:
+	graph_edit_before_changed.emit()
 
 
 func _on_end_node_move() -> void:
@@ -183,6 +191,7 @@ func _connect_pasted_nodes(connections: Array, pasted_names: Dictionary) -> void
 
 
 func add_node(action: QuestAction, node_name: StringName = '', node_position: Vector2 = Vector2.INF, node_size: Vector2 = Vector2.INF) -> QuestEditorGraphNode:
+	graph_edit_before_changed.emit()
 	if node_name.is_empty():
 		node_name = '%s_%s' % [action.node_name, _generate_id()]
 
@@ -205,7 +214,6 @@ func add_node(action: QuestAction, node_name: StringName = '', node_position: Ve
 	_node_list.append(new_node)
 	new_node.property_changed.connect(_on_node_property_changed)
 	graph_edit_changed.emit()
-
 	return new_node
 
 
@@ -214,11 +222,12 @@ func get_new_node_position(at_position: Vector2) -> Vector2:
 
 
 func update_variables(variables: Array[QuestVariables], node_references: Dictionary) -> void:
-	graph_edit_changed.emit()
+	graph_edit_before_changed.emit()
 	for node in _node_list as Array[QuestEditorGraphNode]:
 		node.action.variables = variables
 		node.action.node_references = node_references
 		node._create_controls()
+	graph_edit_changed.emit()
 
 
 func get_nodes() -> Array[QuestEditorGraphNode]:
