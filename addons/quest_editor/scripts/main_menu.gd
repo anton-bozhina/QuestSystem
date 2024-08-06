@@ -27,16 +27,11 @@ const EDIT_MENU_SHORTCUTS: Dictionary = {
 	EditMenuIds.PASTE: preload('../shortcuts/paste.tres'),
 	EditMenuIds.DUPLICATE: preload('../shortcuts/duplicate.tres')
 }
-const SEARCH_MENU_SHORTCUTS: Dictionary = {
-	0: preload('../shortcuts/find.tres')
-}
-
 
 @export var graph_edit: QuestEditorGraphEdit
 @export var docs_button: Button
 @export var file_menu_button: MenuButton
 @export var edit_menu_button: MenuButton
-@export var search_menu_button: MenuButton
 
 
 func _ready() -> void:
@@ -44,7 +39,6 @@ func _ready() -> void:
 	edit_menu_button.get_popup().id_pressed.connect(_on_edit_menu_pressed.bind(EditMenuIds))
 	_set_up_shortcuts(file_menu_button, FILE_MENU_SHORTCUTS)
 	_set_up_shortcuts(edit_menu_button, EDIT_MENU_SHORTCUTS)
-	_set_up_shortcuts(search_menu_button, SEARCH_MENU_SHORTCUTS)
 
 
 func _set_up_shortcuts(menu: MenuButton, shortcut_data: Dictionary) -> void:

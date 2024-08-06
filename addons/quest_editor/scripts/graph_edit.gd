@@ -15,6 +15,7 @@ var _node_default_position: Vector2 = Vector2(200, 200)
 var _node_list: Array[QuestEditorGraphNode] = []
 var _quest_data_label: Label
 var _mouse_entered: bool = false
+var _disable_changed_update: bool = false
 
 
 func _ready() -> void:
@@ -44,14 +45,18 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 
 
 func _on_connection_request(from_node: StringName, from_port: int, to_node: StringName, to_port: int) -> void:
-	if from_node != to_node:
+	if from_node == to_node:
+		return
+
+	if not _disable_changed_update:
 		graph_edit_before_changed.emit()
-		connect_node(from_node, from_port, to_node, to_port)
-		graph_edit_changed.emit()
+	connect_node(from_node, from_port, to_node, to_port)
+	graph_edit_changed.emit()
 
 
 func _on_delete_nodes_request(node_names: Array[StringName]) -> void:
-	graph_edit_before_changed.emit()
+	if not _disable_changed_update:
+		graph_edit_before_changed.emit()
 	for node_name in node_names:
 		for connection in get_connection_list():
 			if connection['from_node'] == node_name or connection['to_node'] == node_name:
@@ -65,13 +70,15 @@ func _on_delete_nodes_request(node_names: Array[StringName]) -> void:
 
 
 func _on_disconnection_request(from_node: StringName, from_port: int, to_node: StringName, to_port: int) -> void:
-	graph_edit_before_changed.emit()
+	if not _disable_changed_update:
+		graph_edit_before_changed.emit()
 	disconnect_node(from_node, from_port, to_node, to_port)
 	graph_edit_changed.emit()
 
 
 func _on_begin_node_move() -> void:
-	graph_edit_before_changed.emit()
+	if not _disable_changed_update:
+		graph_edit_before_changed.emit()
 
 
 func _on_end_node_move() -> void:
@@ -91,9 +98,12 @@ func _on_copy_nodes_request() -> void:
 
 
 func _create_node_clipboard(delete_node: bool) -> void:
+	_disable_changed_update = true
+	graph_edit_before_changed.emit()
 	var selected_node_list: Array = _node_list.filter(_is_node_selected)
 	var clipboard: Array = selected_node_list.reduce(_make_node_array.bind(delete_node), [])
 	DisplayServer.clipboard_set(var_to_str(clipboard))
+	_disable_changed_update = false
 
 
 func _is_node_selected(node: QuestEditorGraphNode) -> bool:
@@ -127,6 +137,9 @@ func _on_paste_nodes_request() -> void:
 	var paste_position: Vector2 = (scroll_offset + position_offset) / zoom
 	var start_position: Vector2 = selected_node_list.reduce(_calculate_node_rect, Rect2(0, 0, 0, 0)).position
 
+	_disable_changed_update = true
+	graph_edit_before_changed.emit()
+
 	for node in selected_node_list:
 		if typeof(node) != TYPE_DICTIONARY:
 			continue
@@ -143,6 +156,7 @@ func _on_paste_nodes_request() -> void:
 
 	_connect_pasted_nodes(connections, node_names)
 	set_selected(null)
+	_disable_changed_update = false
 
 
 func _on_duplicate_nodes_request() -> void:
@@ -154,6 +168,9 @@ func _on_duplicate_nodes_request() -> void:
 	var paste_position: Vector2 = Vector2(selected_node_rect.position.x, selected_node_rect.position.y + selected_node_rect.size.y + 20)
 	var start_position: Vector2 = selected_node_rect.position
 
+	_disable_changed_update = true
+	graph_edit_before_changed.emit()
+
 	for node in selected_node_list:
 		var action_string: String = var_to_str(node.action)
 		var new_node: QuestEditorGraphNode = add_node(str_to_var(action_string), '', paste_position + node.position_offset - start_position, node.size)
@@ -161,6 +178,7 @@ func _on_duplicate_nodes_request() -> void:
 		connections.append_array(get_connection_list().filter(_connections_filter.bind(node.name)))
 
 	_connect_pasted_nodes(connections, node_names)
+	_disable_changed_update = false
 
 
 func _calculate_node_rect(rect: Rect2, node: Variant) -> Rect2:
@@ -191,7 +209,8 @@ func _connect_pasted_nodes(connections: Array, pasted_names: Dictionary) -> void
 
 
 func add_node(action: QuestAction, node_name: StringName = '', node_position: Vector2 = Vector2.INF, node_size: Vector2 = Vector2.INF) -> QuestEditorGraphNode:
-	graph_edit_before_changed.emit()
+	if not _disable_changed_update:
+		graph_edit_before_changed.emit()
 	if node_name.is_empty():
 		node_name = '%s_%s' % [action.node_name, _generate_id()]
 

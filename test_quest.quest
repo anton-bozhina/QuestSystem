@@ -316,6 +316,21 @@
 				}
 			]
 		},
+		"Print_86247718cd0dd7fd": {
+			"class": "QuestActionFunctionPrint",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Execute_1cf22461ebf68d16"
+				}
+			],
+			"properties": [
+				{
+					"name": "message",
+					"value": "second slot"
+				}
+			]
+		},
 		"Print_8b6a8386b517f634": {
 			"class": "QuestActionFunctionPrint",
 			"connections": [
@@ -343,6 +358,21 @@
 				{
 					"name": "message",
 					"value": "new_integer is not 1000"
+				}
+			]
+		},
+		"Print_c13373de1fa36407": {
+			"class": "QuestActionFunctionPrint",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Execute_1cf22461ebf68d16"
+				}
+			],
+			"properties": [
+				{
+					"name": "message",
+					"value": "first slot"
 				}
 			]
 		},
@@ -405,7 +435,7 @@
 			"connections": [
 				{
 					"from_port": 0,
-					"to_node": "Execute_1cf22461ebf68d16"
+					"to_node": "RandomSlot_393a02e3b6f647a4"
 				}
 			],
 			"properties": [
@@ -416,6 +446,25 @@
 				{
 					"name": "quest_description",
 					"value": "Test Description"
+				}
+			]
+		},
+		"RandomSlot_393a02e3b6f647a4": {
+			"class": "QuestActionLogicRandom",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Print_c13373de1fa36407"
+				},
+				{
+					"from_port": 1,
+					"to_node": "Print_86247718cd0dd7fd"
+				}
+			],
+			"properties": [
+				{
+					"name": "slot_ratio",
+					"value": 1
 				}
 			]
 		},

@@ -56,20 +56,24 @@ func _ready() -> void:
 
 
 func _on_main_menu_undo() -> void:
+	if _edit_history_undo.is_empty():
+		return
+
 	_apply_from_history = true
-	if not _edit_history_undo.is_empty():
-		_edit_history_do.append(quest_data_controller.get_quest_data())
-		quest_data_controller.apply_quest_data(_edit_history_undo.pop_back())
-		main_menu.disable_undo_redo(_edit_history_undo.is_empty(), _edit_history_do.is_empty())
+	_edit_history_do.append(quest_data_controller.get_quest_data())
+	quest_data_controller.apply_quest_data(_edit_history_undo.pop_back())
+	main_menu.disable_undo_redo(_edit_history_undo.is_empty(), _edit_history_do.is_empty())
 	_apply_from_history = false
 
 
 func _on_main_menu_redo() -> void:
+	if _edit_history_do.is_empty():
+		return
+
 	_apply_from_history = true
-	if not _edit_history_do.is_empty():
-		_edit_history_undo.append(quest_data_controller.get_quest_data())
-		quest_data_controller.apply_quest_data(_edit_history_do.pop_back())
-		main_menu.disable_undo_redo(_edit_history_undo.is_empty(), _edit_history_do.is_empty())
+	_edit_history_undo.append(quest_data_controller.get_quest_data())
+	quest_data_controller.apply_quest_data(_edit_history_do.pop_back())
+	main_menu.disable_undo_redo(_edit_history_undo.is_empty(), _edit_history_do.is_empty())
 	_apply_from_history = false
 
 
@@ -86,10 +90,12 @@ func _on_node_tree_item_dragged(action_class: GDScript) -> void:
 
 
 func _on_graph_edit_before_changed() -> void:
-	if not _apply_from_history:
-		_edit_history_undo.append(quest_data_controller.get_quest_data())
-		_edit_history_do.clear()
-		main_menu.disable_undo_redo(_edit_history_undo.is_empty(), _edit_history_do.is_empty())
+	if _apply_from_history:
+		return
+
+	_edit_history_undo.append(quest_data_controller.get_quest_data())
+	_edit_history_do.clear()
+	main_menu.disable_undo_redo(_edit_history_undo.is_empty(), _edit_history_do.is_empty())
 
 
 func _on_graph_edit_changed() -> void:

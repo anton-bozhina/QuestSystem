@@ -93,9 +93,9 @@ func set_action(value: QuestAction) -> void:
 	set_slot_enabled_left(0, action.node_show_left_slot)
 	set_slot_enabled_right(0, action.node_show_right_slot)
 
-	if action is QuestActionCheck:
-		set_slot_enabled_right(1, action.node_show_right_slot)
-		set_slot_color_right(1, Color.RED)
+	if action.get('node_show_second_right_slot'):
+		set_slot_enabled_right(1, true)
+		set_slot_color_right(1, action.node_second_right_slot_color)
 
 	_create_controls()
 
