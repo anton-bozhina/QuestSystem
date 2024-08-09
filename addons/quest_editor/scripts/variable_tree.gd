@@ -207,7 +207,7 @@ func _dict_to_variable_item_data(variable_name: StringName, variable_data: Dicti
 func _get_variables(folder_item: TreeItem, options: bool = false) -> Dictionary:
 	var result: Dictionary = {}
 	for variable_tree_item in folder_item.get_children():
-		var variable_name: StringName = variable_tree_item.get_text(Columns.NAME).to_snake_case()
+		var variable_name: StringName = variable_tree_item.get_text(Columns.NAME)
 		var variable_value: Variant = null
 		var variable_type: Variant.Type = TYPE_NIL
 		match variable_tree_item.get_cell_mode(Columns.VALUE):
