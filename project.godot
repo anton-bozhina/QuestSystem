@@ -16,9 +16,9 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-QuestSystem="*res://addons/quest_system/scripts/quest_system.gd"
 FirstAutoload="*res://examples/first_autoload.gd"
 SecondAutoload="*res://examples/second_autoload.gd"
+QuestSystem="*res://addons/questograph/scripts/questograph.gd"
 
 [display]
 
@@ -28,7 +28,7 @@ window/size/always_on_top=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/quest_editor/plugin.cfg", "res://addons/quest_system/plugin.cfg")
+enabled=PackedStringArray("res://addons/questograph/plugin.cfg", "res://addons/questograph_editor/plugin.cfg")
 
 [rendering]
 

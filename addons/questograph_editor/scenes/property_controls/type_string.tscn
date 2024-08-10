@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=3 uid="uid://dp70jq01351en"]
+
+[ext_resource type="Script" path="res://addons/questograph_editor/scripts/properties_controls/property_control.gd" id="1_ed1nl"]
+
+[node name="StringProperty" type="HBoxContainer" node_paths=PackedStringArray("_property_control", "_label")]
+script = ExtResource("1_ed1nl")
+_property_control = NodePath("LineEdit")
+_property_value = &"text"
+_property_hint = &"placeholder_text"
+_property_change_signal = &"text_changed"
+_label = NodePath("Label")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LineEdit" type="LineEdit" parent="."]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+size_flags_horizontal = 3

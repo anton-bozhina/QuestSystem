@@ -1,0 +1,63 @@
+[gd_scene load_steps=4 format=3 uid="uid://djwmu3sb005ih"]
+
+[ext_resource type="Script" path="res://addons/questograph_editor/scripts/graph_node.gd" id="1_xob5a"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uf37k"]
+resource_local_to_scene = true
+content_margin_left = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 2.0
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rfjw0"]
+resource_local_to_scene = true
+content_margin_left = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 2.0
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[node name="GraphNode" type="GraphNode" node_paths=PackedStringArray("control_container", "caption")]
+theme_override_styles/titlebar = SubResource("StyleBoxFlat_uf37k")
+theme_override_styles/titlebar_selected = SubResource("StyleBoxFlat_rfjw0")
+title = "Empty Action"
+slot/0/left_enabled = false
+slot/0/left_type = 0
+slot/0/left_color = Color(1, 0.784314, 0, 1)
+slot/0/left_icon = null
+slot/0/right_enabled = false
+slot/0/right_type = 0
+slot/0/right_color = Color(0.21379, 0.71663, 0, 1)
+slot/0/right_icon = null
+slot/0/draw_stylebox = true
+slot/1/left_enabled = false
+slot/1/left_type = 0
+slot/1/left_color = Color(1, 1, 1, 1)
+slot/1/left_icon = null
+slot/1/right_enabled = false
+slot/1/right_type = 0
+slot/1/right_color = Color(1, 1, 1, 1)
+slot/1/right_icon = null
+slot/1/draw_stylebox = true
+script = ExtResource("1_xob5a")
+control_container = NodePath("MarginContainer/VBoxContainer")
+caption = NodePath("Slot_0/Caption")
+
+[node name="Slot_0" type="MarginContainer" parent="."]
+layout_mode = 2
+
+[node name="Caption" type="Label" parent="Slot_0"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2

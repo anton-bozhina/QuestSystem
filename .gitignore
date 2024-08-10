@@ -1,4 +1,4 @@
 # Godot 4+ specific ignores
-addons/quest_editor/icons/all/
+addons/questograph_editor/icons/all/
 .godot/
 *.tmp

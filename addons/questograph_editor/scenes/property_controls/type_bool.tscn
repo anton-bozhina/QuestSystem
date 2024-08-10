@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://dx2ontqhgkq5d"]
+
+[ext_resource type="Script" path="res://addons/questograph_editor/scripts/properties_controls/property_control.gd" id="1_4x843"]
+
+[node name="BoolProperty" type="HBoxContainer" node_paths=PackedStringArray("_property_control", "_label")]
+script = ExtResource("1_4x843")
+_property_control = NodePath("CheckBox")
+_property_value = &"button_pressed"
+_property_change_signal = &"toggled"
+_can_update_node = true
+_label = NodePath("Label")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CheckBox" type="CheckBox" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
