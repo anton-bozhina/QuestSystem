@@ -17,15 +17,15 @@ enum EditMenuIds {
 const DOCS_URL: String = 'https://github.com/anton-bozhina/QuestSystem/wiki'
 
 const FILE_MENU_SHORTCUTS: Dictionary = {
-	2: preload('../shortcuts/save.tres')
+	2: preload('../resources/shortcuts/save.tres')
 }
 const EDIT_MENU_SHORTCUTS: Dictionary = {
-	EditMenuIds.UNDO: preload('../shortcuts/undo.tres'),
-	EditMenuIds.REDO: preload('../shortcuts/redo.tres'),
-	EditMenuIds.CUT: preload('../shortcuts/cut.tres'),
-	EditMenuIds.COPY: preload('../shortcuts/copy.tres'),
-	EditMenuIds.PASTE: preload('../shortcuts/paste.tres'),
-	EditMenuIds.DUPLICATE: preload('../shortcuts/duplicate.tres')
+	EditMenuIds.UNDO: preload('../resources/shortcuts/undo.tres'),
+	EditMenuIds.REDO: preload('../resources/shortcuts/redo.tres'),
+	EditMenuIds.CUT: preload('../resources/shortcuts/cut.tres'),
+	EditMenuIds.COPY: preload('../resources/shortcuts/copy.tres'),
+	EditMenuIds.PASTE: preload('../resources/shortcuts/paste.tres'),
+	EditMenuIds.DUPLICATE: preload('../resources/shortcuts/duplicate.tres')
 }
 
 @export var graph_edit: QuestEditorGraphEdit
