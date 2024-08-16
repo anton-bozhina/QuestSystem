@@ -1,18 +1,27 @@
 @tool
+@icon('../icons/node_settings.svg')
 class_name QuestographNodeSettings
 extends Resource
+## Class contains the node settings for the Editor and the System.
 
 
+## List of groups to which a node can be placed in the editor
 enum GroupType {
+	## Allows you to specify a group name for a Node
 	Custom,
+	## Group for functional Nodes
 	Functions,
+	## Group for logical Nodes
 	Logic,
+	## Group for waiting Nodes
 	Waits,
+	## Group for checking Nodes
 	Checks
 }
 
+const PROPERTY_EXPORT_VARIABLE: int = PROPERTY_USAGE_SCRIPT_VARIABLE | PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR
 const GROUP_NAMES: Dictionary = {
-	GroupType.Custom: 'Group',
+	GroupType.Custom: '',
 	GroupType.Functions: 'Functions',
 	GroupType.Logic: 'Logic',
 	GroupType.Waits: 'Waits',
@@ -71,41 +80,34 @@ const DEFAULT_SLOTS: Dictionary = {
 	GroupType.Waits: SLOT_PRESETS.default,
 	GroupType.Checks: SLOT_PRESETS.checks
 }
-const PROPERTY_EXPORT_VARIABLE: int = PROPERTY_USAGE_SCRIPT_VARIABLE | PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR
+const DEFAULT_DATA: Dictionary = {
+	file = null,
+	id = '',
+	group_name = '',
+	title = '',
+	caption = ''
+}
 
-
-@export var node: GDScript:
+## GDScript resource with Node logic
+var file: GDScript = null:
 	set(value):
-		node = value
-		if node:
-			#_action_class = action_script.new()
-			id = node.get_path().get_file().get_basename().to_pascal_case()
-		else:
-			#_action_class = null
-			id = ''
-		if title.is_empty():
-			title = id
-		#whitelisted_properties = {}
-		notify_property_list_changed()
-
-@export var id: String:
+		file = value
+		if not file:
+			return
+		var id_name: String = file.get_path().get_file().get_basename().to_pascal_case()
+		id = id_name if id.is_empty() else id
+		title = id_name if title.is_empty() else title
+## Node ID, used for saving in the Editor and link to the script
+var id: String = '':
 	set(value):
 		id = value
-		resource_name = 'NewAction' if value.is_empty() else value
+		resource_name = 'NewAction' if id.is_empty() else id
 
-var group: String = ''
-var title: String = ''
-var caption: String = ''
-var color: Color = Color.CADET_BLUE
-
-var input_slots: Array[Dictionary] = []
-var output_slots: Array[Dictionary] = []
-
-#var _action_class: QuestAction
-var _group: GroupType:
+## List of groups to which a node can be placed in the Editor.
+var group: GroupType = GroupType.Functions:
 	set(value):
-		_group = value
-		group = GROUP_NAMES[value]
+		group = value
+		group_name = GROUP_NAMES[value]
 		color = GROUP_COLORS[value]
 		input_slots = []
 		for slot in DEFAULT_SLOTS[value].inputs as Array[Dictionary]:
@@ -115,33 +117,52 @@ var _group: GroupType:
 			output_slots.append(slot)
 		notify_property_list_changed()
 
+## Name of the group in which the Node will be placed in the Editor
+var group_name: String = ''
+
+## The text to be specified in the Node title
+var title: String = ''
+
+## The text to be specified in the Node caption
+var caption: String = ''
+
+## Node color in the Editor
+var color: Color = GROUP_COLORS[group]
+var input_slots: Array[Dictionary] = []
+var output_slots: Array[Dictionary] = []
+
 
 func _init() -> void:
 	resource_name = 'NewAction'
-	_group = GroupType.Functions
 
 
 func _get_property_list() -> Array[Dictionary]:
 	var property_list: Array[Dictionary] = []
+	property_list.append({
+		'name': 'file',
+		'class_name': &'GDScript',
+		'type': TYPE_OBJECT,
+		'hint': PROPERTY_HINT_RESOURCE_TYPE,
+		'hint_string': 'GDScript',
+		'usage': PROPERTY_EXPORT_VARIABLE
+	})
+	property_list.append({'name': 'id', 'type': TYPE_STRING, 'usage': PROPERTY_EXPORT_VARIABLE})
 	property_list.append({'name': 'Editor Settings', 'type': TYPE_NIL, 'usage': PROPERTY_USAGE_GROUP})
 	property_list.append({
-		'name': '_group',
+		'name': 'group',
 		'type': TYPE_INT,
 		'hint': PROPERTY_HINT_ENUM,
 		'hint_string': ','.join(GroupType.keys()),
 		'usage': PROPERTY_USAGE_EDITOR
 	})
-	if _group == GroupType.Custom:
-		property_list.append({ 'name': 'group', 'type': TYPE_STRING, 'usage': PROPERTY_EXPORT_VARIABLE })
+	if group == GroupType.Custom:
+		property_list.append({'name': 'group_name', 'type': TYPE_STRING, 'usage': PROPERTY_EXPORT_VARIABLE})
 	else:
-		property_list.append({ 'name': 'group', 'type': TYPE_STRING, 'usage': PROPERTY_USAGE_STORAGE })
-	property_list.append({ 'name': 'title', 'type': TYPE_STRING, 'usage': PROPERTY_EXPORT_VARIABLE })
-	property_list.append({ 'name': 'caption', 'type': TYPE_STRING, 'usage': PROPERTY_EXPORT_VARIABLE })
-	property_list.append({ 'name': 'color', 'type': TYPE_COLOR, 'usage': PROPERTY_EXPORT_VARIABLE })
-	#if _action_class:
-		#_action_class.get_property_list().reduce(_reduce_property_names, whitelisted_properties)
-		#property_list.append({ 'name': 'whitelisted_properties', 'type': TYPE_DICTIONARY, 'usage': PROPERTY_EXPORT_VARIABLE })
-	_create_array_property(property_list, 'input_slot', output_slots)
+		property_list.append({'name': 'group_name', 'type': TYPE_STRING, 'usage': PROPERTY_USAGE_STORAGE})
+	property_list.append({'name': 'title', 'type': TYPE_STRING, 'usage': PROPERTY_EXPORT_VARIABLE})
+	property_list.append({'name': 'caption', 'type': TYPE_STRING, 'usage': PROPERTY_EXPORT_VARIABLE})
+	property_list.append({'name': 'color', 'type': TYPE_COLOR, 'usage': PROPERTY_EXPORT_VARIABLE})
+	_create_array_property(property_list, 'input_slot', input_slots)
 	_create_array_property(property_list, 'output_slot', output_slots)
 	return property_list
 
@@ -174,8 +195,14 @@ func _set(property: StringName, value: Variant) -> bool:
 	match property:
 		'input_slot_count':
 			input_slots.resize(value)
+			for index in input_slots.size():
+				if input_slots[index].is_empty():
+					input_slots[index] = SLOT_PRESETS.default.inputs[0]
 		'output_slot_count':
 			output_slots.resize(value)
+			for index in output_slots.size():
+				if output_slots[index].is_empty():
+					output_slots[index] = SLOT_PRESETS.default.outputs[0]
 		property when property.begins_with('input_slot_'):
 			_set_array_property(property.trim_prefix('input_slot_'), input_slots, value)
 		property when property.begins_with('output_slot_'):
@@ -195,6 +222,20 @@ func _get(property: StringName) -> Variant:
 		property when property.begins_with('output_slot_'):
 			return _get_array_property(property.trim_prefix('output_slot_'), output_slots)
 	return null
+
+
+func _property_get_revert(property: StringName) -> Variant:
+	match property:
+		'color':
+			return GROUP_COLORS[group]
+	return DEFAULT_DATA.get(property)
+
+
+func _property_can_revert(property: StringName) -> bool:
+	match property:
+		'color':
+			return color != GROUP_COLORS[group]
+	return DEFAULT_DATA.has(property) and DEFAULT_DATA.get(property) != get(property)
 
 
 func _set_array_property(property: StringName, array: Array, value: Variant) -> void:
@@ -229,9 +270,3 @@ func _get_dict_value(dict: Dictionary, keys: Array) -> Variant:
 		return _get_dict_value(dict.get(keys[0], {}), keys.slice(1, keys.size()))
 	else:
 		return dict.get(keys[0])
-
-
-func _reduce_property_names(list, property) -> Dictionary:
-	if property['usage'] == PROPERTY_EXPORT_VARIABLE and not list.has(property['name']):
-		list[property['name']] = true
-	return list

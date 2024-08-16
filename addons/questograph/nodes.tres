@@ -1,0 +1,76 @@
+[gd_resource type="Resource" script_class="QuestographNodeList" load_steps=11 format=3 uid="uid://cmulclk3exyho"]
+
+[ext_resource type="Script" path="res://addons/questograph/scripts/actions_old/check_global_variable.gd" id="1_cpgrn"]
+[ext_resource type="Script" path="res://addons/questograph/scripts/node_settings.gd" id="2_k0k2q"]
+[ext_resource type="Script" path="res://addons/questograph/scripts/node_list.gd" id="3_u5s5u"]
+[ext_resource type="Script" path="res://addons/questograph/scripts/actions_old/function_execute.gd" id="3_xy8p1"]
+[ext_resource type="Script" path="res://addons/questograph/scripts/actions_old/logic_start.gd" id="4_5ec16"]
+[ext_resource type="Script" path="res://addons/questograph/scripts/actions_old/wait_time.gd" id="5_xpx01"]
+
+[sub_resource type="Resource" id="Resource_f3ptl"]
+resource_name = "CheckGlobalVariable"
+script = ExtResource("2_k0k2q")
+file = ExtResource("1_cpgrn")
+id = "CheckGlobalVariable"
+group_name = "Checks"
+title = "CheckGlobalVariable"
+caption = ""
+color = Color(1, 0.0784314, 0.576471, 1)
+input_slot_count = 1
+input_slot_0/color = Color(1, 0.647059, 0, 1)
+input_slot_0/type = 0
+output_slot_count = 2
+output_slot_0/color = Color(0.196078, 0.803922, 0.196078, 1)
+output_slot_0/type = 0
+output_slot_1/color = Color(1, 0.270588, 0, 1)
+output_slot_1/type = 0
+
+[sub_resource type="Resource" id="Resource_wsbwu"]
+resource_name = "FunctionExecute"
+script = ExtResource("2_k0k2q")
+file = ExtResource("3_xy8p1")
+id = "FunctionExecute"
+group_name = "Functions"
+title = "FunctionExecute"
+caption = ""
+color = Color(1, 0.498039, 0.313726, 1)
+input_slot_count = 1
+input_slot_0/color = Color(1, 0.647059, 0, 1)
+input_slot_0/type = 0
+output_slot_count = 1
+output_slot_0/color = Color(1, 0.647059, 0, 1)
+output_slot_0/type = 0
+
+[sub_resource type="Resource" id="Resource_y1tis"]
+resource_name = "LogicStart"
+script = ExtResource("2_k0k2q")
+file = ExtResource("4_5ec16")
+id = "LogicStart"
+group_name = "Logic"
+title = "LogicStart"
+caption = ""
+color = Color(0, 0.392157, 0, 1)
+input_slot_count = 0
+output_slot_count = 1
+output_slot_0/color = Color(1, 0.647059, 0, 1)
+output_slot_0/type = 0
+
+[sub_resource type="Resource" id="Resource_6l1u4"]
+resource_name = "WaitTime"
+script = ExtResource("2_k0k2q")
+file = ExtResource("5_xpx01")
+id = "WaitTime"
+group_name = "Waits"
+title = "WaitTime"
+caption = ""
+color = Color(1, 0.54902, 0, 1)
+input_slot_count = 1
+input_slot_0/color = Color(1, 0.647059, 0, 1)
+input_slot_0/type = 0
+output_slot_count = 1
+output_slot_0/color = Color(1, 0.647059, 0, 1)
+output_slot_0/type = 0
+
+[resource]
+script = ExtResource("3_u5s5u")
+nodes = Array[ExtResource("2_k0k2q")]([SubResource("Resource_f3ptl"), SubResource("Resource_wsbwu"), SubResource("Resource_y1tis"), SubResource("Resource_6l1u4")])

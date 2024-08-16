@@ -34,6 +34,12 @@ window/size/always_on_top=true
 
 enabled=PackedStringArray("res://addons/questograph/plugin.cfg", "res://addons/questograph_editor/plugin.cfg")
 
+[file_customization]
+
+folder_colors={
+"res://addons/questograph/scripts/": "pink"
+}
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"

@@ -1,8 +1,0 @@
-[gd_resource type="Resource" script_class="QuestographNodeSlot" load_steps=2 format=3 uid="uid://cdgp6eltexqpe"]
-
-[ext_resource type="Script" path="res://addons/questograph_editor/scripts/editor_node_slot.gd" id="1_lk1ua"]
-
-[resource]
-script = ExtResource("1_lk1ua")
-slot_color = Color(0.196, 0.804, 0.196, 1)
-slot_type = 0
