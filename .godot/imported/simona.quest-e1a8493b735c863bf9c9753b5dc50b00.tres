@@ -1,0 +1,242 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/questograph/scripts/quest_data.gd" id="1_m3jnb"]
+
+[resource]
+script = ExtResource("1_m3jnb")
+name = "simona"
+description = "крыса мама"
+variables = {
+"global": {
+"margaritaQuest": {
+"options": {
+"Init": {
+"type": 1.0,
+"value": false
+}
+},
+"type": 2.0,
+"value": 0.0
+},
+"simona": {
+"options": {
+"Init": {
+"type": 1.0,
+"value": true
+}
+},
+"type": 1.0,
+"value": false
+}
+},
+"local": {}
+}
+node_references = {}
+start_action = &"QuestStart_e6a9385d0891c375"
+actions = {
+"Connection_03138d311adbc811": {
+"class": "QuestActionLogicConnection",
+"connections": [{
+"from_port": 0.0,
+"to_node": "WaitGlobalVariableUpdate_b609bdebdc0d35b9"
+}],
+"properties": []
+},
+"Connection_39b191b1112c93bf": {
+"class": "QuestActionLogicConnection",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Connection_03138d311adbc811"
+}],
+"properties": []
+},
+"Connection_be5522deb1fe916a": {
+"class": "QuestActionLogicConnection",
+"connections": [{
+"from_port": 0.0,
+"to_node": "WaitGlobalVariableUpdate_48536b04476f7e7c"
+}],
+"properties": []
+},
+"DialogicStart_0e06f0950cfc5528": {
+"class": "QuestActionDialogic",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Execute_35f07f3fd31871c4"
+}],
+"properties": [{
+"name": "timeline",
+"value": "simonaStart"
+}]
+},
+"DialogicStart_739c58239294861f": {
+"class": "QuestActionDialogic",
+"connections": [{
+"from_port": 0.0,
+"to_node": "WaitDialogEnded_78cada1860258ec3"
+}],
+"properties": [{
+"name": "timeline",
+"value": "margaritaQuest03"
+}]
+},
+"DialogicStart_a16306ef535ea3c0": {
+"class": "QuestActionDialogic",
+"connections": [{
+"from_port": 0.0,
+"to_node": "WaitDialogEnded_d3664fba84f3ee10"
+}],
+"properties": [{
+"name": "timeline",
+"value": "margaritaQuest02"
+}]
+},
+"Execute_35f07f3fd31871c4": {
+"class": "QuestActionFunctionExecute",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Connection_39b191b1112c93bf"
+}],
+"properties": [{
+"name": "singleton",
+"value": "PlayerMove"
+}, {
+"name": "method",
+"value": "unpausePlayer"
+}, {
+"name": "arguments",
+"value": ""
+}]
+},
+"Execute_5f242d2e0377fd26": {
+"class": "QuestActionFunctionExecute",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Connection_be5522deb1fe916a"
+}],
+"properties": [{
+"name": "singleton",
+"value": "PlayerMove"
+}, {
+"name": "method",
+"value": "unpausePlayer"
+}, {
+"name": "arguments",
+"value": ""
+}]
+},
+"Execute_908a565d56dbdf57": {
+"class": "QuestActionFunctionExecute",
+"connections": [{
+"from_port": 0.0,
+"to_node": "WaitGlobalVariableUpdate_48536b04476f7e7c"
+}],
+"properties": [{
+"name": "singleton",
+"value": "PlayerMove"
+}, {
+"name": "method",
+"value": "unpausePlayer"
+}, {
+"name": "arguments",
+"value": ""
+}]
+},
+"GlobalVariableCheck_990679e3cf220156": {
+"class": "QuestActionCheckGlobalVariable",
+"connections": [{
+"from_port": 0.0,
+"to_node": "GlobalVariableSet_9cc2d038059f2ee8"
+}, {
+"from_port": 1.0,
+"to_node": "DialogicStart_0e06f0950cfc5528"
+}],
+"properties": [{
+"name": "variable",
+"value": "margaritaQuest"
+}, {
+"name": "operator",
+"value": 0.0
+}, {
+"name": "value",
+"value": 1.0
+}]
+},
+"GlobalVariableSet_9cc2d038059f2ee8": {
+"class": "QuestActionFunctionGlobalVariableSet",
+"connections": [{
+"from_port": 0.0,
+"to_node": "DialogicStart_a16306ef535ea3c0"
+}],
+"properties": [{
+"name": "variable",
+"value": "margaritaQuest"
+}, {
+"name": "value",
+"value": 2.0
+}]
+},
+"Print_22620b4ad9737c9f": {
+"class": "QuestActionFunctionPrint",
+"connections": [],
+"properties": [{
+"name": "message",
+"value": "второй квест загружен"
+}]
+},
+"QuestStart_e6a9385d0891c375": {
+"class": "QuestActionLogicStart",
+"connections": [{
+"from_port": 0.0,
+"to_node": "WaitGlobalVariableUpdate_b609bdebdc0d35b9"
+}, {
+"from_port": 0.0,
+"to_node": "Print_22620b4ad9737c9f"
+}],
+"properties": [{
+"name": "quest_name",
+"value": "simona"
+}, {
+"name": "quest_description",
+"value": "крыса мама"
+}]
+},
+"WaitDialogEnded_78cada1860258ec3": {
+"class": "QuestActionWaitDialogEnded",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Execute_5f242d2e0377fd26"
+}],
+"properties": []
+},
+"WaitDialogEnded_d3664fba84f3ee10": {
+"class": "QuestActionWaitDialogEnded",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Execute_908a565d56dbdf57"
+}],
+"properties": []
+},
+"WaitGlobalVariableUpdate_48536b04476f7e7c": {
+"class": "QuestActionWaitGlobalVariableUpdate",
+"connections": [{
+"from_port": 0.0,
+"to_node": "DialogicStart_739c58239294861f"
+}],
+"properties": [{
+"name": "variable",
+"value": "simona"
+}]
+},
+"WaitGlobalVariableUpdate_b609bdebdc0d35b9": {
+"class": "QuestActionWaitGlobalVariableUpdate",
+"connections": [{
+"from_port": 0.0,
+"to_node": "GlobalVariableCheck_990679e3cf220156"
+}],
+"properties": [{
+"name": "variable",
+"value": "simona"
+}]
+}
+}

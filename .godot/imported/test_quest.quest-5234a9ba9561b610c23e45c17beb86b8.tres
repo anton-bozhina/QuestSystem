@@ -1,0 +1,511 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/questograph/scripts/quest_data.gd" id="1_ugaj5"]
+
+[resource]
+script = ExtResource("1_ugaj5")
+name = "Test Quest"
+description = "Test Description"
+variables = {
+"global": {
+"global_string": {
+"options": {
+"init": {
+"type": 1.0,
+"value": true
+}
+},
+"type": 4.0,
+"value": "string"
+},
+"new_bool": {
+"options": {
+"init": {
+"type": 1.0,
+"value": true
+}
+},
+"type": 1.0,
+"value": false
+},
+"new_integer": {
+"options": {
+"init": {
+"type": 1.0,
+"value": true
+}
+},
+"type": 2.0,
+"value": -999.0
+}
+},
+"local": {
+"new_bool": {
+"type": 1.0,
+"value": true
+},
+"new_float": {
+"type": 3.0,
+"value": 99.999
+},
+"new_integer": {
+"type": 2.0,
+"value": 100.0
+},
+"new_string": {
+"type": 4.0,
+"value": "string"
+}
+}
+}
+node_references = {
+"test_ref_1": null,
+"test_ref_2": null
+}
+start_action = &"QuestStart_af007e88ca2d4bee"
+actions = {
+"Execute_1cf22461ebf68d16": {
+"class": "QuestActionFunctionExecute",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Execute_36859a2d1acc2577"
+}],
+"properties": [{
+"name": "singleton",
+"value": "FirstAutoload"
+}, {
+"name": "method",
+"value": "set_scene"
+}]
+},
+"Execute_36859a2d1acc2577": {
+"class": "QuestActionFunctionExecute",
+"connections": [{
+"from_port": 0.0,
+"to_node": "NodeProcessModeCheck_6f359f7c81746845"
+}],
+"properties": [{
+"name": "singleton",
+"value": "SecondAutoload"
+}, {
+"name": "method",
+"value": "set_all_second_nodes"
+}, {
+"name": "arguments",
+"value": "test auto"
+}]
+},
+"GlobalVariableCheck_3e58075cacc381aa": {
+"class": "QuestActionCheckGlobalVariable",
+"connections": [{
+"from_port": 1.0,
+"to_node": "Print_67079cf7d7ff66cf"
+}, {
+"from_port": 0.0,
+"to_node": "Print_624d5440efd56da9"
+}],
+"properties": [{
+"name": "variable",
+"value": "global_string"
+}, {
+"name": "operator",
+"value": 0.0
+}, {
+"name": "value",
+"value": "lol"
+}]
+},
+"GlobalVariableSet_05dca615ee48f54f": {
+"class": "QuestActionFunctionGlobalVariableSet",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Print_8b6a8386b517f634"
+}],
+"properties": [{
+"name": "variable",
+"value": "global_string"
+}, {
+"name": "value",
+"value": "lol"
+}]
+},
+"GlobalVariableSet_8a9ebaa471222e36": {
+"class": "QuestActionFunctionGlobalVariableSet",
+"connections": [{
+"from_port": 0.0,
+"to_node": "WaitTime_fdae48eb65e7a4f3"
+}],
+"properties": [{
+"name": "variable",
+"value": "new_integer"
+}, {
+"name": "value",
+"value": 1.0
+}]
+},
+"GlobalVariableSet_b5c197f6f192d6d8": {
+"class": "QuestActionFunctionGlobalVariableSet",
+"connections": [],
+"properties": [{
+"name": "variable",
+"value": "new_bool"
+}, {
+"name": "value",
+"value": true
+}]
+},
+"Math Add_3e925290d7fc4133": {
+"class": "QuestActionFunctionMathAdd",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Print_eb4316814da216ce"
+}],
+"properties": [{
+"name": "first_source",
+"value": 0.0
+}, {
+"name": "second_source",
+"value": 2.0
+}, {
+"name": "first_operand",
+"value": "new_float"
+}, {
+"name": "second_operand",
+"value": 100.5
+}]
+},
+"Math Divide_3eaa1ed7238b80f2": {
+"class": "QuestActionFunctionMathDivide",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Math Add_3e925290d7fc4133"
+}],
+"properties": [{
+"name": "first_source",
+"value": 0.0
+}, {
+"name": "second_source",
+"value": 2.0
+}, {
+"name": "first_operand",
+"value": "new_integer"
+}, {
+"name": "second_operand",
+"value": 0.0
+}]
+},
+"Math Multiply_8210c1ce36bdad19": {
+"class": "QuestActionFunctionMathMultiply",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Math Divide_3eaa1ed7238b80f2"
+}],
+"properties": [{
+"name": "first_source",
+"value": 0.0
+}, {
+"name": "second_source",
+"value": 0.0
+}, {
+"name": "first_operand",
+"value": "new_float"
+}, {
+"name": "second_operand",
+"value": "new_float"
+}]
+},
+"Math Subtract_ba140aa8b052985c": {
+"class": "QuestActionFunctionMathSubtract",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Math Multiply_8210c1ce36bdad19"
+}],
+"properties": [{
+"name": "first_source",
+"value": 0.0
+}, {
+"name": "second_source",
+"value": 0.0
+}, {
+"name": "first_operand",
+"value": "new_float"
+}, {
+"name": "second_operand",
+"value": "new_float"
+}]
+},
+"NodeProcessModeCheck_6f359f7c81746845": {
+"class": "QuestActionCheckNodeProcessMode",
+"connections": [{
+"from_port": 0.0,
+"to_node": "NodeProcessModeSet_d0bdce96b0061b88"
+}, {
+"from_port": 1.0,
+"to_node": "NodeProcessModeSet_befd4b97fcf38092"
+}],
+"properties": [{
+"name": "reference",
+"value": "test_ref_1"
+}, {
+"name": "operator",
+"value": 0.0
+}, {
+"name": "mode",
+"value": 4.0
+}]
+},
+"NodeProcessModeSet_befd4b97fcf38092": {
+"class": "QuestActionFunctionSetProcessMode",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Math Subtract_ba140aa8b052985c"
+}],
+"properties": [{
+"name": "reference",
+"value": "test_ref_2"
+}, {
+"name": "mode",
+"value": 0.0
+}]
+},
+"NodeProcessModeSet_d0bdce96b0061b88": {
+"class": "QuestActionFunctionSetProcessMode",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Math Subtract_ba140aa8b052985c"
+}],
+"properties": [{
+"name": "reference",
+"value": "test_ref_1"
+}, {
+"name": "mode",
+"value": 0.0
+}]
+},
+"Print_408e952a6c435771": {
+"class": "QuestActionFunctionPrint",
+"connections": [{
+"from_port": 0.0,
+"to_node": "QuestFinish_5d90ee19f1dfbb86"
+}],
+"properties": [{
+"name": "message",
+"value": "time waited
+quest finish!"
+}]
+},
+"Print_624d5440efd56da9": {
+"class": "QuestActionFunctionPrint",
+"connections": [{
+"from_port": 0.0,
+"to_node": "WaitTime_f4ad495680590943"
+}],
+"properties": [{
+"name": "message",
+"value": "global_string is lol"
+}]
+},
+"Print_67079cf7d7ff66cf": {
+"class": "QuestActionFunctionPrint",
+"connections": [{
+"from_port": 0.0,
+"to_node": "GlobalVariableSet_05dca615ee48f54f"
+}],
+"properties": [{
+"name": "message",
+"value": "global_string not lol"
+}]
+},
+"Print_75595d26b1b3405e": {
+"class": "QuestActionFunctionPrint",
+"connections": [],
+"properties": [{
+"name": "message",
+"value": "new_integer is change"
+}]
+},
+"Print_86247718cd0dd7fd": {
+"class": "QuestActionFunctionPrint",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Execute_1cf22461ebf68d16"
+}],
+"properties": [{
+"name": "message",
+"value": "second slot"
+}]
+},
+"Print_8b6a8386b517f634": {
+"class": "QuestActionFunctionPrint",
+"connections": [{
+"from_port": 0.0,
+"to_node": "GlobalVariableCheck_3e58075cacc381aa"
+}],
+"properties": [{
+"name": "message",
+"value": "new_integer is 1000
+check global string"
+}]
+},
+"Print_ab416dd878659e0a": {
+"class": "QuestActionFunctionPrint",
+"connections": [{
+"from_port": 0.0,
+"to_node": "VariableSet_b70350a80138444b"
+}],
+"properties": [{
+"name": "message",
+"value": "new_integer is not 1000"
+}]
+},
+"Print_c13373de1fa36407": {
+"class": "QuestActionFunctionPrint",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Execute_1cf22461ebf68d16"
+}],
+"properties": [{
+"name": "message",
+"value": "first slot"
+}]
+},
+"Print_ce543ad737ac893f": {
+"class": "QuestActionFunctionPrint",
+"connections": [{
+"from_port": 0.0,
+"to_node": "WaitVarUpdate_cf3d925bbe796107"
+}],
+"properties": [{
+"name": "message",
+"value": "waiting new_integer changed"
+}]
+},
+"Print_eb4316814da216ce": {
+"class": "QuestActionFunctionPrint",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Print_ce543ad737ac893f"
+}, {
+"from_port": 0.0,
+"to_node": "Print_f0354ed5e4ad9457"
+}],
+"properties": [{
+"name": "message",
+"value": "quest start!"
+}]
+},
+"Print_f0354ed5e4ad9457": {
+"class": "QuestActionFunctionPrint",
+"connections": [{
+"from_port": 0.0,
+"to_node": "VariableCheck_df0b7b83291a8a65"
+}],
+"properties": [{
+"name": "message",
+"value": "check new_integer"
+}]
+},
+"QuestFinish_5d90ee19f1dfbb86": {
+"class": "QuestActionLogicFinish",
+"connections": [],
+"properties": []
+},
+"QuestStart_af007e88ca2d4bee": {
+"class": "QuestActionLogicStart",
+"connections": [{
+"from_port": 0.0,
+"to_node": "RandomSlot_393a02e3b6f647a4"
+}, {
+"from_port": 0.0,
+"to_node": "GlobalVariableSet_8a9ebaa471222e36"
+}],
+"properties": [{
+"name": "quest_name",
+"value": "Test Quest"
+}, {
+"name": "quest_description",
+"value": "Test Description"
+}]
+},
+"RandomSlot_393a02e3b6f647a4": {
+"class": "QuestActionLogicRandom",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Print_c13373de1fa36407"
+}, {
+"from_port": 1.0,
+"to_node": "Print_86247718cd0dd7fd"
+}],
+"properties": [{
+"name": "slot_ratio",
+"value": 1.0
+}]
+},
+"VariableCheck_df0b7b83291a8a65": {
+"class": "QuestActionCheckVariable",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Print_8b6a8386b517f634"
+}, {
+"from_port": 1.0,
+"to_node": "Print_ab416dd878659e0a"
+}],
+"properties": [{
+"name": "variable",
+"value": "new_integer"
+}, {
+"name": "operator",
+"value": 0.0
+}, {
+"name": "value",
+"value": 1000.0
+}]
+},
+"VariableSet_b70350a80138444b": {
+"class": "QuestActionFunctionVariableSet",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Print_f0354ed5e4ad9457"
+}],
+"properties": [{
+"name": "variable",
+"value": "new_integer"
+}, {
+"name": "value",
+"value": 1000.0
+}]
+},
+"WaitTime_f4ad495680590943": {
+"class": "QuestActionWaitTime",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Print_408e952a6c435771"
+}],
+"properties": [{
+"name": "wait_time",
+"value": 10.0
+}]
+},
+"WaitTime_fdae48eb65e7a4f3": {
+"class": "QuestActionWaitTime",
+"connections": [{
+"from_port": 0.0,
+"to_node": "GlobalVariableSet_b5c197f6f192d6d8"
+}],
+"properties": [{
+"name": "wait_time",
+"value": 5.0
+}]
+},
+"WaitVarUpdate_cf3d925bbe796107": {
+"class": "QuestActionWaitVariableUpdate",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Print_75595d26b1b3405e"
+}],
+"properties": [{
+"name": "variable",
+"value": "new_integer"
+}]
+}
+}
