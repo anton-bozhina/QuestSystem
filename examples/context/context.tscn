@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=3 uid="uid://ei8wj4mp658l"]
+
+[ext_resource type="Resource" uid="uid://dci855ax4u1qs" path="res://variables.tres" id="1_26omd"]
+
+[sub_resource type="GDScript" id="GDScript_3ibmd"]
+script/source = "extends Control
+
+
+@export var context: QuestographContext
+
+
+func _ready() -> void:
+	context.__tests()
+	#context.changed.connect(func(): print('updated'))
+	#print(context.variables)
+	#print(context.get_variable_list(TYPE_BOOL))
+	#print(context.get_variable('vector22'))
+	#print(typeof(context.get_variable('vector3')) == TYPE_VECTOR3)
+	#print(typeof(context.variables.vector3) == TYPE_VECTOR3)
+#
+	#context.variables.int = 321
+	#context.set_variable('vector22', Vector2.LEFT)
+#
+	#print(context.get_variables())
+#
+	#context.variables.new_var = true
+"
+
+[node name="Context" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_3ibmd")
+context = ExtResource("1_26omd")

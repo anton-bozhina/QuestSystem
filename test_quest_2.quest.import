@@ -1,0 +1,14 @@
+[remap]
+
+importer="quest.system.import.plugin"
+type="Resource"
+uid="uid://c1ppoaj86654v"
+path="res://.godot/imported/test_quest_2.quest-526f66e12a557c75dd75ea48a89ae140.tres"
+
+[deps]
+
+source_file="res://test_quest_2.quest"
+dest_files=["res://.godot/imported/test_quest_2.quest-526f66e12a557c75dd75ea48a89ae140.tres"]
+
+[params]
+

@@ -15,7 +15,7 @@ array=[0.0]
 [application]
 
 config/name="QuestSystem"
-config/features=PackedStringArray("4.2", "GL Compatibility")
+config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [autoload]

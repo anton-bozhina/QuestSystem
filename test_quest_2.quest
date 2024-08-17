@@ -1,0 +1,133 @@
+{
+	"actions": {
+		"GlobalVariableCheck_da23f92e4b9fd877": {
+			"class": "QuestActionCheckGlobalVariable",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Print_71667d1bfa4d14b1"
+				},
+				{
+					"from_port": 1,
+					"to_node": "Print_94d4f770fdf7c715"
+				}
+			],
+			"properties": [
+				{
+					"name": "variable",
+					"value": "new_integer"
+				},
+				{
+					"name": "operator",
+					"value": 0
+				},
+				{
+					"name": "value",
+					"value": -999
+				}
+			]
+		},
+		"Print_14ce5bf05f515d37": {
+			"class": "QuestActionFunctionPrint",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "GlobalVariableCheck_da23f92e4b9fd877"
+				}
+			],
+			"properties": [
+				{
+					"name": "message",
+					"value": "GLOBAL CHANGED!"
+				}
+			]
+		},
+		"Print_71667d1bfa4d14b1": {
+			"class": "QuestActionFunctionPrint",
+			"connections": [],
+			"properties": [
+				{
+					"name": "message",
+					"value": "new int = 1"
+				}
+			]
+		},
+		"Print_94d4f770fdf7c715": {
+			"class": "QuestActionFunctionPrint",
+			"connections": [],
+			"properties": [
+				{
+					"name": "message",
+					"value": "new int != 1"
+				}
+			]
+		},
+		"QuestStart_7df4238155bfdb4c": {
+			"class": "QuestActionLogicStart",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "WaitGlobalVariableUpdate_2f0751102af0a4e6"
+				}
+			],
+			"properties": [
+				{
+					"name": "quest_name",
+					"value": "Test Quest 2"
+				},
+				{
+					"name": "quest_description",
+					"value": ""
+				}
+			]
+		},
+		"WaitGlobalVariableUpdate_2f0751102af0a4e6": {
+			"class": "QuestActionWaitGlobalVariableUpdate",
+			"connections": [
+				{
+					"from_port": 0,
+					"to_node": "Print_14ce5bf05f515d37"
+				}
+			],
+			"properties": [
+				{
+					"name": "variable",
+					"value": "new_bool"
+				}
+			]
+		}
+	},
+	"description": "",
+	"name": "Test Quest 2",
+	"node_references": {
+
+	},
+	"start_action": "QuestStart_7df4238155bfdb4c",
+	"variables": {
+		"global": {
+			"new_bool": {
+				"options": {
+					"init": {
+						"type": 1,
+						"value": true
+					}
+				},
+				"type": 1,
+				"value": false
+			},
+			"new_integer": {
+				"options": {
+					"init": {
+						"type": 1,
+						"value": false
+					}
+				},
+				"type": 2,
+				"value": 0
+			}
+		},
+		"local": {
+
+		}
+	}
+}

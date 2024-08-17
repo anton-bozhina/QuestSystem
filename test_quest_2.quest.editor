@@ -1,0 +1,31 @@
+{
+	"graph_edit_scroll_offset": "Vector2(61.315, -302.503)",
+	"graph_edit_zoom": 0.971494436264038,
+	"nodes": {
+		"GlobalVariableCheck_da23f92e4b9fd877": {
+			"position": "Vector2(1480, 200)",
+			"size": "Vector2(304, 350)"
+		},
+		"Print_14ce5bf05f515d37": {
+			"position": "Vector2(1120, 200)",
+			"size": "Vector2(242, 348)"
+		},
+		"Print_71667d1bfa4d14b1": {
+			"position": "Vector2(1960, 180)",
+			"size": "Vector2(242, 348)"
+		},
+		"Print_94d4f770fdf7c715": {
+			"position": "Vector2(1960, 440)",
+			"size": "Vector2(242, 348)"
+		},
+		"QuestStart_7df4238155bfdb4c": {
+			"position": "Vector2(200, 200)",
+			"size": "Vector2(324, 448)"
+		},
+		"WaitGlobalVariableUpdate_2f0751102af0a4e6": {
+			"position": "Vector2(700, 200)",
+			"size": "Vector2(310, 146)"
+		}
+	},
+	"version": "1.0"
+}

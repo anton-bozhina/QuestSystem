@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://cmsbd6giq0ctk"]
+[gd_scene load_steps=5 format=3 uid="uid://cmsbd6giq0ctk"]
 
 [ext_resource type="Script" path="res://addons/questograph/scripts/quest_node.gd" id="1_3mk0g"]
 [ext_resource type="Script" path="res://examples/example_1.gd" id="1_a0v3q"]
-[ext_resource type="Resource" uid="uid://ca412mukkaam0" path="res://test_quest.quest" id="2_tsawb"]
+[ext_resource type="Resource" uid="uid://cp2cca1gnpv30" path="res://test_quest.quest" id="2_tsawb"]
+[ext_resource type="Resource" uid="uid://c1ppoaj86654v" path="res://test_quest_2.quest" id="4_7qdu2"]
 
 [node name="Example" type="Node2D" node_paths=PackedStringArray("quest_node")]
 script = ExtResource("1_a0v3q")
@@ -15,6 +16,10 @@ node_references = {
 "test_ref_1": NodePath("../Node_1"),
 "test_ref_2": NodePath("../Node_2")
 }
+
+[node name="QuestNode2" type="Node" parent="."]
+script = ExtResource("1_3mk0g")
+quest_data = ExtResource("4_7qdu2")
 
 [node name="Node_1" type="Node" parent="."]
 
