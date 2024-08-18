@@ -2,28 +2,46 @@
 class_name QuestographContext
 extends Resource
 
-signal variables_changed
+signal variables_changed(variable: StringName)
+
+
+class Variable:
+	var value: Variant = false
+	var type: Variant.Type = TYPE_NIL
+
+	func _init(variable_value: Variant = false, variable_type: Variant.Type = TYPE_NIL) -> void:
+		value = variable_value
+		type = variable_type
 
 
 class Variables:
-	signal changed
+	signal changed(variable: StringName)
+
+	var context_name: String = ''
+	var context_path: String = ''
 
 	var _variables: Dictionary
-	var _owner: Resource
-
-	func _init(owner: Resource) -> void:
-		_owner = owner
 
 	func _set(property: StringName, value: Variant) -> bool:
-		_variables[property] = value
-		changed.emit()
+		if _variables.get(property) is Variable:
+			_variables.get(property).value = type_convert(value, _variables.get(property).type)
+		else:
+			_variables[property] = Variable.new(value, typeof(value))
+
+		changed.emit(property)
 		return true
 
 	func _get(property: StringName) -> Variant:
-		if not _variables.has(property):
-			push_warning('Variable %s does not exist in the context %s, return false!' % [property, _owner.resource_path])
+		var variable_value: Variant = _variables.get(property)
+		if variable_value and variable_value is not Variable:
+			_variables[property] = Variable.new(variable_value, typeof(variable_value))
+		elif not variable_value:
+			push_warning('Variable %s does not exist in context %s, return false!' % [property, context_path])
 			return false
-		return _variables.get(property)
+		return _variables.get(property).value
+
+	func _to_string() -> String:
+		return str(_variables)
 
 	func keys() -> PackedStringArray:
 		return _variables.keys() as PackedStringArray
@@ -33,20 +51,27 @@ class Variables:
 
 	func set_variables(variables: Dictionary) -> void:
 		_variables = variables
-		changed.emit()
+		changed.emit('')
 
-	func erase(name: StringName) -> void:
-		_variables.erase(name)
-		changed.emit()
+	func get_variable(variable: StringName) -> Variant:
+		return get(variable)
 
-	func has(name: StringName) -> bool:
-		return _variables.has(name)
+	func set_variable(variable: StringName, value: Variant) -> void:
+		set(variable, value)
+
+	func erase(variable: StringName) -> void:
+		_variables.erase(variable)
+		changed.emit(variable)
+
+	func has(variable: StringName) -> bool:
+		return _variables.has(variable)
 
 	func clear() -> void:
 		_variables.clear()
-		changed.emit()
+		changed.emit('')
 
 
+@export var test: QuestographNodeSettings
 
 
 const AVAILABLE_TYPES: PackedStringArray = [
@@ -57,7 +82,8 @@ const AVAILABLE_TYPES: PackedStringArray = [
 	'String:%d' % TYPE_STRING,
 	'Vector2:%d' % TYPE_VECTOR2,
 	'Vector3:%d' % TYPE_VECTOR3,
-	'NodePath:%d' % TYPE_NODE_PATH
+	'NodePath:%d' % TYPE_NODE_PATH,
+	'Resource:%d' % TYPE_OBJECT
 ]
 const DEFAULT_VALUES: Dictionary = {
 		TYPE_NIL: null,
@@ -70,7 +96,7 @@ const DEFAULT_VALUES: Dictionary = {
 		TYPE_NODE_PATH: NodePath('')
 	}
 
-var variables: Variables = Variables.new(self)
+var variables: Variables = Variables.new()
 var _variables_data: Array[Dictionary]
 
 
@@ -111,10 +137,18 @@ func _create_array_property(property_list: Array[Dictionary], prefix: StringName
 				'name': '%s_%d/name' % [prefix, index],
 				'type': TYPE_STRING
 			})
-			property_list.append({
+			var all_value_properties: Dictionary = get_meta('value_properties', {})
+			var value_properties: Dictionary = all_value_properties.get(data[index].type, {
+				'class_name': &'',
+				'hint': PROPERTY_HINT_NONE,
+				'hint_string': '',
+			})
+			value_properties.merge({
 				'name': '%s_%d/value' % [prefix, index],
 				'type': data[index].type
 			})
+			property_list.append(value_properties)
+			#{ "name": "test", "class_name": &"QuestographNodeSettings", "type": 24, "hint": 17, "hint_string": "QuestographNodeSettings", "usage": 4102 }
 
 
 func _set(property: StringName, value: Variant) -> bool:
@@ -165,8 +199,8 @@ func _update_variables() -> void:
 	variables.changed.connect(_on_variables_changed)
 
 
-func _on_variables_changed() -> void:
-	variables_changed.emit()
+func _on_variables_changed(variable: StringName) -> void:
+	variables_changed.emit(variable)
 	emit_changed()
 
 
@@ -178,12 +212,12 @@ func set_variables(variable_dict: Dictionary) -> void:
 	variables.set_variables(variable_dict)
 
 
-func get_variable(name: StringName) -> Variant:
-	return variables[name]
+func get_variable(variable: StringName) -> Variant:
+	return variables.get_variable(variable)
 
 
-func set_variable(name: StringName, value: Variant) -> void:
-	variables[name] = value
+func set_variable(variable: StringName, value: Variant) -> void:
+	variables.set_variable(variable, value)
 
 
 func get_variable_list(type_filter: Array[int] = []) -> PackedStringArray:
@@ -192,8 +226,9 @@ func get_variable_list(type_filter: Array[int] = []) -> PackedStringArray:
 
 	var result: PackedStringArray = []
 	for variable in variables.get_variables():
-		if typeof(variables[variable]) in type_filter:
+		if typeof(variables.get_variable(variable)) in type_filter:
 			result.append(variable)
+
 	return result
 
 
@@ -207,50 +242,3 @@ func has_variable(name: StringName) -> bool:
 
 func clear_variables() -> void:
 	variables.clear()
-
-
-func __tests() -> void:
-	var test_dict: Dictionary = {
-		test_bool = true,
-		test_int = 99,
-		test_float = 9.99,
-		test_string = 'string'
-	}
-
-	set_variables(test_dict)
-	assert(get_variables() == test_dict)
-	print_debug('Test set_variables() and get_variables() passed!')
-
-	set_variable('test_int', 999)
-	assert(get_variable('test_int') == 999)
-	print_debug('Test set_variable() and get_variable() passed!')
-
-	assert(get_variable_list() as Array == test_dict.keys())
-	print_debug('Test get_variable_list() passed!')
-
-	assert(get_variable_list([TYPE_FLOAT, TYPE_INT]) == PackedStringArray(['test_int', 'test_float']))
-	print_debug('Test filtered get_variable_list() passed!')
-
-	erase_variable('test_string')
-	erase_variable('some_test_string')
-	assert(has_variable('test_string') == false)
-	print_debug('Test remove_variable() and has_variable() passed!')
-
-	clear_variables()
-	assert(get_variables().is_empty())
-	print_debug('Test clear_variables() passed!')
-
-	variables.test_vector2 = Vector2.DOWN
-	assert(variables.test_vector2 == Vector2.DOWN)
-	print_debug('Test adding and reading new variable directly passed!')
-
-	assert(variables.test_not_created_variable == false)
-	print_debug('Test reading not created variable directly passed!')
-
-	var signal_result: Array[bool] = []
-	var on_signal_func: Callable = func(result):
-		result.append(true)
-	variables_changed.connect(on_signal_func.bind(signal_result), CONNECT_ONE_SHOT)
-	variables.test_bool = false
-	assert(not signal_result.is_empty())
-	print_debug('Test variables_changed signal passed!')

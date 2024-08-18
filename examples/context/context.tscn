@@ -10,20 +10,55 @@ script/source = "extends Control
 
 
 func _ready() -> void:
-	context.__tests()
-	#context.changed.connect(func(): print('updated'))
-	#print(context.variables)
-	#print(context.get_variable_list(TYPE_BOOL))
-	#print(context.get_variable('vector22'))
-	#print(typeof(context.get_variable('vector3')) == TYPE_VECTOR3)
-	#print(typeof(context.variables.vector3) == TYPE_VECTOR3)
-#
-	#context.variables.int = 321
-	#context.set_variable('vector22', Vector2.LEFT)
-#
-	#print(context.get_variables())
-#
-	#context.variables.new_var = true
+	__tests()
+
+
+func __tests() -> void:
+	var test_dict: Dictionary = {
+		test_bool = true,
+		test_int = 99,
+		test_float = 9.99,
+		test_string = 'string'
+	}
+
+	context.set_variables(test_dict)
+	assert(context.get_variables() == test_dict)
+	print_debug('Test set_variables() and get_variables() passed!')
+
+	context.set_variable('test_int', 999)
+	assert(context.get_variable('test_int') == 999)
+	print_debug('Test set_variable() and get_variable() passed!')
+
+	assert(context.get_variable_list() as Array == test_dict.keys())
+	print_debug('Test get_variable_list() passed!')
+
+	assert(context.get_variable_list([TYPE_FLOAT, TYPE_INT]) == PackedStringArray(['test_int', 'test_float']))
+	print_debug('Test filtered get_variable_list() passed!')
+
+	context.erase_variable('test_string')
+	context.erase_variable('some_test_string')
+	assert(context.has_variable('test_string') == false)
+	print_debug('Test remove_variable() and has_variable() passed!')
+
+	context.clear_variables()
+	assert(context.get_variables().is_empty())
+	print_debug('Test clear_variables() passed!')
+
+	context.variables.test_vector2 = Vector2.DOWN
+	assert(context.variables.test_vector2 == Vector2.DOWN)
+	print_debug('Test adding and reading new variable directly passed!')
+
+	assert(context.variables.test_not_created_variable == false)
+	print_debug('Test reading not created variable directly passed!')
+
+	var signal_result: Array = []
+	var on_signal_func: Callable = func(variable, result):
+		result.append(variable)
+		result.append(true)
+	context.variables_changed.connect(on_signal_func.bind(signal_result), CONNECT_ONE_SHOT)
+	context.variables.test_bool = false
+	assert(signal_result[0] == 'test_bool' and signal_result[1] == true)
+	print_debug('Test variables_changed signal passed!')
 "
 
 [node name="Context" type="Control"]
