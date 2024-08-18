@@ -28,9 +28,10 @@ func get_quest_data() -> Dictionary:
 
 	for node in graph_edit.get_nodes() as Array[QuestEditorGraphNode]:
 		var node_name: StringName = node.name
+		var node_action: QuestAction = node.action if node.action else QuestAction.new(variable_tree.get_quest_variables(), variable_tree.get_references())
 
 		quest_data['actions'][node_name] = {
-			'class': QuestSystem.get_action_class_name(node.action.get_script()),
+			'class': QuestSystem.get_action_class_name(node_action.get_script()),
 			'connections': graph_edit.get_connection_list().filter(_connections_filter.bind(node_name)).map(_clear_connection),
 			'properties': []
 		}

@@ -46,7 +46,7 @@ func _get_property_list() -> Array[Dictionary]:
 			'hint_string': ','.join(singleton_methods.keys()),
 			'usage': PROPERTY_USAGE_SCRIPT_VARIABLE + PROPERTY_USAGE_STORAGE + PROPERTY_USAGE_EDITOR
 		})
-	if not method.is_empty() and not singleton_methods[method].is_empty():
+	if not method.is_empty() and (singleton_methods.has(method) and not singleton_methods[method].is_empty()):
 		property_list.append({
 			'name': 'arguments',
 			'type': TYPE_STRING,

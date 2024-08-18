@@ -143,7 +143,7 @@ func _on_variable_add_menu_pressed(menu_id: int, folder: TreeItem) -> void:
 			for option_name in variable_options:
 				var option_type: int = variable_options[option_name].get('type', 0)
 				var option_value: Variant = variable_options[option_name].get('value', null)
-				variable_item_data.add_option(VariableItemData.new(option_type, option_name, option_value))
+				variable_item_data.add_option(VariableItemData.new(option_type, option_name.capitalize(), option_value))
 	_add_variable_item_to_tree(variable_item_data, folder)
 	item_edited.emit()
 
@@ -208,6 +208,8 @@ func _get_variables(folder_item: TreeItem, options: bool = false) -> Dictionary:
 	var result: Dictionary = {}
 	for variable_tree_item in folder_item.get_children():
 		var variable_name: StringName = variable_tree_item.get_text(Columns.NAME)
+		if options:
+			variable_name = variable_name.to_lower()
 		var variable_value: Variant = null
 		var variable_type: Variant.Type = TYPE_NIL
 		match variable_tree_item.get_cell_mode(Columns.VALUE):
