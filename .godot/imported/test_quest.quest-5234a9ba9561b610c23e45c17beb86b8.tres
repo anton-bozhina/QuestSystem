@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://addons/questograph/scripts/quest_data.gd" id="1_ugaj5"]
+[ext_resource type="Script" path="res://addons/questograph/scripts/quest_data.gd" id="1_7vs5q"]
 
 [resource]
-script = ExtResource("1_ugaj5")
+script = ExtResource("1_7vs5q")
 name = "Test Quest"
 description = "Test Description"
 variables = {
@@ -17,26 +17,6 @@ variables = {
 },
 "type": 4.0,
 "value": "string"
-},
-"new_bool": {
-"options": {
-"init": {
-"type": 1.0,
-"value": true
-}
-},
-"type": 1.0,
-"value": false
-},
-"new_integer": {
-"options": {
-"init": {
-"type": 1.0,
-"value": true
-}
-},
-"type": 2.0,
-"value": -999.0
 }
 },
 "local": {
@@ -127,31 +107,6 @@ actions = {
 }, {
 "name": "value",
 "value": "lol"
-}]
-},
-"GlobalVariableSet_8a9ebaa471222e36": {
-"class": "QuestActionFunctionGlobalVariableSet",
-"connections": [{
-"from_port": 0.0,
-"to_node": "WaitTime_fdae48eb65e7a4f3"
-}],
-"properties": [{
-"name": "variable",
-"value": "new_integer"
-}, {
-"name": "value",
-"value": 1.0
-}]
-},
-"GlobalVariableSet_b5c197f6f192d6d8": {
-"class": "QuestActionFunctionGlobalVariableSet",
-"connections": [],
-"properties": [{
-"name": "variable",
-"value": "new_bool"
-}, {
-"name": "value",
-"value": true
 }]
 },
 "Math Add_3e925290d7fc4133": {
@@ -415,9 +370,6 @@ check global string"
 "connections": [{
 "from_port": 0.0,
 "to_node": "RandomSlot_393a02e3b6f647a4"
-}, {
-"from_port": 0.0,
-"to_node": "GlobalVariableSet_8a9ebaa471222e36"
 }],
 "properties": [{
 "name": "quest_name",
@@ -484,17 +436,6 @@ check global string"
 "properties": [{
 "name": "wait_time",
 "value": 10.0
-}]
-},
-"WaitTime_fdae48eb65e7a4f3": {
-"class": "QuestActionWaitTime",
-"connections": [{
-"from_port": 0.0,
-"to_node": "GlobalVariableSet_b5c197f6f192d6d8"
-}],
-"properties": [{
-"name": "wait_time",
-"value": 5.0
 }]
 },
 "WaitVarUpdate_cf3d925bbe796107": {
