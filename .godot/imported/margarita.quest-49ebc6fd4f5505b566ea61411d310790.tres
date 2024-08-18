@@ -1,0 +1,185 @@
+[gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/quest_system/scripts/quest_data.gd" id="1_ij60k"]
+
+[resource]
+script = ExtResource("1_ij60k")
+name = "margarita"
+description = "дочка крысы"
+variables = {
+"global": {
+"margarita": {
+"options": {
+"init": {
+"type": 1.0,
+"value": true
+}
+},
+"type": 1.0,
+"value": false
+},
+"margaritaQuest": {
+"options": {
+"init": {
+"type": 1.0,
+"value": true
+}
+},
+"type": 2.0,
+"value": 777.0
+}
+},
+"local": {}
+}
+node_references = {}
+start_action = &"QuestStart_42fa38fcce788be8"
+actions = {
+"Connection_2c1f65e3129fd5d2": {
+"class": "QuestActionLogicConnection",
+"connections": [{
+"from_port": 0.0,
+"to_node": "WaitGlobalVariableUpdate_01b862d920654f69"
+}],
+"properties": []
+},
+"DialogicStart_5e05ce7fdef01414": {
+"class": "",
+"connections": [{
+"from_port": 0.0,
+"to_node": "WaitDialogEnded_d7f5f80a75c2a2c2"
+}],
+"properties": []
+},
+"DialogicStart_6790fe996ab7c462": {
+"class": "",
+"connections": [{
+"from_port": 0.0,
+"to_node": "WaitDialogEnded_50c924d9a9270c35"
+}],
+"properties": []
+},
+"Execute_377d9ea07f17c8de": {
+"class": "QuestActionFunctionExecute",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Connection_2c1f65e3129fd5d2"
+}],
+"properties": [{
+"name": "singleton",
+"value": ""
+}]
+},
+"Execute_8f7a89a2e4312a10": {
+"class": "QuestActionFunctionExecute",
+"connections": [{
+"from_port": 0.0,
+"to_node": "WaitGlobalVariableUpdate_01b862d920654f69"
+}],
+"properties": [{
+"name": "singleton",
+"value": ""
+}]
+},
+"GlobalVariableCheck_63e7dfd03b4556e4": {
+"class": "QuestActionCheckGlobalVariable",
+"connections": [{
+"from_port": 0.0,
+"to_node": "GlobalVariableSet_39ff3c2baef66749"
+}],
+"properties": [{
+"name": "variable",
+"value": "margaritaQuest"
+}, {
+"name": "operator",
+"value": 0.0
+}, {
+"name": "value",
+"value": -999.0
+}]
+},
+"GlobalVariableSet_39ff3c2baef66749": {
+"class": "QuestActionFunctionGlobalVariableSet",
+"connections": [{
+"from_port": 0.0,
+"to_node": "DialogicStart_5e05ce7fdef01414"
+}],
+"properties": [{
+"name": "variable",
+"value": "margaritaQuest"
+}, {
+"name": "value",
+"value": 0.0
+}]
+},
+"PrintVar_60b2cd0454cd92d8": {
+"class": "",
+"connections": [],
+"properties": []
+},
+"Print_bc14e14607e67249": {
+"class": "QuestActionFunctionPrint",
+"connections": [],
+"properties": [{
+"name": "message",
+"value": "первый квест загружен"
+}]
+},
+"QuestStart_42fa38fcce788be8": {
+"class": "QuestActionLogicStart",
+"connections": [{
+"from_port": 0.0,
+"to_node": "WaitGlobalVariableUpdate_8cb5c79afef305b0"
+}, {
+"from_port": 0.0,
+"to_node": "Print_bc14e14607e67249"
+}],
+"properties": [{
+"name": "quest_name",
+"value": "margarita"
+}, {
+"name": "quest_description",
+"value": "дочка крысы"
+}]
+},
+"WaitDialogEnded_50c924d9a9270c35": {
+"class": "",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Execute_377d9ea07f17c8de"
+}],
+"properties": []
+},
+"WaitDialogEnded_d7f5f80a75c2a2c2": {
+"class": "",
+"connections": [{
+"from_port": 0.0,
+"to_node": "Execute_8f7a89a2e4312a10"
+}],
+"properties": []
+},
+"WaitGlobalVariableUpdate_01b862d920654f69": {
+"class": "QuestActionWaitGlobalVariableUpdate",
+"connections": [{
+"from_port": 0.0,
+"to_node": "DialogicStart_6790fe996ab7c462"
+}],
+"properties": [{
+"name": "variable",
+"value": "margarita"
+}]
+},
+"WaitGlobalVariableUpdate_8cb5c79afef305b0": {
+"class": "QuestActionWaitGlobalVariableUpdate",
+"connections": [{
+"from_port": 0.0,
+"to_node": "GlobalVariableCheck_63e7dfd03b4556e4"
+}, {
+"from_port": 0.0,
+"to_node": "PrintVar_60b2cd0454cd92d8"
+}],
+"properties": [{
+"name": "variable",
+"value": "margarita"
+}]
+}
+}

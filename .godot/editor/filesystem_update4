@@ -1,0 +1,9 @@
+res://examples/example_1.tscn
+res://addons/quest_editor/shortcuts/save.tres
+res://addons/quest_editor/shortcuts/undo.tres
+res://addons/quest_editor/shortcuts/redo.tres
+res://addons/quest_editor/shortcuts/cut.tres
+res://addons/quest_editor/shortcuts/copy.tres
+res://addons/quest_editor/shortcuts/paste.tres
+res://addons/quest_editor/shortcuts/duplicate.tres
+res://addons/quest_editor/scenes/main_panel.tscn
