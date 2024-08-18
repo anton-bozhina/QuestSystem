@@ -74,6 +74,8 @@ func _get_action_data(action_name: StringName) -> Dictionary:
 
 func _on_action_performed(from_slot: int, action_name: StringName) -> void:
 	_add_log('[%s] Action performed.' % [action_name])
+	if not active_nodes.has(action_name):
+		return
 	var action_connections: Array = active_nodes[action_name]['connections']
 	active_nodes.erase(action_name)
 	for connection in action_connections:

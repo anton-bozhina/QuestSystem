@@ -243,6 +243,8 @@ func get_new_node_position(at_position: Vector2) -> Vector2:
 func update_variables(variables: Array[QuestVariables], node_references: Dictionary) -> void:
 	graph_edit_before_changed.emit()
 	for node in _node_list as Array[QuestEditorGraphNode]:
+		if not node.action:
+			continue
 		node.action.variables = variables
 		node.action.node_references = node_references
 		node._create_controls()
