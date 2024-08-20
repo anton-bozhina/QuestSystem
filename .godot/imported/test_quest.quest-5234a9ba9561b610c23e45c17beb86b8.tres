@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="QuestData" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://addons/questograph/scripts/quest_data.gd" id="1_7vs5q"]
+[ext_resource type="Script" path="res://addons/questograph/scripts/quest_data.gd" id="1_fphk2"]
 
 [resource]
-script = ExtResource("1_7vs5q")
+script = ExtResource("1_fphk2")
 name = "Test Quest"
 description = "Test Description"
 variables = {
