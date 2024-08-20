@@ -10,6 +10,10 @@ script/source = "extends Control
 
 
 func _ready() -> void:
+	#print(context.get_variables())
+	#context.set_variables(str_to_var(var_to_str(context.get_variables())))
+	#print(context.get_variables())
+
 	__tests()
 
 
@@ -18,12 +22,26 @@ func __tests() -> void:
 		test_bool = true,
 		test_int = 99,
 		test_float = 9.99,
-		test_string = 'string'
+		test_string = 'string',
+		test_dict = {
+			value = false,
+			type = TYPE_AABB,
+			some_var = 888
+		}
 	}
 
 	context.set_variables(test_dict)
 	assert(context.get_variables() == test_dict)
 	print_debug('Test set_variables() and get_variables() passed!')
+
+	var fake_dict: Dictionary = {
+			value = false,
+			type = TYPE_AABB,
+			some_var = 888
+		}
+	context.variables.test_dict = fake_dict
+	assert(context.variables.test_dict == fake_dict)
+	print_debug('Test set_variable() with fake dict variable passed!')
 
 	context.set_variable('test_int', 999)
 	assert(context.get_variable('test_int') == 999)
@@ -40,10 +58,6 @@ func __tests() -> void:
 	assert(context.has_variable('test_string') == false)
 	print_debug('Test remove_variable() and has_variable() passed!')
 
-	context.clear_variables()
-	assert(context.get_variables().is_empty())
-	print_debug('Test clear_variables() passed!')
-
 	context.variables.test_vector2 = Vector2.DOWN
 	assert(context.variables.test_vector2 == Vector2.DOWN)
 	print_debug('Test adding and reading new variable directly passed!')
@@ -51,14 +65,30 @@ func __tests() -> void:
 	assert(context.variables.test_not_created_variable == false)
 	print_debug('Test reading not created variable directly passed!')
 
-	var signal_result: Array = []
+	var signal_result: Array = ['', false]
 	var on_signal_func: Callable = func(variable, result):
+		result.clear()
 		result.append(variable)
 		result.append(true)
-	context.variables_changed.connect(on_signal_func.bind(signal_result), CONNECT_ONE_SHOT)
+	context.variables.changed.connect(on_signal_func.bind(signal_result), CONNECT_ONE_SHOT)
 	context.variables.test_bool = false
 	assert(signal_result[0] == 'test_bool' and signal_result[1] == true)
 	print_debug('Test variables_changed signal passed!')
+
+	#signal_result = [false]
+	#on_signal_func = func(result):
+		#result.clear()
+		#result.append(true)
+	#var variable_object: QuestographContext.Variable = context.variables.get_variable('test_bool', true)
+	#if variable_object:
+		#variable_object.changed.connect(on_signal_func.bind(signal_result), CONNECT_ONE_SHOT)
+	#context.variables.test_bool = true
+	#assert(signal_result[0] == true)
+	#print_debug('Test variables_changed signal passed!')
+
+	context.clear_variables()
+	assert(context.get_variables().is_empty())
+	print_debug('Test clear_variables() passed!')
 "
 
 [node name="Context" type="Control"]

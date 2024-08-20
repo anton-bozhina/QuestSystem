@@ -1,52 +1,11 @@
-[gd_resource type="Resource" script_class="QuestographContext" load_steps=4 format=3 uid="uid://dci855ax4u1qs"]
+[gd_resource type="Resource" script_class="QuestographContext" load_steps=2 format=3 uid="uid://dci855ax4u1qs"]
 
 [ext_resource type="Script" path="res://addons/questograph/scripts/context.gd" id="1_jwheh"]
-[ext_resource type="Script" path="res://addons/questograph/scripts/node_settings.gd" id="2_vl71o"]
-
-[sub_resource type="Resource" id="Resource_3ekcp"]
-resource_name = "NewAction"
-script = ExtResource("2_vl71o")
-id = ""
-group_name = ""
-title = ""
-caption = ""
-color = Color(1, 0.498039, 0.313726, 1)
-input_slot_count = 0
-output_slot_count = 0
 
 [resource]
 script = ExtResource("1_jwheh")
-variable_count = 11
-variable_0/type = 2
-variable_0/name = "int"
-variable_0/value = 123
-variable_1/type = 1
-variable_1/name = "bool"
-variable_1/value = true
-variable_2/type = 5
-variable_2/name = "vector2"
-variable_2/value = Vector2(1, 2)
-variable_3/type = 9
-variable_3/name = "vector3"
-variable_3/value = Vector3(1, 1, 1)
-variable_4/type = 1
-variable_4/name = "bool2"
-variable_4/value = false
-variable_5/type = 3
-variable_5/name = "float"
-variable_5/value = 0.445
-variable_6/type = 5
-variable_6/name = "vector22"
-variable_6/value = Vector2(232, 312.57)
-variable_7/type = 3
-variable_7/name = "float2"
-variable_7/value = 0.385
-variable_8/type = 5
-variable_8/name = "vector23"
-variable_8/value = Vector2(0.28, 0.885)
-variable_9/type = 1
-variable_9/name = "bool3"
-variable_9/value = true
-variable_10/type = 24
-variable_10/name = "new_variable_11"
-variable_10/value = SubResource("Resource_3ekcp")
+variable_count = 1
+variable_0/type = 1
+variable_0/name = "test_2"
+variable_0/value = true
+metadata/show_settings = false

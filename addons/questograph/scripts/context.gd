@@ -2,16 +2,50 @@
 class_name QuestographContext
 extends Resource
 
-signal variables_changed(variable: StringName)
 
+const REVERT_VALUES: Dictionary = {
+	'available_types' = [
+		'Bool:%d' % TYPE_BOOL,
+		'Integer:%d' % TYPE_INT,
+		'Float:%d' % TYPE_FLOAT,
+		'String:%d' % TYPE_STRING,
+		'Vector2:%d' % TYPE_VECTOR2,
+		'Vector3:%d' % TYPE_VECTOR3,
+		'NodePath:%d' % TYPE_NODE_PATH,
+		'Resource:%d' % TYPE_OBJECT
+	],
+	'type_by_id' = {
+				0: {
+					'class_name' = &'',
+					'hint' = PROPERTY_HINT_NONE,
+					'hint_string' = ''
+				}
+	},
+	'type_by_name' = {
+		'': {
+			'class_name' = &'',
+			'hint' = PROPERTY_HINT_NONE,
+			'hint_string' = ''
+		}
+	}
+}
+const DEFAULT_VALUES: Dictionary = {
+		TYPE_NIL: null,
+		TYPE_BOOL: false,
+		TYPE_INT: 0,
+		TYPE_FLOAT: 0,
+		TYPE_STRING: '',
+		TYPE_VECTOR2: Vector2.ZERO,
+		TYPE_VECTOR3: Vector3.ZERO,
+		TYPE_NODE_PATH: NodePath('')
+	}
 
-class Variable:
-	var value: Variant = false
-	var type: Variant.Type = TYPE_NIL
+var variables: Variables = Variables.new()
+var type_by_id: Dictionary
+var type_by_name: Dictionary
+var available_types: Array = REVERT_VALUES['available_types']
 
-	func _init(variable_value: Variant = false, variable_type: Variant.Type = TYPE_NIL) -> void:
-		value = variable_value
-		type = variable_type
+var _variables_data: Array[Dictionary]
 
 
 class Variables:
@@ -23,22 +57,32 @@ class Variables:
 	var _variables: Dictionary
 
 	func _set(property: StringName, value: Variant) -> bool:
-		if _variables.get(property) is Variable:
-			_variables.get(property).value = type_convert(value, _variables.get(property).type)
+		if _is_variable_correct(_variables.get(property)):
+			_variables[property].value = type_convert(value, _variables.get(property, {type = TYPE_NIL}).type)
 		else:
-			_variables[property] = Variable.new(value, typeof(value))
+			_variables[property] = {
+				value = value,
+				type = typeof(value)
+			}
 
 		changed.emit(property)
 		return true
 
 	func _get(property: StringName) -> Variant:
-		var variable_value: Variant = _variables.get(property)
-		if variable_value and variable_value is not Variable:
-			_variables[property] = Variable.new(variable_value, typeof(variable_value))
-		elif not variable_value:
+		if not _variables.has(property):
 			push_warning('Variable %s does not exist in context %s, return false!' % [property, context_path])
-			return false
-		return _variables.get(property).value
+		elif not _is_variable_correct(_variables.get(property)):
+			_variables[property] = {
+				value = _variables.get(property),
+				type = typeof(_variables.get(property))
+			}
+		return _variables.get(property, {value = false}).value
+
+	func _is_variable_correct(variable: Variant) -> bool:
+		if typeof(variable) == TYPE_DICTIONARY:
+			var type: Variant.Type = variable.get('type')
+			return type != TYPE_NIL and typeof(variable.get('value')) == int(type)
+		return false
 
 	func _to_string() -> String:
 		return str(_variables)
@@ -71,39 +115,42 @@ class Variables:
 		changed.emit('')
 
 
-@export var test: QuestographNodeSettings
-
-
-const AVAILABLE_TYPES: PackedStringArray = [
-	'Null',
-	'Bool:%d' % TYPE_BOOL,
-	'Integer:%d' % TYPE_INT,
-	'Float:%d' % TYPE_FLOAT,
-	'String:%d' % TYPE_STRING,
-	'Vector2:%d' % TYPE_VECTOR2,
-	'Vector3:%d' % TYPE_VECTOR3,
-	'NodePath:%d' % TYPE_NODE_PATH,
-	'Resource:%d' % TYPE_OBJECT
-]
-const DEFAULT_VALUES: Dictionary = {
-		TYPE_NIL: null,
-		TYPE_BOOL: false,
-		TYPE_INT: 0,
-		TYPE_FLOAT: 0,
-		TYPE_STRING: '',
-		TYPE_VECTOR2: Vector2.ZERO,
-		TYPE_VECTOR3: Vector3.ZERO,
-		TYPE_NODE_PATH: NodePath('')
-	}
-
-var variables: Variables = Variables.new()
-var _variables_data: Array[Dictionary]
-
-
 func _get_property_list() -> Array[Dictionary]:
 	var property_list: Array[Dictionary] = []
 	_create_array_property(property_list, 'variable', _variables_data)
+	if get_meta('show_settings', false):
+		_create_settings_property(property_list)
 	return property_list
+
+
+func _create_settings_property(property_list: Array[Dictionary]) -> void:
+	property_list.append({
+		'name': 'Settings',
+		'type': TYPE_NIL,
+		'usage': PROPERTY_USAGE_CATEGORY
+	})
+	property_list.append({
+		'name': 'Settings',
+		'type': TYPE_NIL,
+		'usage': PROPERTY_USAGE_GROUP
+	})
+	property_list.append({
+		'name': 'type_by_id',
+		'type': TYPE_DICTIONARY,
+		'usage': PROPERTY_USAGE_DEFAULT
+	})
+	property_list.append({
+		'name': 'type_by_name',
+		'type': TYPE_DICTIONARY,
+		'usage': PROPERTY_USAGE_DEFAULT
+	})
+	property_list.append({
+		'name': 'available_types',
+		'type': TYPE_ARRAY,
+		'hint': PROPERTY_HINT_TYPE_STRING,
+		'hint_string': '4:',
+		'usage': PROPERTY_USAGE_DEFAULT
+	})
 
 
 func _create_array_property(property_list: Array[Dictionary], prefix: StringName, data: Array) -> void:
@@ -117,39 +164,52 @@ func _create_array_property(property_list: Array[Dictionary], prefix: StringName
 	})
 	for index in data.size():
 		if data[index].type == TYPE_NIL:
-			property_list.append({
-				'name': '%s_%d/type' % [prefix, index],
-				'type': TYPE_INT,
-				'hint': PROPERTY_HINT_ENUM,
-				'hint_string': ','.join(AVAILABLE_TYPES),
-				'usage': PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_STORAGE
-			})
-		else:
-			property_list.append({
-				'name': '%s_%d/type' % [prefix, index],
-				'type': TYPE_INT,
-				'hint': PROPERTY_HINT_ENUM,
-				'hint_string': ','.join(AVAILABLE_TYPES),
-				'usage': PROPERTY_USAGE_STORAGE
-			})
+			if available_types.size() > 1:
+				property_list.append({
+					'name': '%s_%d/type' % [prefix, index],
+					'type': TYPE_INT,
+					'hint': PROPERTY_HINT_ENUM,
+					'hint_string': 'Null,%s' % ','.join(available_types),
+					'usage': PROPERTY_USAGE_DEFAULT
+				})
+			elif available_types.size() == 1:
+				data[index].type = int(available_types[0].get_slice(':', 1))
+			else:
+				property_list.append({
+					'name': '%s_%d/type' % [prefix, index],
+					'type': TYPE_INT,
+					'hint': PROPERTY_HINT_ENUM,
+					'hint_string': 'No Types Available',
+					'usage': PROPERTY_USAGE_DEFAULT
+				})
+
 		if data[index].type != TYPE_NIL:
 			property_list.append({
-				'name': '%s_%d/name' % [prefix, index],
+				'name': '%s_%d/type' % [prefix, index],
+				'type': TYPE_INT,
+				'hint': PROPERTY_HINT_ENUM,
+				'hint_string': 'Null,%s' % ','.join(available_types),
+				'usage': PROPERTY_USAGE_STORAGE
+			})
+			var property_name_name: String = '%s_%d/name' % [prefix, index]
+			property_list.append({
+				'name': property_name_name,
 				'type': TYPE_STRING
 			})
-			var all_value_properties: Dictionary = get_meta('value_properties', {})
-			var value_properties: Dictionary = all_value_properties.get(data[index].type, {
-				'class_name': &'',
-				'hint': PROPERTY_HINT_NONE,
-				'hint_string': '',
-			})
-			value_properties.merge({
+			var property_name_value: String = get(property_name_name)
+			var value_type_customize: Dictionary = {}
+			if type_by_name.has(property_name_value):
+				value_type_customize = type_by_name.get(property_name_value, {}).duplicate()
+			else:
+				value_type_customize = type_by_id.get(data[index].type, {}).duplicate()
+			value_type_customize.merge({
 				'name': '%s_%d/value' % [prefix, index],
 				'type': data[index].type
 			})
-			property_list.append(value_properties)
+			property_list.append(value_type_customize)
+			#{ "name": "power_percent", "class_name": &"", "type": 2, "hint": 1, "hint_string": "0,100,10,or_greater", "usage": 4102 }
 			#{ "name": "test", "class_name": &"QuestographNodeSettings", "type": 24, "hint": 17, "hint_string": "QuestographNodeSettings", "usage": 4102 }
-
+			#{ "name": "available_types", "class_name": &"", "type": 28, "hint": 23, "hint_string": "4:", "usage": 4102 }
 
 func _set(property: StringName, value: Variant) -> bool:
 	match property:
@@ -160,9 +220,10 @@ func _set(property: StringName, value: Variant) -> bool:
 					_variables_data[index] = {
 						type = TYPE_NIL,
 						name = 'new_variable_%d' % (index + 1),
-						value = null
+						value = ''
 					}
 			notify_property_list_changed()
+			return true
 		property when property.begins_with('variable_'):
 			var splited_property: PackedStringArray = property.trim_prefix('variable_').split('/')
 			var index: int = int(splited_property[0])
@@ -171,7 +232,8 @@ func _set(property: StringName, value: Variant) -> bool:
 				notify_property_list_changed()
 			_variables_data[index][key] = value
 			_update_variables()
-	return true
+			return true
+	return false
 
 
 func _get(property: StringName) -> Variant:
@@ -186,22 +248,23 @@ func _get(property: StringName) -> Variant:
 	return null
 
 
+func _property_can_revert(property: StringName) -> bool:
+	return REVERT_VALUES.has(property) and REVERT_VALUES.get(property) != get(property)
+
+
+func _property_get_revert(property: StringName) -> Variant:
+	return REVERT_VALUES.get(property)
+
+
 func _update_variables() -> void:
 	variables.clear()
-	if variables.changed.is_connected(_on_variables_changed):
-		variables.changed.disconnect(_on_variables_changed)
-
 	for variable in _variables_data:
 		if not variable.type:
 			continue
-		variables[variable.name] = type_convert(variable.value, variable.type)
-
-	variables.changed.connect(_on_variables_changed)
-
-
-func _on_variables_changed(variable: StringName) -> void:
-	variables_changed.emit(variable)
-	emit_changed()
+		variables[variable.name] = {
+			value = variable.value,
+			type = variable.type
+		}
 
 
 func get_variables() -> Dictionary:

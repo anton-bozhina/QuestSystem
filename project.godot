@@ -8,10 +8,6 @@
 
 config_version=5
 
-[Questograph]
-
-array=[0.0]
-
 [application]
 
 config/name="QuestSystem"
