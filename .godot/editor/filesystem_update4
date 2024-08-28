@@ -7,5 +7,4 @@ res://addons/questograph_editor/resources/shortcuts/copy.tres
 res://addons/questograph_editor/resources/shortcuts/paste.tres
 res://addons/questograph_editor/resources/shortcuts/duplicate.tres
 res://variables.tres
-res://addons/questograph/plugin.gd
 res://addons/questograph/scripts/context.gd
