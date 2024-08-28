@@ -1,25 +1,50 @@
 @tool
+@icon('../icons/context.svg')
 class_name QuestographContext
 extends Resource
+## A class of context variable resource.
+##
+## This class is designed to create and manage a set of variables for use within a Godot project.
+## It allows for the dynamic creation, modification, and retrieval of variables of different types
+## (e.g., String, Integer, Float, etc.) at runtime or in the editor. The class also provides
+## custom properties for these variables, making them editable within the Godot editor.
+## It includes functionality for managing the type and value of each variable, and it emits
+## signals when variables are changed. The meta boolean variable [b]show_settings[/b] can be
+## used to toggle the visibility of additional settings for this resource in the editor.
 
 
+## Emitted when a variable is changed.
+signal variable_changed(name: StringName)
+
+
+## Configuration settings for variable properties.
+const VARIABLE_SETTINGS: Dictionary = {
+	name = 'variable',
+	category = 'Variables',
+	prefix = 'variable_',
+	add_button_text = 'Add Variable',
+	page_size = 10,
+	null_type = 'Null'
+}
+
+## Default values used for reverting properties.
 const REVERT_VALUES: Dictionary = {
 	'available_types' = [
-		'Bool:%d' % TYPE_BOOL,
+		'String:%d' % TYPE_STRING,
 		'Integer:%d' % TYPE_INT,
 		'Float:%d' % TYPE_FLOAT,
-		'String:%d' % TYPE_STRING,
+		'Bool:%d' % TYPE_BOOL,
 		'Vector2:%d' % TYPE_VECTOR2,
 		'Vector3:%d' % TYPE_VECTOR3,
 		'NodePath:%d' % TYPE_NODE_PATH,
 		'Resource:%d' % TYPE_OBJECT
 	],
 	'type_by_id' = {
-				0: {
-					'class_name' = &'',
-					'hint' = PROPERTY_HINT_NONE,
-					'hint_string' = ''
-				}
+		0: {
+			'class_name' = &'',
+			'hint' = PROPERTY_HINT_NONE,
+			'hint_string' = ''
+		}
 	},
 	'type_by_name' = {
 		'': {
@@ -29,100 +54,62 @@ const REVERT_VALUES: Dictionary = {
 		}
 	}
 }
+
+## Default key values for the variables.
+const DEFAULT_KEYS: Dictionary = {
+	type = TYPE_NIL,
+	name = &'',
+	value = DEFAULT_VALUES[TYPE_NIL]
+}
+
+## Default values for different variable types.
 const DEFAULT_VALUES: Dictionary = {
-		TYPE_NIL: null,
-		TYPE_BOOL: false,
-		TYPE_INT: 0,
-		TYPE_FLOAT: 0,
-		TYPE_STRING: '',
-		TYPE_VECTOR2: Vector2.ZERO,
-		TYPE_VECTOR3: Vector3.ZERO,
-		TYPE_NODE_PATH: NodePath('')
-	}
+	TYPE_NIL: null,
+	TYPE_BOOL: false,
+	TYPE_INT: 0,
+	TYPE_FLOAT: 0,
+	TYPE_STRING: '',
+	TYPE_VECTOR2: Vector2.ZERO,
+	TYPE_VECTOR3: Vector3.ZERO,
+	TYPE_NODE_PATH: NodePath('')
+}
 
-var variables: Variables = Variables.new()
-var type_by_id: Dictionary
-var type_by_name: Dictionary
-var available_types: Array = REVERT_VALUES['available_types']
+## Meta key to show or hide settings in the editor.
+const META_SHOW_SETTINGS: String = 'show_settings'
 
-var _variables_data: Array[Dictionary]
+## Array storing all the variables as dictionaries.
+@export_storage var _variables: Array[Dictionary]
 
+## Dictionary mapping variable names to their indices in the _variables array.
+@export_storage var _names: Dictionary
 
-class Variables:
-	signal changed(variable: StringName)
+## Dictionary mapping type IDs to their respective settings.
+@export_storage var _type_by_id: Dictionary = REVERT_VALUES['type_by_id']
 
-	var context_name: String = ''
-	var context_path: String = ''
+## Dictionary mapping variable names to their respective settings.
+@export_storage var _type_by_name: Dictionary = REVERT_VALUES['type_by_name']
 
-	var _variables: Dictionary
-
-	func _set(property: StringName, value: Variant) -> bool:
-		if _is_variable_correct(_variables.get(property)):
-			_variables[property].value = type_convert(value, _variables.get(property, {type = TYPE_NIL}).type)
-		else:
-			_variables[property] = {
-				value = value,
-				type = typeof(value)
-			}
-
-		changed.emit(property)
-		return true
-
-	func _get(property: StringName) -> Variant:
-		if not _variables.has(property):
-			push_warning('Variable %s does not exist in context %s, return false!' % [property, context_path])
-		elif not _is_variable_correct(_variables.get(property)):
-			_variables[property] = {
-				value = _variables.get(property),
-				type = typeof(_variables.get(property))
-			}
-		return _variables.get(property, {value = false}).value
-
-	func _is_variable_correct(variable: Variant) -> bool:
-		if typeof(variable) == TYPE_DICTIONARY:
-			var type: Variant.Type = variable.get('type')
-			return type != TYPE_NIL and typeof(variable.get('value')) == int(type)
-		return false
-
-	func _to_string() -> String:
-		return str(_variables)
-
-	func keys() -> PackedStringArray:
-		return _variables.keys() as PackedStringArray
-
-	func get_variables() -> Dictionary:
-		return _variables
-
-	func set_variables(variables: Dictionary) -> void:
-		_variables = variables
-		changed.emit('')
-
-	func get_variable(variable: StringName) -> Variant:
-		return get(variable)
-
-	func set_variable(variable: StringName, value: Variant) -> void:
-		set(variable, value)
-
-	func erase(variable: StringName) -> void:
-		_variables.erase(variable)
-		changed.emit(variable)
-
-	func has(variable: StringName) -> bool:
-		return _variables.has(variable)
-
-	func clear() -> void:
-		_variables.clear()
-		changed.emit('')
+## Array of available types for variables.
+@export_storage var _available_types: Array = REVERT_VALUES['available_types']
 
 
+#func _init() -> void:
+	#printt('INIT!', resource_name)
+
+
+## Generates the list of properties for the editor, including variable properties
+## and settings if META_SHOW_SETTINGS is enabled.
 func _get_property_list() -> Array[Dictionary]:
+	if not Engine.is_editor_hint():
+		return []
 	var property_list: Array[Dictionary] = []
-	_create_array_property(property_list, 'variable', _variables_data)
-	if get_meta('show_settings', false):
+	property_list.append_array(_create_variable_property())
+	if get_meta(META_SHOW_SETTINGS, false):
 		_create_settings_property(property_list)
 	return property_list
 
 
+## Creates properties for the settings in the editor.
 func _create_settings_property(property_list: Array[Dictionary]) -> void:
 	property_list.append({
 		'name': 'Settings',
@@ -135,173 +122,180 @@ func _create_settings_property(property_list: Array[Dictionary]) -> void:
 		'usage': PROPERTY_USAGE_GROUP
 	})
 	property_list.append({
-		'name': 'type_by_id',
+		'name': '_type_by_id',
 		'type': TYPE_DICTIONARY,
-		'usage': PROPERTY_USAGE_DEFAULT
+		'usage': PROPERTY_USAGE_EDITOR
 	})
 	property_list.append({
-		'name': 'type_by_name',
+		'name': '_type_by_name',
 		'type': TYPE_DICTIONARY,
-		'usage': PROPERTY_USAGE_DEFAULT
+		'usage': PROPERTY_USAGE_EDITOR
 	})
 	property_list.append({
-		'name': 'available_types',
+		'name': '_available_types',
 		'type': TYPE_ARRAY,
 		'hint': PROPERTY_HINT_TYPE_STRING,
 		'hint_string': '4:',
-		'usage': PROPERTY_USAGE_DEFAULT
+		'usage': PROPERTY_USAGE_EDITOR
 	})
 
 
-func _create_array_property(property_list: Array[Dictionary], prefix: StringName, data: Array) -> void:
+## Creates the properties for the variables in the editor, allowing for customization of their types and names.
+func _create_variable_property() -> Array[Dictionary]:
+	_names.clear()
+	var property_list: Array[Dictionary] = []
 	property_list.append({
-		'name': '%s_count' % prefix,
-		'class_name': '%ss,%s_,add_button_text=Add %s,page_size=10' % [prefix.capitalize(), prefix, prefix.capitalize()],
+		'name': '%s_count' % VARIABLE_SETTINGS.name,
+		'class_name': '%s,%s,add_button_text=%s,page_size=%d' % [
+			VARIABLE_SETTINGS.category,
+			VARIABLE_SETTINGS.prefix,
+			VARIABLE_SETTINGS.add_button_text,
+			VARIABLE_SETTINGS.page_size
+		],
 		'type': TYPE_INT,
-		'usage': PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_ARRAY,
+		'usage': PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_ARRAY,
 		'hint': PROPERTY_HINT_NONE,
 		'hint_string': ''
 	})
-	for index in data.size():
-		if data[index].type == TYPE_NIL:
-			if available_types.size() > 1:
-				property_list.append({
-					'name': '%s_%d/type' % [prefix, index],
-					'type': TYPE_INT,
-					'hint': PROPERTY_HINT_ENUM,
-					'hint_string': 'Null,%s' % ','.join(available_types),
-					'usage': PROPERTY_USAGE_DEFAULT
-				})
-			elif available_types.size() == 1:
-				data[index].type = int(available_types[0].get_slice(':', 1))
-			else:
-				property_list.append({
-					'name': '%s_%d/type' % [prefix, index],
-					'type': TYPE_INT,
-					'hint': PROPERTY_HINT_ENUM,
-					'hint_string': 'No Types Available',
-					'usage': PROPERTY_USAGE_DEFAULT
-				})
+	for index in _variables.size():
+		var variable_type: Variant.Type = _variables[index].get('type', DEFAULT_KEYS.type)
 
-		if data[index].type != TYPE_NIL:
-			property_list.append({
-				'name': '%s_%d/type' % [prefix, index],
-				'type': TYPE_INT,
-				'hint': PROPERTY_HINT_ENUM,
-				'hint_string': 'Null,%s' % ','.join(available_types),
-				'usage': PROPERTY_USAGE_STORAGE
-			})
-			var property_name_name: String = '%s_%d/name' % [prefix, index]
-			property_list.append({
-				'name': property_name_name,
-				'type': TYPE_STRING
-			})
-			var property_name_value: String = get(property_name_name)
-			var value_type_customize: Dictionary = {}
-			if type_by_name.has(property_name_value):
-				value_type_customize = type_by_name.get(property_name_value, {}).duplicate()
+		var type_list: Array = _available_types.duplicate() if _available_types.size() >= 1 else REVERT_VALUES.available_types.duplicate()
+		if variable_type == TYPE_NIL:
+			if type_list.size() == 1:
+				variable_type = int(type_list[0].split(':')[1])
+				_variables[index].type = variable_type
 			else:
-				value_type_customize = type_by_id.get(data[index].type, {}).duplicate()
-			value_type_customize.merge({
-				'name': '%s_%d/value' % [prefix, index],
-				'type': data[index].type
-			})
-			property_list.append(value_type_customize)
-			#{ "name": "power_percent", "class_name": &"", "type": 2, "hint": 1, "hint_string": "0,100,10,or_greater", "usage": 4102 }
-			#{ "name": "test", "class_name": &"QuestographNodeSettings", "type": 24, "hint": 17, "hint_string": "QuestographNodeSettings", "usage": 4102 }
-			#{ "name": "available_types", "class_name": &"", "type": 28, "hint": 23, "hint_string": "4:", "usage": 4102 }
+				type_list.insert(0, VARIABLE_SETTINGS.null_type)
 
+		property_list.append({
+			'name': '%s%d/type' % [VARIABLE_SETTINGS.prefix, index],
+			'type': TYPE_INT,
+			'hint': PROPERTY_HINT_ENUM,
+			'hint_string': '%s' % [','.join(type_list)],
+			'usage': PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_UPDATE_ALL_IF_MODIFIED if type_list.size() > 1 else PROPERTY_USAGE_NONE
+		})
+
+		property_list.append({
+			'name': '%s%d/name' % [VARIABLE_SETTINGS.prefix, index],
+			'type': TYPE_STRING_NAME,
+			'usage': PROPERTY_USAGE_EDITOR if variable_type != TYPE_NIL else PROPERTY_USAGE_NONE
+		})
+
+		var variable_name: StringName = _variables[index].get('name', DEFAULT_KEYS.name)
+		var value_type_customize: Dictionary = {}
+
+		if _type_by_name.has(variable_name):
+			value_type_customize = _type_by_name.get(variable_name, {}).duplicate()
+		else:
+			value_type_customize = _type_by_id.get(variable_type, {}).duplicate()
+
+		value_type_customize.merge({
+			'name': '%s%d/value' % [VARIABLE_SETTINGS.prefix, index],
+			'type': variable_type,
+			'usage': PROPERTY_USAGE_EDITOR if variable_type != TYPE_NIL else PROPERTY_USAGE_NONE
+		})
+		property_list.append(value_type_customize)
+
+		if _variables[index].has('name'):
+			_names[_variables[index].name] = index
+
+	return property_list
+
+
+## Sets the value of a property within the class, adjusting variables as needed.
 func _set(property: StringName, value: Variant) -> bool:
+	if not Engine.is_editor_hint():
+		return false
+
 	match property:
-		'variable_count':
-			_variables_data.resize(value)
-			for index in _variables_data.size():
-				if not _variables_data[index]:
-					_variables_data[index] = {
-						type = TYPE_NIL,
-						name = 'new_variable_%d' % (index + 1),
-						value = ''
-					}
+		'%s_count' % VARIABLE_SETTINGS.name:
+			_variables.resize(value)
 			notify_property_list_changed()
 			return true
-		property when property.begins_with('variable_'):
-			var splited_property: PackedStringArray = property.trim_prefix('variable_').split('/')
+		property when property.begins_with(VARIABLE_SETTINGS.prefix):
+			var splited_property: PackedStringArray = property.trim_prefix(VARIABLE_SETTINGS.prefix).split('/')
 			var index: int = int(splited_property[0])
 			var key: String = splited_property[1]
-			if key == 'type':
-				notify_property_list_changed()
-			_variables_data[index][key] = value
-			_update_variables()
+			_variables[index][key] = value
 			return true
 	return false
 
 
+## Retrieves the value of a property within the class.
 func _get(property: StringName) -> Variant:
+	if not Engine.is_editor_hint():
+		return null
+
 	match property:
-		'variable_count':
-			return _variables_data.size()
-		property when property.begins_with('variable_'):
-			var splited_property: PackedStringArray = property.trim_prefix('variable_').split('/')
+		'%s_count' % VARIABLE_SETTINGS.name:
+			return _variables.size()
+		property when property.begins_with(VARIABLE_SETTINGS.prefix):
+			var splited_property: PackedStringArray = property.trim_prefix(VARIABLE_SETTINGS.prefix).split('/')
 			var index: int = int(splited_property[0])
 			var key: String = splited_property[1]
-			return _variables_data[index].get(key)
+			var default_value: Variant = DEFAULT_KEYS.get(key) if key != 'value' else DEFAULT_VALUES.get(_variables[index].type)
+			return _variables[index].get_or_add(key, default_value)
 	return null
 
 
+## Checks if a property can be reverted to its default value.
 func _property_can_revert(property: StringName) -> bool:
 	return REVERT_VALUES.has(property) and REVERT_VALUES.get(property) != get(property)
 
 
+## Retrieves the default value for a property if it can be reverted.
 func _property_get_revert(property: StringName) -> Variant:
 	return REVERT_VALUES.get(property)
 
 
-func _update_variables() -> void:
-	variables.clear()
-	for variable in _variables_data:
-		if not variable.type:
-			continue
-		variables[variable.name] = {
-			value = variable.value,
-			type = variable.type
-		}
+## Returns the array of variables.
+func get_variables() -> Array[Dictionary]:
+	return _variables
 
 
-func get_variables() -> Dictionary:
-	return variables.get_variables()
+## Sets the array of variables and updates the name-to-index mapping.
+func set_variables(variables: Array[Dictionary]) -> void:
+	_variables.clear()
+	_names.clear()
+	for index in variables.size():
+		_variables.append({
+			type = variables[index].type,
+			name = variables[index].name,
+			value = type_convert(variables[index].value, variables[index].type)
+		})
+		_names[variables[index].name] = index
 
 
-func set_variables(variable_dict: Dictionary) -> void:
-	variables.set_variables(variable_dict)
+## Retrieves the value of a specific variable by its name.
+func get_variable(name: StringName, default: Variant = null) -> Variant:
+	if not _names.has(name):
+		return default
+	return _variables[_names[name]].value
 
 
-func get_variable(variable: StringName) -> Variant:
-	return variables.get_variable(variable)
-
-
-func set_variable(variable: StringName, value: Variant) -> void:
-	variables.set_variable(variable, value)
-
-
+## Returns a list of variable names, optionally filtered by type.
 func get_variable_list(type_filter: Array[int] = []) -> PackedStringArray:
 	if type_filter.is_empty():
-		return variables.keys()
+		return _names.keys()
 
 	var result: PackedStringArray = []
-	for variable in variables.get_variables():
-		if typeof(variables.get_variable(variable)) in type_filter:
-			result.append(variable)
-
+	for variable in _variables:
+		if variable.type in type_filter:
+			result.append(variable.name)
 	return result
 
 
-func erase_variable(name: StringName) -> void:
-	variables.erase(name)
-
-
+## Checks if a variable with the given name exists.
 func has_variable(name: StringName) -> bool:
-	return variables.has(name)
+	return _names.has(name)
 
 
-func clear_variables() -> void:
-	variables.clear()
+## Sets the value of a specific variable and emits a signal to notify that the variable has changed.
+func set_variable(name: StringName, value: Variant) -> void:
+	if not _names.has(name):
+		return
+	var index: int =  _names[name]
+	_variables[index].value = type_convert(value, _variables[index].type)
+	emit_changed()
+	variable_changed.emit(name)

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://ei8wj4mp658l"]
 
-[ext_resource type="Resource" uid="uid://dci855ax4u1qs" path="res://variables.tres" id="1_26omd"]
+[ext_resource type="Resource" uid="uid://dtw2f7kbmth53" path="res://variables.tres" id="1_0fqy8"]
 
 [sub_resource type="GDScript" id="GDScript_3ibmd"]
 script/source = "extends Control
@@ -10,85 +10,62 @@ script/source = "extends Control
 
 
 func _ready() -> void:
-	#print(context.get_variables())
+	#context.variables.test
+	#print(context.get_variable_list([TYPE_BOOL]))
+	#print(context.get_variable('bool_var'))
+	#context.set_variable('bool_var', Vector2.ZERO)
+	#print(context.get_variable('bool_var'))
 	#context.set_variables(str_to_var(var_to_str(context.get_variables())))
-	#print(context.get_variables())
-
+	#print(context.variables)
+	#pass
 	__tests()
 
 
 func __tests() -> void:
-	var test_dict: Dictionary = {
-		test_bool = true,
-		test_int = 99,
-		test_float = 9.99,
-		test_string = 'string',
-		test_dict = {
-			value = false,
-			type = TYPE_AABB,
-			some_var = 888
-		}
-	}
+	var start_variables: Array[Dictionary] = context.get_variables()
+	print_debug('Start Variables:\\n%s' % '\\n'.join(start_variables))
 
-	context.set_variables(test_dict)
-	assert(context.get_variables() == test_dict)
+	var new_variables: Array[Dictionary] = [
+		{ \"name\": &\"string\", \"type\": 4, \"value\": \"test string\" },
+		{ \"name\": &\"bool\", \"type\": 1, \"value\": true },
+		{ \"name\": &\"vector3\", \"type\": 9, \"value\": Vector3(1, 2, 3) }
+	]
+
+	context.set_variables(new_variables)
+	print_debug('New Variables:\\n%s' % '\\n'.join(start_variables))
+
+	assert(context.get_variable('vector3').z == 3)
+	assert(context.get_variables() == new_variables)
 	print_debug('Test set_variables() and get_variables() passed!')
 
-	var fake_dict: Dictionary = {
-			value = false,
-			type = TYPE_AABB,
-			some_var = 888
-		}
-	context.variables.test_dict = fake_dict
-	assert(context.variables.test_dict == fake_dict)
-	print_debug('Test set_variable() with fake dict variable passed!')
-
-	context.set_variable('test_int', 999)
-	assert(context.get_variable('test_int') == 999)
+	context.set_variable('vector3', Vector3.INF)
+	assert(context.get_variable('vector3') == Vector3.INF)
 	print_debug('Test set_variable() and get_variable() passed!')
 
-	assert(context.get_variable_list() as Array == test_dict.keys())
+	assert(context.get_variable_list() as Array == [\"string\", \"bool\", \"vector3\"])
 	print_debug('Test get_variable_list() passed!')
 
-	assert(context.get_variable_list([TYPE_FLOAT, TYPE_INT]) == PackedStringArray(['test_int', 'test_float']))
+	assert(context.get_variable_list([TYPE_VECTOR3, TYPE_STRING]) == PackedStringArray([\"string\", \"vector3\"]))
 	print_debug('Test filtered get_variable_list() passed!')
 
-	context.erase_variable('test_string')
-	context.erase_variable('some_test_string')
-	assert(context.has_variable('test_string') == false)
-	print_debug('Test remove_variable() and has_variable() passed!')
+	assert(context.get_variable_list([TYPE_INT]) == PackedStringArray([]))
+	print_debug('Test filtered get_variable_list() with not valid types passed!')
 
-	context.variables.test_vector2 = Vector2.DOWN
-	assert(context.variables.test_vector2 == Vector2.DOWN)
-	print_debug('Test adding and reading new variable directly passed!')
-
-	assert(context.variables.test_not_created_variable == false)
-	print_debug('Test reading not created variable directly passed!')
+	context.set_variable('vector3', true)
+	assert(context.get_variable('vector3') == Vector3.ZERO)
+	print_debug('Test filtered get_variable_list() with not valid types passed!')
 
 	var signal_result: Array = ['', false]
 	var on_signal_func: Callable = func(variable, result):
 		result.clear()
 		result.append(variable)
 		result.append(true)
-	context.variables.changed.connect(on_signal_func.bind(signal_result), CONNECT_ONE_SHOT)
-	context.variables.test_bool = false
-	assert(signal_result[0] == 'test_bool' and signal_result[1] == true)
+	context.variable_changed.connect(on_signal_func.bind(signal_result), CONNECT_ONE_SHOT)
+	context.set_variable('bool', false)
+	assert(signal_result[0] == &'bool' and signal_result[1] == true)
 	print_debug('Test variables_changed signal passed!')
 
-	#signal_result = [false]
-	#on_signal_func = func(result):
-		#result.clear()
-		#result.append(true)
-	#var variable_object: QuestographContext.Variable = context.variables.get_variable('test_bool', true)
-	#if variable_object:
-		#variable_object.changed.connect(on_signal_func.bind(signal_result), CONNECT_ONE_SHOT)
-	#context.variables.test_bool = true
-	#assert(signal_result[0] == true)
-	#print_debug('Test variables_changed signal passed!')
-
-	context.clear_variables()
-	assert(context.get_variables().is_empty())
-	print_debug('Test clear_variables() passed!')
+	print_debug('Final Variables:\\n%s' % '\\n'.join(start_variables))
 "
 
 [node name="Context" type="Control"]
@@ -99,4 +76,4 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = SubResource("GDScript_3ibmd")
-context = ExtResource("1_26omd")
+context = ExtResource("1_0fqy8")
