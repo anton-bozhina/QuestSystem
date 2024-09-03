@@ -10,59 +10,42 @@ script/source = "extends Control
 
 
 func _ready() -> void:
-	print(context.get_variable('nested_string'))
-	context.set_variable('nested_string', 'LOL KEK')
-	print(context.get_variable('nested_string'))
-	print(context._cached_data)
-	#context._update_cached_data()
+	var stored: Dictionary = context.store_context_data()
 
-	#print(context.variables.str2)
-	#context.variables.str22 = {0: 123}
-	#print(context.variables.str22)
-
-	#context.test_signal.connect(__tests)
-	#context.test_signal.emit()
-	#context.connect('test_signal', __tests)
-	#context.connect('changed', __tests)
-
-	#context.variables.test
-	#print(context.get_variable_list([TYPE_BOOL]))
-	#print(context.get_variable('bool_var'))
-	#context.set_variable('bool_var', Vector2.ZERO)
-	#print(context.get_variable('bool_var'))
-	#context.set_variables(str_to_var(var_to_str(context.get_variables())))
-	#print(context.variables)
-	#pass
-	__tests()
+	print(bytes_to_var_with_objects(stored.nested[1]).store_context_data())
+	pass
+	#__tests()
 
 
 func __tests() -> void:
-	var start_variables: Dictionary = context.store_variable_data()
+	var start_variables: Dictionary = context.store_context_data()
 	print_debug('Start Variables: %s' % start_variables)
 
-	var new_variables: Dictionary = {
-		'string': { 'name': 'string', 'type': 4, 'value': 'test string' },
-		'bool': { 'name': 'bool', 'type': 1, 'value': false },
-		'vector3': { 'name': 'vector3', 'type': 9, 'value': Vector3(1, 2, 3) },
+	var context_data: Dictionary = {
+		'variables': [
+			{ 'name': 'string', 'type': 4, 'value': 'test string' },
+			{ 'name': 'bool', 'type': 1, 'value': false },
+			{ 'name': 'vector3', 'type': 9, 'value': Vector3(1, 2, 3) },
+		],
+		'nested': []
 	}
 
-	context.restore_variable_data(new_variables)
-	print_debug('New Variables: %s' % context.store_variable_data())
+	context.restore_context_data(context_data)
+	print_debug('New Variables: %s' % context.store_context_data())
 
 
 	assert(context.get_variable('vector3').z == 3)
-	assert(context.store_variable_data() == new_variables)
+	assert(context.store_context_data() == context_data)
 	print_debug('Test set_variables() and get_variables() passed!')
-#
+
 	context.set_variable('vector3', Vector3.INF)
 	assert(context.get_variable('vector3') == Vector3.INF)
 	print_debug('Test set_variable() and get_variable() passed!')
-#
+
 	var variable_list: Dictionary = context.get_variable_list()
 	assert(variable_list.has('string'))
 	assert(variable_list.has('vector3'))
 	assert(variable_list.has('bool'))
-	#assert(variable_list.size() == 3)
 	print_debug('Test get_variable_list() passed!')
 
 	var filtered_variable_list: Dictionary = context.get_variable_list([TYPE_VECTOR3, TYPE_STRING])
@@ -88,23 +71,26 @@ func __tests() -> void:
 	assert(signal_result[0] == &'bool' and signal_result[1] == true)
 	print_debug('Test variables_changed signal passed!')
 
-	context.restore_variable_data({
-		'signal': {'name': 'signal', 'type': 26, 'value': null }
-	})
+	context_data = {
+		'variables': [
+			{'name': 'signal', 'type': 26, 'value': [{'name': 'argument', 'type': TYPE_STRING}]}
+		],
+		'nested': []
+	}
+	on_signal_func = func(variable, result):
+		result.clear()
+		result.append(variable)
+		result.append(true)
 
-	#context.variables.signal.connect(_test_sig)
-	context.get_signal('signal').connect(_test_sig)
+	context.restore_context_data(context_data)
+	context.get_signal('signal').connect(on_signal_func.bind(signal_result))
 
-	printt('signal', context.get_signal('signal').get_connections())
-	printt('signal', context.has_signal('signal'))
+	assert(context.variables.has_signal('signal') == true)
+	context.get_signal('signal').emit('test_signal')
+	assert(signal_result[0] == 'test_signal' and signal_result[1] == true)
+	print_debug('Variable signal passed!')
 
-	context.get_signal('signal').emit()
-
-	print_debug('Final Variables: %s' % context.store_variable_data())
-
-
-func _test_sig() -> void:
-	print('SIGNAL!')
+	print_debug('Final Variables: %s' % context.store_context_data())
 "
 
 [node name="Context" type="Control"]
