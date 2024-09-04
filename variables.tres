@@ -1,49 +1,6 @@
-[gd_resource type="Resource" script_class="QuestographContext" load_steps=3 format=3 uid="uid://dtw2f7kbmth53"]
+[gd_resource type="Resource" script_class="QuestographContext" load_steps=2 format=3 uid="uid://dtw2f7kbmth53"]
 
 [ext_resource type="Script" path="res://addons/questograph/scripts/context.gd" id="1_3wego"]
-
-[sub_resource type="Resource" id="Resource_jfy1k"]
-script = ExtResource("1_3wego")
-_variable_settings_by_type = {
-0: {
-"class_name": &"",
-"hint": 0,
-"hint_string": ""
-}
-}
-_variable_settings_by_name = {
-"": {
-"class_name": &"",
-"hint": 0,
-"hint_string": ""
-}
-}
-_available_types = {
-"Bool": 1,
-"Float": 3,
-"Integer": 2,
-"NodePath": 22,
-"Resource": 24,
-"Signal": 26,
-"String": 4,
-"Vector2": 5,
-"Vector3": 9
-}
-_default_type_values = {
-1: false,
-2: 0,
-3: 0,
-4: "",
-5: Vector2(0, 0),
-9: Vector3(0, 0, 0),
-22: NodePath("")
-}
-_variable_list = Array[Dictionary]([{
-"name": "nested_string",
-"type": 4,
-"value": "nest string"
-}])
-nested = Array[ExtResource("1_3wego")]([])
 
 [resource]
 resource_name = "Variables"
@@ -80,16 +37,10 @@ _default_type_values = {
 4: "",
 5: Vector2(0, 0),
 9: Vector3(0, 0, 0),
-22: NodePath("")
+22: NodePath(""),
+26: []
 }
-_variable_list = Array[Dictionary]([{
-"name": "test",
-"type": 26,
-"value": null
-}, {
-"name": "kek",
-"type": 4,
-"value": "lol"
-}])
-nested = Array[ExtResource("1_3wego")]([SubResource("Resource_jfy1k")])
-metadata/show_settings = true
+_show_nested_context = true
+_show_variables = true
+_variable_data = Array[Dictionary]([])
+_nested_context_data = Array[ExtResource("1_3wego")]([])

@@ -1,0 +1,96 @@
+[gd_scene load_steps=5 format=3 uid="uid://ei8wj4mp658l"]
+
+[ext_resource type="Script" path="res://tests/tests.gd" id="1_tml6v"]
+[ext_resource type="Resource" uid="uid://dtw2f7kbmth53" path="res://variables.tres" id="2_occhq"]
+[ext_resource type="Script" path="res://tests/test.gd" id="3_suoth"]
+
+[sub_resource type="GDScript" id="GDScript_3ibmd"]
+script/source = "extends TestsTest
+
+
+@export var context: QuestographContext
+
+
+func _tests() -> void:
+	var result: bool = false
+
+	var context_data: Array[Dictionary] = [
+		{ 'name': 'string', 'type': 4, 'value': 'test string' },
+		{ 'name': 'bool', 'type': 1, 'value': false },
+		{ 'name': 'vector3', 'type': 9, 'value': Vector3(1, 2, 3) },
+	]
+	context.set_variable_data(context_data)
+	result = context.get_variable('vector3').z == 3 and context.get_variable_data() == context_data
+	tested.emit(result, 'set_variables() and get_variables()')
+
+	context.set_variable('vector3', Vector3.INF)
+	result = context.get_variable('vector3') == Vector3.INF
+	tested.emit(result, 'set_variable() and get_variable()')
+
+	var variable_list: Dictionary = context.get_variable_list()
+	result = (variable_list.has('string')) \\
+		and (variable_list.has('vector3')) \\
+		and (variable_list.has('bool'))
+	tested.emit(result, 'get_variable_list()')
+
+	var filtered_variable_list: Dictionary = context.get_variable_list([TYPE_VECTOR3, TYPE_STRING])
+	result = (filtered_variable_list.has('string')) \\
+		and (filtered_variable_list.has('vector3')) \\
+		and (filtered_variable_list.size() == 2)
+	tested.emit(result, 'filtered get_variable_list()')
+
+	result = (context.get_variable_list([TYPE_INT]) == {})
+	tested.emit(result, 'filtered get_variable_list() with not valid types')
+
+	context.set_variable('vector3', true)
+	result = (context.get_variable('vector3') == Vector3.ZERO)
+	tested.emit(result, 'wrong type in set_variable()')
+
+	var signal_result: Array = ['', false]
+	var on_signal_func: Callable = func(variable, result_array):
+		result_array.clear()
+		result_array.append(variable)
+		result_array.append(true)
+	context.variable_changed.connect(on_signal_func.bind(signal_result), CONNECT_ONE_SHOT)
+	context.set_variable('bool', false)
+	result = (signal_result[0] == &'bool' and signal_result[1] == true)
+	tested.emit(result, 'variables_changed signal')
+
+	context_data = [{'name': 'signal', 'type': 26, 'value': [{'name': 'argument', 'type': TYPE_STRING}]}]
+
+	on_signal_func = func(variable, result_array):
+		result_array.clear()
+		result_array.append(variable)
+		result_array.append(true)
+
+	context.set_variable_data(context_data)
+	context.get_signal('signal').connect(on_signal_func.bind(signal_result))
+
+	result = (context.variables.has_signal('signal') == true)
+	tested.emit(result, 'Set variable signal')
+
+	context.get_signal('signal').emit('test_signal')
+	result = (signal_result[0] == 'test_signal' and signal_result[1] == true)
+	tested.emit(result, 'Variable signal')
+
+	var nested_context: QuestographContext = QuestographContext.new()
+	nested_context.set_variable_data([{ 'name': 'nested_string', 'type': 4, 'value': 'test nested string' }])
+	context.set_nested_context_data([nested_context])
+
+	result = (context.get_variable('nested_string') == 'test nested string')
+	tested.emit(result, 'Get nested variable')
+
+	context.set_variable('nested_string', 'new nested text')
+	result = (context.get_variable('nested_string') == 'new nested text')
+	tested.emit(result, 'Set nested variable')
+"
+
+[node name="Tests" type="Node"]
+script = ExtResource("1_tml6v")
+
+[node name="Context" type="Node" parent="."]
+script = SubResource("GDScript_3ibmd")
+context = ExtResource("2_occhq")
+
+[node name="Test" type="Node" parent="."]
+script = ExtResource("3_suoth")

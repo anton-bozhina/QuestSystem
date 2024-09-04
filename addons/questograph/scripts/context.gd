@@ -88,10 +88,14 @@ const _META_SHOW_SETTINGS: String = 'show_settings'
 @export_storage var _show_variables: bool = true
 
 ## Dictionary storing all the variables and nested contexts.
-@export_storage var _context_data: Dictionary = {
-	variables = [],
-	nested = [],
-}
+@export_storage var _variable_data: Array[Dictionary] = []
+
+#{
+	#variables = [],
+	#nested = [],
+#}
+
+@export_storage var _nested_context_data: Array[QuestographContext] = []
 
 ## Instance of the ContextVariables helper class.
 var variables: ContextVariables = ContextVariables.new(self)
@@ -100,7 +104,7 @@ var variables: ContextVariables = ContextVariables.new(self)
 var _cached_data: Dictionary = {}:
 	get:
 		if _cached_data.is_empty():
-			_cached_data = _create_cached_data(_context_data)
+			_cached_data = _create_cached_data(_variable_data, _nested_context_data)
 		return _cached_data
 
 
@@ -116,10 +120,10 @@ func _set(property: StringName, value: Variant) -> bool:
 
 	match property:
 		'%scount' % _VARIABLE_DATA_LIST_PREFIX:
-			_context_data.variables.resize(value)
-			for index in _context_data.variables.size():
-				if not _context_data.variables[index] or typeof(_context_data.variables[index]) != TYPE_DICTIONARY:
-					_context_data.variables[index] = {
+			_variable_data.resize(value)
+			for index in _variable_data.size():
+				if not _variable_data[index] or typeof(_variable_data[index]) != TYPE_DICTIONARY:
+					_variable_data[index] = {
 						type = _available_types.values()[0],
 						name = '',
 						value = _default_type_values.get(_available_types.values()[0])
@@ -127,7 +131,7 @@ func _set(property: StringName, value: Variant) -> bool:
 			notify_property_list_changed()
 			return true
 		'%scount' % _NESTED_DATA_LIST_PREFIX:
-			_context_data.nested.resize(value)
+			_nested_context_data.resize(value)
 			notify_property_list_changed()
 			return true
 		property when property.begins_with(_VARIABLE_DATA_LIST_PREFIX):
@@ -136,12 +140,12 @@ func _set(property: StringName, value: Variant) -> bool:
 			var key: String = splited_property[1]
 			match key:
 				'type':
-					_context_data.variables[index].type = value
-					_context_data.variables[index].value = _default_type_values.get(value)
+					_variable_data[index].type = value
+					_variable_data[index].value = _default_type_values.get(value)
 				'value':
-					_context_data.variables[index].value = value
+					_variable_data[index].value = value
 				'name':
-					_context_data.variables[index].name = value
+					_variable_data[index].name = value
 				'arguments':
 					for value_index in value.size():
 						if value[value_index].is_empty():
@@ -149,12 +153,12 @@ func _set(property: StringName, value: Variant) -> bool:
 								'name': 'argument',
 								'type': TYPE_NIL
 							}
-					_context_data.variables[index].value = value
+					_variable_data[index].value = value
 			return true
 		property when property.begins_with(_NESTED_DATA_LIST_PREFIX):
 			var splited_property: PackedStringArray = property.trim_prefix(_NESTED_DATA_LIST_PREFIX).split('/')
 			var index: int = int(splited_property[0])
-			_context_data.nested[index] = value
+			_nested_context_data[index] = value
 			return true
 	return false
 
@@ -166,25 +170,25 @@ func _get(property: StringName) -> Variant:
 
 	match property:
 		'%scount' % _VARIABLE_DATA_LIST_PREFIX:
-			return _context_data.variables.size()
+			return _variable_data.size()
 		'%scount' % _NESTED_DATA_LIST_PREFIX:
-			return _context_data.nested.size()
+			return _nested_context_data.size()
 		property when property.begins_with(_VARIABLE_DATA_LIST_PREFIX):
 			var splited_property: PackedStringArray = property.trim_prefix(_VARIABLE_DATA_LIST_PREFIX).split('/')
 			var index: int = int(splited_property[0])
 			var key: String = splited_property[1]
-			if key == 'type' and not _context_data.variables[index].type in _available_types.values():
-				_context_data.variables[index].type = _available_types.values()[0]
-				_context_data.variables[index].value = _default_type_values.get(_context_data.variables[index].type)
+			if key == 'type' and not _variable_data[index].type in _available_types.values():
+				_variable_data[index].type = _available_types.values()[0]
+				_variable_data[index].value = _default_type_values.get(_variable_data[index].type)
 				notify_property_list_changed()
 			if key == 'arguments':
 				key = 'value'
-			return _context_data.variables[index][key]
+			return _variable_data[index][key]
 		property when property.begins_with(_NESTED_DATA_LIST_PREFIX):
 			var splited_property: PackedStringArray = property.trim_prefix(_NESTED_DATA_LIST_PREFIX).split('/')
 			var index: int = int(splited_property[0])
-			if _context_data.nested.size() > index:
-				return _context_data.nested[index]
+			if _nested_context_data.size() > index:
+				return _nested_context_data[index]
 	return null
 
 
@@ -231,7 +235,7 @@ func _create_variable_property() -> Array[Dictionary]:
 		'hint': PROPERTY_HINT_NONE,
 		'hint_string': ''
 	})
-	for index in _context_data.variables.size():
+	for index in _variable_data.size():
 		property_list.append({
 			'name': '%s%d/type' % [_VARIABLE_DATA_LIST_PREFIX, index],
 			'type': TYPE_INT,
@@ -246,7 +250,7 @@ func _create_variable_property() -> Array[Dictionary]:
 			'usage': PROPERTY_USAGE_EDITOR
 		})
 
-		var variable_type: Variant.Type = _context_data.variables[index].type
+		var variable_type: Variant.Type = _variable_data[index].type
 
 		if variable_type == TYPE_SIGNAL:
 			property_list.append({
@@ -258,7 +262,7 @@ func _create_variable_property() -> Array[Dictionary]:
 			})
 			continue
 
-		var variable_name: StringName = _context_data.variables[index].get('name', '')
+		var variable_name: StringName = _variable_data[index].get('name', '')
 		var value_type_customize: Dictionary = {}
 
 		if _variable_settings_by_name.has(variable_name):
@@ -290,7 +294,7 @@ func _create_nested_property() -> Array[Dictionary]:
 		'hint': PROPERTY_HINT_NONE,
 		'hint_string': ''
 	})
-	for index in _context_data.nested.size():
+	for index in _nested_context_data.size():
 		property_list.append({
 			'name': '%s%d/context' % [_NESTED_DATA_LIST_PREFIX, index],
 			'class_name': &'QuestographContext',
@@ -347,14 +351,14 @@ func _create_settings_property() -> Array[Dictionary]:
 
 ## Creates a dictionary for quick access to variable data.
 ## This is used for caching and efficient data retrieval.
-func _create_cached_data(context_data: Dictionary) -> Dictionary:
+func _create_cached_data(variable_data: Array[Dictionary], nested_context_data: Array[QuestographContext]) -> Dictionary:
 	var cached_data: Dictionary = {
 		names = {},
 		data = {},
 		types = {},
 	}
 
-	for variable in context_data.get('variables', []):
+	for variable in variable_data:
 		var variable_name: StringName = variable.name
 		var variable_type: Variant.Type = variable.type
 		if variable_name.is_empty():
@@ -363,12 +367,10 @@ func _create_cached_data(context_data: Dictionary) -> Dictionary:
 		cached_data.data[variable_name] = variable
 		cached_data.types.get_or_add(variable_type, {})[variable_name] = variable
 
-		if variable_type == TYPE_SIGNAL:
+		if variable_type == TYPE_SIGNAL and typeof(variable.value) != TYPE_SIGNAL:
 			variable.value = _create_signal(variable_name, variable.value)
 
-	for context in context_data.get('nested', []):
-		if typeof(context) == TYPE_STRING:
-			context = load(context)
+	for context in nested_context_data:
 		cached_data.names.merge(context.get_variable_list())
 
 	return cached_data
@@ -386,31 +388,25 @@ func _create_signal(name: StringName, arguments: Array = []) -> Signal:
 #region Variables
 
 ## Returns the array of variables.
-## This function stores the current context data into a Dictionary and returns it.
-## The data includes all variables and nested contexts. Nested contexts are stored as paths.
-## If a nested context is a sub-resource (not saved to disk), a warning is issued.
-func store_context_data() -> Dictionary:
-	var context_data: Dictionary = {
-		variables = _cached_data.data.values(),
-		nested = []
-	}
-	for context in _context_data.get('nested', []) as Array[QuestographContext]:
-		var context_path: String = context.resource_path
-		if context_path.get_basename() == resource_path.get_basename():
-			print(context)
-			context_data.nested.append(var_to_bytes_with_objects(context))
-			#print(bytes_to_var_with_objects(var_to_bytes_with_objects(context)).get_variable('LOL'))
-			#push_warning('%s is a sub-resource! To store context data a sub-resource must be saved to disk manually!' % [context_path])
-		else:
-			context_data.nested.append(context_path)
-	return context_data
+func get_variable_data() -> Array[Dictionary]:
+	return _variable_data
 
 
-## Sets the array of variables and updates the name-to-index mapping.
-## This function restores the context data from a provided Dictionary and updates the cached data.
-func restore_context_data(variable_data: Dictionary) -> void:
-	_context_data = variable_data
-	_cached_data = _create_cached_data(_context_data)
+## Sets the array of variables and clear the name-to-index mapping.
+func set_variable_data(variable_data: Array[Dictionary]) -> void:
+	_variable_data = variable_data
+	_cached_data.clear()
+
+
+## Returns the array of nested contexts.
+func get_nested_context_data() -> Array[QuestographContext]:
+	return _nested_context_data
+
+
+## Sets the array of nested contexts and clear the name-to-index mapping.
+func set_nested_context_data(nested_context_data: Array[QuestographContext]) -> void:
+	_nested_context_data = nested_context_data
+	_cached_data.clear()
 
 
 ## Returns a list of variable names, optionally filtered by type.
